@@ -1,6 +1,6 @@
 {
   "name": "@chocbite/ts-lib-svg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library to help with svg generation in typescript",
   "author": "chocolateandmilkwin",
   "license": "MIT",
@@ -28,7 +28,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@chocolateish/lib-math": "1.0.0"
+    "@chocbite/ts-lib-math": "1.0.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

@@ -1,4 +1,4 @@
-import { degrees_to_radians } from "@chocolateish/lib-math";
+import { degrees_to_radians } from "@chocbite/ts-lib-math";
 import { SVGAttributes } from "../attributes";
 import { create_svg_element } from "./shared";
 
