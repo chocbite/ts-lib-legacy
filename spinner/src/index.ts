@@ -1,7 +1,7 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
 import { GREY } from "@chocbite/ts-lib-colors";
 import { svg } from "@chocbite/ts-lib-svg";
-import { theme_init_variable_root } from "@libTheme";
+import { theme_init_variable_root } from "@chocbite/ts-lib-theme";
 import "./index.scss";
 
 const variables = theme_init_variable_root(
