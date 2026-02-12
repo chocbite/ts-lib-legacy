@@ -1,5 +1,5 @@
 import { define_element } from "@chocbite/ts-lib-base";
-import { Spinner } from "@libSpinners";
+import { Spinner } from "@chocbite/ts-lib-spinner";
 import "./buffer.scss";
 import { ContextMenuLine } from "./line";
 

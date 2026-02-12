@@ -1,5 +1,5 @@
 import { define_element } from "@chocbite/ts-lib-base";
-import { material_navigation_chevron_right_rounded } from "../icons";
+import { material_navigation_chevron_right_rounded } from "@chocbite/ts-lib-icons";
 import { ContextMenuLine } from "./line";
 import { ContextMenu } from "./menu";
 import "./submenu.scss";

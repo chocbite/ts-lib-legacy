@@ -1,5 +1,5 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
-import { material_navigation_close_rounded } from "../icons";
+import { material_navigation_close_rounded } from "@chocbite/ts-lib-icons";
 import { Buffer } from "./buffer";
 import { Container } from "./container";
 import { ContextMenuLine } from "./line";

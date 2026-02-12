@@ -1,5 +1,5 @@
+import { DOCUMENT_HANDLER } from "@chocbite/ts-lib-document";
 import type { Option } from "@chocbite/ts-lib-result";
-import { DOCUMENT_HANDLER } from "@libDocument";
 import { Container } from "./container";
 import "./engine.scss";
 import { ContextMenu } from "./menu";

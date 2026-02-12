@@ -1,5 +1,5 @@
 import { BLUE, GREY } from "@chocbite/ts-lib-colors";
-import { theme_init_variable_root } from "@libTheme";
+import { theme_init_variable_root } from "@chocbite/ts-lib-theme";
 
 const variables = theme_init_variable_root(
   "contextmenu",
