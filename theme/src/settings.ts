@@ -151,7 +151,7 @@ const INPUT_MODES = st.h.enums.list<InputModes>({
   },
 });
 
-const INPUT_MODE_ID = "inputMode";
+const INPUT_MODE_ID = "input_mode";
 const PRIVATE_INPUT_MODE = st.s.ros_ws.ok(
   SETTINGS.get(
     INPUT_MODE_ID,
@@ -188,13 +188,13 @@ export type AnimationLevels =
 const ANIMATION_LEVELS = st.h.enums.list<AnimationLevels>({
   [AnimationLevels.All]: { name: "All", description: "All animations" },
   [AnimationLevels.Some]: {
-    name: "Some",
-    description: "Only animations that improve usability",
+    name: "Functional",
+    description: "Only functional animations that improve usability",
   },
   [AnimationLevels.None]: { name: "None", description: "No animations" },
 });
 
-const ANIMATION_LEVEL_ID = "animation";
+const ANIMATION_LEVEL_ID = "animation_level";
 const PRIVATE_ANIMATION_LEVEL = st.s.ros_ws.ok(
   SETTINGS.get(ANIMATION_LEVEL_ID, AnimationLevels.None as AnimationLevels),
   true,
@@ -208,3 +208,24 @@ SETTINGS.register(
 );
 
 export const ANIMATION_LEVEL = PRIVATE_ANIMATION_LEVEL.read_write;
+
+//               _   _ _____ __  __       _______ _____ ____  _   _    _____ _____  ______ ______ _____
+//         /\   | \ | |_   _|  \/  |   /\|__   __|_   _/ __ \| \ | |  / ____|  __ \|  ____|  ____|  __ \
+//        /  \  |  \| | | | | \  / |  /  \  | |    | || |  | |  \| | | (___ | |__) | |__  | |__  | |  | |
+//       / /\ \ | . ` | | | | |\/| | / /\ \ | |    | || |  | | . ` |  \___ \|  ___/|  __| |  __| | |  | |
+//      / ____ \| |\  |_| |_| |  | |/ ____ \| |   _| || |__| | |\  |  ____) | |    | |____| |____| |__| |
+//     /_/    \_\_| \_|_____|_|  |_/_/    \_\_|  |_____\____/|_| \_| |_____/|_|    |______|______|_____/
+const ANIMATION_SPEED_ID = "animation_speed";
+const PRIVATE_ANIMATION_SPEED = st.s.ros_ws.ok(
+  SETTINGS.get(ANIMATION_SPEED_ID, 200),
+  true,
+  st.h.nums.helper(50, 1000, "ms", 0, 50),
+);
+SETTINGS.register(
+  ANIMATION_SPEED_ID,
+  "Animation Speed",
+  "Setting for animation speed, changes the speed of animations in the UI",
+  PRIVATE_ANIMATION_SPEED,
+);
+
+export const ANIMATION_SPEED = PRIVATE_ANIMATION_SPEED.read_write;
