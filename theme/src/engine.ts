@@ -77,7 +77,7 @@ export const theme_engine = new (class ThemeEngine {
   }
   #apply_animation_speed_to_doc(doc: Document, speed: number) {
     const style = doc.documentElement.style;
-    style.setProperty("--animation-speed", speed.toString());
+    style.setProperty("--animation-speed", speed.toString() + "ms");
   }
 
   /**This applies the current theme to a document*/
