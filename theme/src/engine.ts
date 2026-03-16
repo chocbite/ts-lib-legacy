@@ -1,6 +1,7 @@
 import { DOCUMENT_HANDLER } from "@chocbite/ts-lib-document";
 import {
   ANIMATION_LEVEL,
+  ANIMATION_SPEED,
   AnimationLevels,
   INPUT_MODE,
   InputModes,
@@ -28,7 +29,8 @@ export const theme_engine = new (class ThemeEngine {
     this.#apply_theme_to_doc(doc, THEME.ok());
     this.#apply_input_to_doc(doc, INPUT_MODE.ok());
     this.#apply_scale_to_doc(doc, SCALE.ok() / 100);
-    this.#apply_animation_to_doc(doc, ANIMATION_LEVEL.ok());
+    this.#apply_animation_level_to_doc(doc, ANIMATION_LEVEL.ok());
+    this.#apply_animation_speed_to_doc(doc, ANIMATION_SPEED.ok());
   }
 
   /**This applies the current theme to a document*/
@@ -49,12 +51,12 @@ export const theme_engine = new (class ThemeEngine {
   }
 
   /**This applies the current theme to a document*/
-  apply_animation(anim: AnimationLevels) {
+  apply_animation_level(anim: AnimationLevels) {
     DOCUMENT_HANDLER.for_documents((doc) => {
-      this.#apply_animation_to_doc(doc, anim);
+      this.#apply_animation_level_to_doc(doc, anim);
     });
   }
-  #apply_animation_to_doc(doc: Document, anim: AnimationLevels) {
+  #apply_animation_level_to_doc(doc: Document, anim: AnimationLevels) {
     doc.documentElement.classList.remove("anim-all", "anim-some");
     switch (anim) {
       case AnimationLevels.All:
@@ -65,6 +67,17 @@ export const theme_engine = new (class ThemeEngine {
         doc.documentElement.classList.add("anim-some");
         break;
     }
+  }
+
+  /**This applies the current theme to a document*/
+  apply_animation_speed(speed: number) {
+    DOCUMENT_HANDLER.for_documents((doc) => {
+      this.#apply_animation_speed_to_doc(doc, speed);
+    });
+  }
+  #apply_animation_speed_to_doc(doc: Document, speed: number) {
+    const style = doc.documentElement.style;
+    style.setProperty("--animation-speed", speed.toString());
   }
 
   /**This applies the current theme to a document*/
@@ -149,5 +162,5 @@ INPUT_MODE.sub((val) => {
   theme_engine.apply_input(val.value);
 });
 ANIMATION_LEVEL.sub((val) => {
-  theme_engine.apply_animation(val.value);
+  theme_engine.apply_animation_level(val.value);
 });
