@@ -1,6 +1,6 @@
 {
   "name": "@chocbite/ts-lib-theme",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "UI theme library for TypeScript",
   "author": "chocolateandmilkwin",
   "license": "MIT",
@@ -49,6 +49,6 @@
     "@chocbite/ts-lib-document": "^1.0.0",
     "@chocbite/ts-lib-icons": "^1.0.3",
     "@chocbite/ts-lib-settings": "^1.0.0",
-    "@chocbite/ts-lib-state": "^1.0.0"
+    "@chocbite/ts-lib-state": "^1.1.0"
   }
 }

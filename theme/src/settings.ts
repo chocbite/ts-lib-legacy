@@ -51,7 +51,7 @@ const PRIVATE_THEME = st.s.ros_ws.ok(
       : (Themes.Light as Themes),
   ),
   true,
-  st.h.enums.helper(THEMES),
+  st.h.enums.helper(st.ok(THEMES)),
 );
 SETTINGS.register(THEME_ID, "Theme", "Theme to use for the UI", PRIVATE_THEME);
 
@@ -74,7 +74,7 @@ const SCALE_ID = "scale";
 const PRIVATE_SCALE = st.s.ros_ws.ok(
   SETTINGS.get(SCALE_ID, 100),
   true,
-  st.h.nums.helper(50, 400, "%", 0, 1),
+  st.h.nums.helper(st.ok(50), st.ok(400), st.ok("%"), st.ok(0), st.ok(1)),
 );
 SETTINGS.register(SCALE_ID, "Scale", "UI scale", PRIVATE_SCALE);
 export const SCALE = PRIVATE_SCALE.read_write;
@@ -109,7 +109,7 @@ const SCROLLBAR_ID = "scrollbar";
 const PRIVATE_SCROLLBAR_MODE = st.s.ros_ws.ok(
   SETTINGS.get(SCROLLBAR_ID, ScrollbarModes.Thin as ScrollbarModes),
   true,
-  st.h.enums.helper(SCROLLBAR_MODES),
+  st.h.enums.helper(st.ok(SCROLLBAR_MODES)),
 );
 SETTINGS.register(
   "scrollbar",
@@ -160,7 +160,7 @@ const PRIVATE_INPUT_MODE = st.s.ros_ws.ok(
       : (InputModes.Mouse as InputModes),
   ),
   true,
-  st.h.enums.helper(INPUT_MODES),
+  st.h.enums.helper(st.ok(INPUT_MODES)),
 );
 SETTINGS.register(
   INPUT_MODE_ID,
@@ -198,7 +198,7 @@ const ANIMATION_LEVEL_ID = "animation_level";
 const PRIVATE_ANIMATION_LEVEL = st.s.ros_ws.ok(
   SETTINGS.get(ANIMATION_LEVEL_ID, AnimationLevels.None as AnimationLevels),
   true,
-  st.h.enums.helper(ANIMATION_LEVELS),
+  st.h.enums.helper(st.ok(ANIMATION_LEVELS)),
 );
 SETTINGS.register(
   ANIMATION_LEVEL_ID,
@@ -219,7 +219,7 @@ const ANIMATION_SPEED_ID = "animation_speed";
 const PRIVATE_ANIMATION_SPEED = st.s.ros_ws.ok(
   SETTINGS.get(ANIMATION_SPEED_ID, 200),
   true,
-  st.h.nums.helper(50, 1000, "ms", 0, 50),
+  st.h.nums.helper(st.ok(50), st.ok(1000), st.ok("ms"), st.ok(0), st.ok(50)),
 );
 SETTINGS.register(
   ANIMATION_SPEED_ID,
