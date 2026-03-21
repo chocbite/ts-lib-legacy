@@ -1,46 +1,59 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { err, none, ok, some, type Option, type Result } from ".";
+import result, { err, none, ok, some, type Option, type Result } from ".";
 
 //###########################################################################################################################################################
-//       ____  _  __
-//      / __ \| |/ /
-//     | |  | | ' /
-//     | |  | |  <
-//     | |__| | . \
-//      \____/|_|\_\
+//      _____  ______  _____ _    _ _   _______    ____  _  __
+//     |  __ \|  ____|/ ____| |  | | | |__   __|  / __ \| |/ /
+//     | |__) | |__  | (___ | |  | | |    | |    | |  | | ' /
+//     |  _  /|  __|  \___ \| |  | | |    | |    | |  | |  <
+//     | | \ \| |____ ____) | |__| | |____| |    | |__| | . \
+//     |_|  \_\______|_____/ \____/|______|_|     \____/|_|\_\
 //###########################################################################################################################################################
 describe("Result Ok", function () {
   it("Value from valid result", function () {
     const result = ok(42);
     expect(result.value).equal(42);
   });
-  it("Ok from valid result", function () {
+  it("ok from valid result", function () {
     const result = ok(42);
     expect(result.ok).equal(true);
   });
-  it("Err from valid result", function () {
+  it("err from valid result", function () {
     const result = ok(42);
     expect(result.err).equal(false);
   });
-  it("Expect value from valid result", function () {
+  it("expect value from valid result", function () {
     const result = ok(42);
     expect(result.expect()).equal(42);
   });
-  it("Expect err value from valid result", function () {
+  it("expect_err value from valid result", function () {
     const result = ok(42);
     expect(() => {
       result.expect_err("YOYO");
     }).to.throw();
   });
-  it("Unwrap value from valid result", function () {
+  it("unwrap value from valid result", function () {
     const result = ok(42);
-    expect(result.unwrap).equal(42);
+    expect(result.unwrap()).equal(42);
   });
-  it("UnwrapOr value from valid result", function () {
+  it("unwrap_or value from valid result", function () {
     const result = ok(42);
     expect(result.unwrap_or()).equal(42);
   });
-  it("andThen from valid result returning valid result", function () {
+  it("unwrap_err from valid result with default value", function () {
+    const result = ok(42);
+    let yo;
+    expect(() => {
+      yo = result.unwrap_err();
+    }).to.throw();
+    yo = yo;
+  });
+  it("unwrap_err_or from valid result with default value", function () {
+    const result = ok(42);
+    expect(result.unwrap_err_or(43)).equal(43);
+  });
+
+  it("and_then from valid result returning valid result", function () {
     const result = ok(42);
     expect(
       result
@@ -48,10 +61,10 @@ describe("Result Ok", function () {
           expect(val).equal(42);
           return ok("42");
         })
-        .expect()
+        .expect(),
     ).equal("42");
   });
-  it("andThen from valid result returning error result", function () {
+  it("and_then from valid result returning error result", function () {
     const result = ok(42);
     expect(
       result
@@ -59,10 +72,10 @@ describe("Result Ok", function () {
           expect(val).equal(42);
           return err("42");
         })
-        .expect_err()
+        .expect_err(),
     ).equal("42");
   });
-  it("orElse from valid result", function () {
+  it("or_else from valid result", function () {
     const result = ok(42);
     expect(result.or_else().expect()).equal(42);
   });
@@ -74,81 +87,90 @@ describe("Result Ok", function () {
           expect(val).equal(42);
           return "42";
         })
-        .expect()
+        .expect(),
     ).equal("42");
   });
-  it("mapErr from valid result", function () {
+  it("map_err from valid result", function () {
     const result = ok(42);
     expect(result.map_err().expect()).equal(42);
   });
-  it("Compare equal valid results", function () {
+  it("compare equal valid results", function () {
     const result1 = ok(42);
     const result2 = ok(42);
     expect(result1.compare(result2)).equal(true);
   });
-  it("Compare unequal valid results", function () {
+  it("compare unequal valid results", function () {
     const result1 = ok(42);
     const result2 = ok(43);
     expect(result1.compare(result2)).equal(false);
   });
-  it("Compare valid and error results", function () {
+  it("compare valid and error results", function () {
     const result1 = ok(42) as Result<number, string>;
     const result2 = err("42") as Result<number, string>;
     expect(result1.compare(result2)).equal(false);
   });
 
-  it("toOptional from valid result", function () {
+  it("to_option from valid result", function () {
     const result = ok(42);
-    expect(result.to_option.expect()).equal(42);
+    expect(result.to_option().expect()).equal(42);
   });
 });
 
 //###########################################################################################################################################################
-//      ______
-//     |  ____|
-//     | |__   _ __ _ __ ___  _ __
-//     |  __| | '__| '__/ _ \| '__|
-//     | |____| |  | | | (_) | |
-//     |______|_|  |_|  \___/|_|
+//      _____  ______  _____ _    _ _   _______   ______ _____  _____   ____  _____
+//     |  __ \|  ____|/ ____| |  | | | |__   __| |  ____|  __ \|  __ \ / __ \|  __ \
+//     | |__) | |__  | (___ | |  | | |    | |    | |__  | |__) | |__) | |  | | |__) |
+//     |  _  /|  __|  \___ \| |  | | |    | |    |  __| |  _  /|  _  /| |  | |  _  /
+//     | | \ \| |____ ____) | |__| | |____| |    | |____| | \ \| | \ \| |__| | | \ \
+//     |_|  \_\______|_____/ \____/|______|_|    |______|_|  \_\_|  \_\\____/|_|  \_\
 //###########################################################################################################################################################
 describe("Result Error", function () {
-  it("Value from error result", function () {
+  it("value from error result", function () {
     const result = err(42);
     expect(result.error).equal(42);
   });
-  it("Valid from error result", function () {
+  it("valid from error result", function () {
     const result = err(42);
     expect(result.valid).equal(false);
   });
-  it("Ok from error result", function () {
+  it("ok from error result", function () {
     const result = err(42);
     expect(result.ok).equal(false);
   });
-  it("Err from error result", function () {
+  it("err from error result", function () {
     const result = err(42);
     expect(result.err).equal(true);
   });
-  it("Expect err value from error result", function () {
+  it("expect_err value from error result", function () {
     const result = err(42);
     expect(result.expect_err()).equal(42);
   });
-  it("Unwrap value from error result", function () {
+  it("unwrap value from error result", function () {
     const result = err(42);
     let yo;
     expect(() => {
-      yo = result.unwrap;
+      yo = result.unwrap();
     }).to.throw();
     yo = yo;
   });
-  it("UnwrapOr value from error result", function () {
+  it("unwrap_or value from error result", function () {
     const result = err(42);
     expect(result.unwrap_or(42)).equal(42);
   });
-  it("andThen from error result", function () {
+  it("unwrap_err from error result", function () {
+    const result = err("42");
+    expect(result.unwrap_err()).equal("42");
+  });
+  it("unwrap_err_or from error result", function () {
+    const result = err("42");
+    expect(result.unwrap_err_or()).equal("42");
+  });
+
+  it("and_then from error result", function () {
     const result = err(42);
     expect(result.and_then().expect_err()).equal(42);
   });
-  it("orElse from error result", function () {
+  it("or_else from error result", function () {
     const result = err(42);
     expect(
       result
@@ -156,14 +178,14 @@ describe("Result Error", function () {
           expect(val).equal(42);
           return ok("42");
         })
-        .expect()
+        .expect(),
     ).equal("42");
   });
   it("map from error result", function () {
     const result = err(42);
     expect(result.map().expect_err()).equal(42);
   });
-  it("mapErr from error result", function () {
+  it("map_err from error result", function () {
     const result = err(42);
     expect(
       result
@@ -171,63 +193,63 @@ describe("Result Error", function () {
           expect(val).equal(42);
           return "42";
         })
-        .expect_err()
+        .expect_err(),
     ).equal("42");
   });
-  it("Compare equal error results", function () {
+  it("compare equal error results", function () {
     const result1 = err(42);
     const result2 = err(42);
     expect(result1.compare(result2)).equal(true);
   });
-  it("Compare unequal error results", function () {
+  it("compare unequal error results", function () {
     const result1 = err(42);
     const result2 = err(43);
     expect(result1.compare(result2)).equal(false);
   });
-  it("Compare error and valid results", function () {
+  it("compare error and valid results", function () {
     const result1 = err(42) as Result<number, number>;
     const result2 = ok(42) as Result<number, number>;
     expect(result1.compare(result2)).equal(false);
   });
-  it("toOptional from error result", function () {
+  it("to_option from error result", function () {
     const result = err(42);
-    expect(result.to_option.none).equal(true);
+    expect(result.to_option().none).equal(true);
   });
 });
 //###########################################################################################################################################################
-//       _____
-//      / ____|
-//     | (___   ___  _ __ ___   ___
-//      \___ \ / _ \| '_ ` _ \ / _ \
-//      ____) | (_) | | | | | |  __/
-//     |_____/ \___/|_| |_| |_|\___|
+//       ____  _____ _______ _____ ____  _   _    _____  ____  __  __ ______
+//      / __ \|  __ \__   __|_   _/ __ \| \ | |  / ____|/ __ \|  \/  |  ____|
+//     | |  | | |__) | | |    | || |  | |  \| | | (___ | |  | | \  / | |__
+//     | |  | |  ___/  | |    | || |  | | . ` |  \___ \| |  | | |\/| |  __|
+//     | |__| | |      | |   _| || |__| | |\  |  ____) | |__| | |  | | |____
+//      \____/|_|      |_|  |_____\____/|_| \_| |_____/ \____/|_|  |_|______|
 //###########################################################################################################################################################
 describe("Option Some", function () {
-  it("Value from Some", function () {
+  it("value from Some", function () {
     const result = some(42);
     expect(result.value).equal(42);
   });
-  it("Some from Some", function () {
+  it("some from Some", function () {
     const result = some(42);
     expect(result.some).equal(true);
   });
-  it("None from Some", function () {
+  it("none from Some", function () {
     const result = some(42);
     expect(result.none).equal(false);
   });
-  it("Expect value from Some", function () {
+  it("expect from Some", function () {
     const result = some(42);
     expect(result.expect()).equal(42);
   });
-  it("Unwrap value from Some", function () {
+  it("unwrap from Some", function () {
     const result = some(42);
-    expect(result.unwrap).equal(42);
+    expect(result.unwrap()).equal(42);
   });
-  it("UnwrapOr value from Some", function () {
+  it("unwrap_or from Some", function () {
     const result = some(42);
     expect(result.unwrap_or()).equal(42);
   });
-  it("andThen from Some returning Some", function () {
+  it("and_then from Some returning Some", function () {
     const result = some(42);
     expect(
       result
@@ -235,19 +257,19 @@ describe("Option Some", function () {
           expect(val).equal(42);
           return some("42");
         })
-        .expect()
+        .expect(),
     ).equal("42");
   });
-  it("andThen from Some returning error result", function () {
+  it("and_then from Some returning error result", function () {
     const result = some(42);
     expect(
       result.and_then((val) => {
         expect(val).equal(42);
         return none();
-      }).none
+      }).none,
     ).equal(true);
   });
-  it("orElse from Some", function () {
+  it("or_else from Some", function () {
     const result = some(42);
     expect(result.or_else().expect()).equal(42);
   });
@@ -259,114 +281,114 @@ describe("Option Some", function () {
           expect(val).equal(42);
           return "42";
         })
-        .expect()
+        .expect(),
     ).equal("42");
   });
-  it("Compare equal Some", function () {
+  it("compare equal Some", function () {
     const result1 = some(42);
     const result2 = some(42);
     expect(result1.compare(result2)).equal(true);
   });
-  it("Compare unequal Some", function () {
+  it("compare unequal Some", function () {
     const result1 = some(42);
     const result2 = some(43);
     expect(result1.compare(result2)).equal(false);
   });
-  it("Compare Some and None", function () {
+  it("compare Some and None", function () {
     const result1 = some(42);
     const result2 = none();
     expect(result1.compare(result2)).equal(false);
   });
-  it("toResult from Some", function () {
+  it("to_result from Some", function () {
     const result = some(42);
     expect(result.to_result().expect()).equal(42);
   });
 });
 
 //###########################################################################################################################################################
-//      _   _
-//     | \ | |
-//     |  \| | ___  _ __   ___
-//     | . ` |/ _ \| '_ \ / _ \
-//     | |\  | (_) | | | |  __/
-//     |_| \_|\___/|_| |_|\___|
+//       ____  _____ _______ _____ ____  _   _   _   _  ____  _   _ ______
+//      / __ \|  __ \__   __|_   _/ __ \| \ | | | \ | |/ __ \| \ | |  ____|
+//     | |  | | |__) | | |    | || |  | |  \| | |  \| | |  | |  \| | |__
+//     | |  | |  ___/  | |    | || |  | | . ` | | . ` | |  | | . ` |  __|
+//     | |__| | |      | |   _| || |__| | |\  | | |\  | |__| | |\  | |____
+//      \____/|_|      |_|  |_____\____/|_| \_| |_| \_|\____/|_| \_|______|
 //###########################################################################################################################################################
 describe("Option None", function () {
-  it("Some from None", function () {
+  it("some from None", function () {
     const result = none();
     expect(result.some).equal(false);
   });
-  it("None from None", function () {
+  it("none from None", function () {
     const result = none();
     expect(result.none).equal(true);
   });
-  it("Expect value from None", function () {
+  it("expect from None", function () {
     const result = none();
     expect(() => {
       result.expect("YOYO");
     }).to.throw();
   });
-  it("Unwrap value from None", function () {
+  it("unwrap from None", function () {
     const result = none();
     let yo;
     expect(() => {
-      yo = result.unwrap;
+      yo = result.unwrap();
     }).to.throw();
     yo = yo;
   });
-  it("UnwrapOr value from None", function () {
+  it("unwrap_or from None", function () {
     const result = none();
     expect(result.unwrap_or(42)).equal(42);
   });
-  it("andThen from None returning error result", function () {
+  it("and_then from None returning error result", function () {
     const result = none();
     expect(result.and_then().none).equal(true);
   });
-  it("orElse from Some returning Some", function () {
+  it("or_else from Some returning Some", function () {
     const result = none();
     expect(
       result
         .or_else(() => {
           return some("42");
         })
-        .expect()
+        .expect(),
     ).equal("42");
   });
-  it("orElse from Some returning error result", function () {
+  it("or_else from Some returning error result", function () {
     const result = none();
     expect(
       result.or_else(() => {
         return none();
-      }).none
+      }).none,
     ).equal(true);
   });
   it("map from None", function () {
     const result = none();
     expect(result.map()).equal(result);
   });
-  it("Compare equal None", function () {
+  it("compare equal None", function () {
     const result1 = none();
     const result2 = none();
     expect(result1.compare(result2)).equal(true);
   });
-  it("Compare Some and None", function () {
+  it("compare Some and None", function () {
     const result1 = some(42);
     const result2 = none();
     expect(result1.compare(result2)).equal(false);
   });
-  it("toResult from None", function () {
+  it("to_result from None", function () {
     const result = none();
     expect(result.to_result("YOYO").err).equal(true);
   });
 });
 
 //###########################################################################################################################################################
-//       ____  _____ _______ _____ ____  _   _
-//      / __ \|  __ \__   __|_   _/ __ \| \ | |
-//     | |  | | |__) | | |    | || |  | |  \| |
-//     | |  | |  ___/  | |    | || |  | | . ` |
-//     | |__| | |      | |   _| || |__| | |\  |
-//      \____/|_|      |_|  |_____\____/|_| \_|
+//       ____  _____ _______ _____ ____  _   _   _   _          _____  _____   ______          _______ _   _  _____
+//      / __ \|  __ \__   __|_   _/ __ \| \ | | | \ | |   /\   |  __ \|  __ \ / __ \ \        / /_   _| \ | |/ ____|
+//     | |  | | |__) | | |    | || |  | |  \| | |  \| |  /  \  | |__) | |__) | |  | \ \  /\  / /  | | |  \| | |  __
+//     | |  | |  ___/  | |    | || |  | | . ` | | . ` | / /\ \ |  _  /|  _  /| |  | |\ \/  \/ /   | | | . ` | | |_ |
+//     | |__| | |      | |   _| || |__| | |\  | | |\  |/ ____ \| | \ \| | \ \| |__| | \  /\  /   _| |_| |\  | |__| |
+//      \____/|_|      |_|  |_____\____/|_| \_| |_| \_/_/    \_\_|  \_\_|  \_\\____/   \/  \/   |_____|_| \_|\_____|
 //###########################################################################################################################################################
 describe("Option", function () {
   it("Type narrowing", function () {
@@ -381,12 +403,12 @@ describe("Option", function () {
 });
 
 //###########################################################################################################################################################
-//      _____                 _ _
-//     |  __ \               | | |
-//     | |__) |___  ___ _   _| | |_
-//     |  _  // _ \/ __| | | | | __|
-//     | | \ \  __/\__ \ |_| | | |_
-//     |_|  \_\___||___/\__,_|_|\__|
+//      _____  ______  _____ _    _ _   _______   _   _          _____  _____   ______          _______ _   _  _____
+//     |  __ \|  ____|/ ____| |  | | | |__   __| | \ | |   /\   |  __ \|  __ \ / __ \ \        / /_   _| \ | |/ ____|
+//     | |__) | |__  | (___ | |  | | |    | |    |  \| |  /  \  | |__) | |__) | |  | \ \  /\  / /  | | |  \| | |  __
+//     |  _  /|  __|  \___ \| |  | | |    | |    | . ` | / /\ \ |  _  /|  _  /| |  | |\ \/  \/ /   | | | . ` | | |_ |
+//     | | \ \| |____ ____) | |__| | |____| |    | |\  |/ ____ \| | \ \| | \ \| |__| | \  /\  /   _| |_| |\  | |__| |
+//     |_|  \_\______|_____/ \____/|______|_|    |_| \_/_/    \_\_|  \_\_|  \_\\____/   \/  \/   |_____|_| \_|\_____|
 //###########################################################################################################################################################
 describe("Result", function () {
   it("Type narrowing", function () {
@@ -399,5 +421,30 @@ describe("Result", function () {
     } else {
       expectTypeOf(result.error).toEqualTypeOf<string>();
     }
+  });
+});
+
+//###########################################################################################################################################################
+//      _    _ ______ _      _____  ______ _____
+//     | |  | |  ____| |    |  __ \|  ____|  __ \
+//     | |__| | |__  | |    | |__) | |__  | |__) |
+//     |  __  |  __| | |    |  ___/|  __| |  _  /
+//     | |  | | |____| |____| |    | |____| | \ \
+//     |_|  |_|______|______|_|    |______|_|  \_\
+//###########################################################################################################################################################
+describe("Helpers", function () {
+  it("Is result", function () {
+    expect(result.is_result(err("YOYO"))).equal(true);
+    expect(result.is_result(ok(42))).equal(true);
+    expect(result.is_result({})).equal(false);
+    expect(result.is_result({ ok: true, value: 42 })).equal(false);
+    expect(result.is_result(40)).equal(false);
+  });
+  it("Is option", function () {
+    expect(result.is_option(some(42))).equal(true);
+    expect(result.is_option(none())).equal(true);
+    expect(result.is_option({})).equal(false);
+    expect(result.is_option({ some: true, value: 42 })).equal(false);
+    expect(result.is_option(40)).equal(false);
   });
 });

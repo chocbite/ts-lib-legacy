@@ -1,3 +1,8 @@
+/**Symbol used to identify Result objects, can be used to create result compliant objects */
+const RESULT_KEY = Symbol("result_key");
+/**Symbol used to identify Option objects, can be used to create option compliant objects */
+const OPTION_KEY = Symbol("option_key");
+
 //###########################################################################################################################################################
 //       ____  _____ _______ _____ ____  _   _
 //      / __ \|  __ \__   __|_   _/ __ \| \ | |
@@ -7,6 +12,9 @@
 //      \____/|_|      |_|  |_____\____/|_| \_|
 //###########################################################################################################################################################
 interface OptionBase<T> {
+  /**Unique symbol to identify Option objects */
+  readonly [OPTION_KEY]: true;
+
   /**Is true when a value is available*/
   readonly some: boolean;
   /**Is true when no value is available*/
@@ -19,7 +27,7 @@ interface OptionBase<T> {
   expect(msg: string): T;
 
   /**Returns the contained value, if exists. Throws an error if not.*/
-  get unwrap(): T;
+  unwrap(): T;
 
   /**Returns the contained value or a provided default.
    * @param value value to use as default*/
@@ -50,6 +58,10 @@ interface OptionBase<T> {
 }
 
 export class OptionSome<T> implements OptionBase<T> {
+  get [OPTION_KEY](): true {
+    return true;
+  }
+
   readonly value: T;
 
   constructor(value: T) {
@@ -66,7 +78,7 @@ export class OptionSome<T> implements OptionBase<T> {
     return this.value;
   }
 
-  get unwrap(): T {
+  unwrap(): T {
     return this.value;
   }
 
@@ -99,6 +111,10 @@ export class OptionSome<T> implements OptionBase<T> {
 }
 
 export class OptionNone implements OptionBase<never> {
+  get [OPTION_KEY](): true {
+    return true;
+  }
+
   get some(): false {
     return false;
   }
@@ -110,7 +126,7 @@ export class OptionNone implements OptionBase<never> {
     throw new Error(msg);
   }
 
-  get unwrap(): never {
+  unwrap(): never {
     throw new Error(`Tried to unwrap None`);
   }
 
@@ -152,6 +168,9 @@ export class OptionNone implements OptionBase<never> {
 //###########################################################################################################################################################
 
 interface ResultBase<T, E> {
+  /**Unique symbol to identify Result objects */
+  readonly [RESULT_KEY]: true;
+
   /**Is true when the result is valid and false when it is invalid*/
   readonly ok: boolean;
   /**Is false when the result is valid and true when it is invalid*/
@@ -171,10 +190,17 @@ interface ResultBase<T, E> {
 
   /**Returns the contained valid value.
    * Throws if the value is invalid, with a message provided by the error's value.*/
-  get unwrap(): T;
+  unwrap(): T;
 
   /**Returns the contained valid value or a provided default.*/
   unwrap_or<T2>(value: T2): T | T2;
+
+  /**Returns the contained error value.
+   * Throws if the value is valid, with the value.*/
+  unwrap_err(): E;
+
+  /* Returns the contained error value or a provided default.*/
+  unwrap_err_or<E2>(error: E2): E | E2;
 
   /**Calls mapper function if the result is valid, otherwise returns the error value of self.
    * This function can be used for control flow based on `Result` values.*/
@@ -201,10 +227,14 @@ interface ResultBase<T, E> {
   compare(other: Result<T, E>): boolean;
 
   /**Converts from `Result<T, E>` to `Optional<T>`, discarding the error if any*/
-  get to_option(): Option<T>;
+  to_option(): Option<T>;
 }
 
 export class ResultOk<T> implements ResultBase<T, never> {
+  get [RESULT_KEY](): true {
+    return true;
+  }
+
   readonly value: T;
 
   constructor(value: T) {
@@ -225,12 +255,20 @@ export class ResultOk<T> implements ResultBase<T, never> {
     throw new Error(msg);
   }
 
-  get unwrap(): T {
+  unwrap(): T {
     return this.value;
   }
 
   unwrap_or(): T {
     return this.value;
+  }
+
+  unwrap_err(): never {
+    throw new Error("Tried to unwrap_err on ResultOk with value " + this.value);
+  }
+
+  unwrap_err_or<E2>(error: E2): E2 {
+    return error;
   }
 
   and_then<T2>(mapper: (value: T) => ResultOk<T2>): ResultOk<T2>;
@@ -256,12 +294,16 @@ export class ResultOk<T> implements ResultBase<T, never> {
     return other.ok && this.value === other.value;
   }
 
-  get to_option(): OptionSome<T> {
+  to_option(): OptionSome<T> {
     return new OptionSome(this.value);
   }
 }
 
 export class ResultErr<E> implements ResultBase<never, E> {
+  get [RESULT_KEY](): true {
+    return true;
+  }
+
   readonly error: E;
 
   constructor(error: E) {
@@ -286,12 +328,20 @@ export class ResultErr<E> implements ResultBase<never, E> {
     return this.error;
   }
 
-  get unwrap(): never {
+  unwrap(): never {
     throw new Error("Tried to unwrap Error\nOriginal " + this.error);
   }
 
   unwrap_or<T2>(val: T2): T2 {
     return val;
+  }
+
+  unwrap_err(): E {
+    return this.error;
+  }
+
+  unwrap_err_or(): E {
+    return this.error;
   }
 
   and_then(): ResultErr<E> {
@@ -317,7 +367,7 @@ export class ResultErr<E> implements ResultBase<never, E> {
     return other.err && this.error === other.error;
   }
 
-  get to_option(): OptionNone {
+  to_option(): OptionNone {
     return new OptionNone();
   }
 }
@@ -336,15 +386,36 @@ export class ResultErr<E> implements ResultBase<never, E> {
 export type Result<T, E> = ResultOk<T> | ResultErr<E>;
 export type Option<T> = OptionSome<T> | OptionNone;
 
+/**Creates an ok result with the given value */
 export function ok<T>(value: T) {
   return new ResultOk<T>(value);
 }
+/**Creates an error result with the given error */
 export function err<E>(error: E) {
   return new ResultErr<E>(error);
 }
+/**Creates a some option with the given value */
 export function some<T>(value: T) {
   return new OptionSome<T>(value);
 }
+/**Creates a none option */
 export function none() {
   return new OptionNone();
 }
+
+export const result = {
+  ok,
+  err,
+  some,
+  none,
+  RESULT_KEY,
+  OPTION_KEY,
+  is_result(r: any): r is Result<any, any> {
+    return (r as { [RESULT_KEY]: boolean })[RESULT_KEY] || false;
+  },
+  is_option(r: any): r is Option<any> {
+    return (r as { [OPTION_KEY]: boolean })[OPTION_KEY] || false;
+  },
+};
+
+export default result;
