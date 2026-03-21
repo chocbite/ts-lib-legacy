@@ -1,7 +1,7 @@
 /**Symbol used to identify Result objects, can be used to create result compliant objects */
-const RESULT_KEY = Symbol("result_key");
+export const RESULT_KEY = Symbol("result_key");
 /**Symbol used to identify Option objects, can be used to create option compliant objects */
-const OPTION_KEY = Symbol("option_key");
+export const OPTION_KEY = Symbol("option_key");
 
 //###########################################################################################################################################################
 //       ____  _____ _______ _____ ____  _   _
