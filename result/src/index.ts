@@ -411,10 +411,10 @@ export const result = {
   RESULT_KEY,
   OPTION_KEY,
   is_result(r: any): r is Result<any, any> {
-    return (r as { [RESULT_KEY]: boolean })[RESULT_KEY] || false;
+    return Boolean(r && (r as { [RESULT_KEY]: boolean })[RESULT_KEY]);
   },
   is_option(r: any): r is Option<any> {
-    return (r as { [OPTION_KEY]: boolean })[OPTION_KEY] || false;
+    return Boolean(r && (r as { [OPTION_KEY]: boolean })[OPTION_KEY]);
   },
 };
 
