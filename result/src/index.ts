@@ -1,3 +1,5 @@
+import { instant_promise } from "@chocbite/ts-lib-common";
+
 /**Symbol used to identify Result objects, can be used to create result compliant objects */
 export const RESULT_KEY = Symbol("result_key");
 /**Symbol used to identify Option objects, can be used to create option compliant objects */
@@ -55,6 +57,9 @@ interface OptionBase<T> {
 
   /**Maps an `Optional<T>` to a `Result<T, E>`.*/
   to_result<E>(error: E): Result<T, E>;
+
+  /**Makes is possible to return option as a promise like, for async functions not using the async keyword */
+  then<T = this>(func: (value: this) => T | PromiseLike<T>): PromiseLike<T>;
 }
 
 export class OptionSome<T> implements OptionBase<T> {
@@ -108,6 +113,14 @@ export class OptionSome<T> implements OptionBase<T> {
   to_result(): ResultOk<T> {
     return new ResultOk(this.value);
   }
+
+  then<T = this>(func: (value: this) => T | PromiseLike<T>): PromiseLike<T> {
+    try {
+      return instant_promise(func(this));
+    } catch (error) {
+      return Promise.reject(error as Error);
+    }
+  }
 }
 
 export class OptionNone implements OptionBase<never> {
@@ -155,6 +168,14 @@ export class OptionNone implements OptionBase<never> {
 
   to_result<E>(error: E): ResultErr<E> {
     return new ResultErr(error);
+  }
+
+  then<T = this>(func: (value: this) => T | PromiseLike<T>): PromiseLike<T> {
+    try {
+      return instant_promise(func(this));
+    } catch (error) {
+      return Promise.reject(error as Error);
+    }
   }
 }
 
@@ -228,6 +249,9 @@ interface ResultBase<T, E> {
 
   /**Converts from `Result<T, E>` to `Optional<T>`, discarding the error if any*/
   to_option(): Option<T>;
+
+  /**Makes is possible to return option as a promise like, for async functions not using the async keyword */
+  then<T = this>(func: (value: this) => T | PromiseLike<T>): PromiseLike<T>;
 }
 
 export class ResultOk<T> implements ResultBase<T, never> {
@@ -296,6 +320,14 @@ export class ResultOk<T> implements ResultBase<T, never> {
 
   to_option(): OptionSome<T> {
     return new OptionSome(this.value);
+  }
+
+  then<T = this>(func: (value: this) => T | PromiseLike<T>): PromiseLike<T> {
+    try {
+      return instant_promise(func(this));
+    } catch (error) {
+      return Promise.reject(error as Error);
+    }
   }
 }
 
@@ -369,6 +401,14 @@ export class ResultErr<E> implements ResultBase<never, E> {
 
   to_option(): OptionNone {
     return new OptionNone();
+  }
+
+  then<T = this>(func: (value: this) => T | PromiseLike<T>): PromiseLike<T> {
+    try {
+      return instant_promise(func(this));
+    } catch (error) {
+      return Promise.reject(error as Error);
+    }
   }
 }
 
