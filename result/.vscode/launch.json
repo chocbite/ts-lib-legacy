@@ -8,7 +8,7 @@
       "name": "Fontend Launch Chrome",
       "request": "launch",
       "type": "chrome",
-      "url": "http://localhost:9951",
+      "url": "http://localhost:9958",
       "webRoot": "${workspaceFolder}/src"
     }
   ]
