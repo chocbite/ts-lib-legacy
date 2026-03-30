@@ -5,6 +5,7 @@ import {
   material_hardware_mouse_rounded,
   material_image_edit_rounded,
 } from "@chocbite/ts-lib-icons";
+import { ok } from "@chocbite/ts-lib-result";
 import { settings_init } from "@chocbite/ts-lib-settings";
 import { state as st } from "@chocbite/ts-lib-state";
 import { name, version } from "../package.json";
@@ -28,30 +29,36 @@ export const Themes = {
 } as const;
 export type Themes = (typeof Themes)[keyof typeof Themes];
 
-const THEMES = st.h.enums.list<Themes>({
-  [Themes.Light]: {
-    name: "Light",
-    description: "Theme optimized for daylight",
-    icon: material_device_light_mode_rounded,
-  },
-  [Themes.Dark]: {
-    name: "Dark",
-    description: "Theme optimized for night time",
-    icon: material_device_dark_mode_rounded,
-  },
-});
+const THEMES = st.ok(
+  st.e.list<Themes>({
+    [Themes.Light]: {
+      name: "Light",
+      description: "Theme optimized for daylight",
+      icon: material_device_light_mode_rounded,
+    },
+    [Themes.Dark]: {
+      name: "Dark",
+      description: "Theme optimized for night time",
+      icon: material_device_dark_mode_rounded,
+    },
+  }),
+);
 
 const THEME_ID = "theme";
-const PRIVATE_THEME = st.s.ros_ws.ok(
-  SETTINGS.get(
-    THEME_ID,
-    window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? (Themes.Dark as Themes)
-      : (Themes.Light as Themes),
+const PRIVATE_THEME = st.rosw(
+  st.e.help(
+    ok(
+      SETTINGS.get(
+        THEME_ID,
+        window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? (Themes.Dark as Themes)
+          : (Themes.Light as Themes),
+      ),
+    ),
+    { list: THEMES },
   ),
   true,
-  st.h.enums.helper(st.ok(THEMES)),
 );
 SETTINGS.register(THEME_ID, "Theme", "Theme to use for the UI", PRIVATE_THEME);
 
@@ -71,10 +78,15 @@ window
 //      ____) | |____ / ____ \| |____| |____
 //     |_____/ \_____/_/    \_\______|______|
 const SCALE_ID = "scale";
-const PRIVATE_SCALE = st.s.ros_ws.ok(
-  SETTINGS.get(SCALE_ID, 100),
+const PRIVATE_SCALE = st.rosw(
+  st.n.help(ok(SETTINGS.get(SCALE_ID, 100)), {
+    min: st.ok(50),
+    max: st.ok(400),
+    unit: st.ok("%"),
+    start: st.ok(0),
+    step: st.ok(1),
+  }),
   true,
-  st.h.nums.helper(st.ok(50), st.ok(400), st.ok("%"), st.ok(0), st.ok(1)),
 );
 SETTINGS.register(SCALE_ID, "Scale", "UI scale", PRIVATE_SCALE);
 export const SCALE = PRIVATE_SCALE.read_write;
