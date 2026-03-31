@@ -5,7 +5,6 @@ import {
   material_hardware_mouse_rounded,
   material_image_edit_rounded,
 } from "@chocbite/ts-lib-icons";
-import { ok } from "@chocbite/ts-lib-result";
 import { settings_init } from "@chocbite/ts-lib-settings";
 import { state as st } from "@chocbite/ts-lib-state";
 import { name, version } from "../package.json";
@@ -47,14 +46,12 @@ const THEMES = st.ok(
 const THEME_ID = "theme";
 const PRIVATE_THEME = st.rosw(
   st.e.help(
-    ok(
-      SETTINGS.get(
-        THEME_ID,
-        window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? (Themes.Dark as Themes)
-          : (Themes.Light as Themes),
-      ),
+    SETTINGS.get(
+      THEME_ID,
+      window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? (Themes.Dark as Themes)
+        : (Themes.Light as Themes),
     ),
     { list: THEMES },
   ),
@@ -79,7 +76,7 @@ window
 //     |_____/ \_____/_/    \_\______|______|
 const SCALE_ID = "scale";
 const PRIVATE_SCALE = st.rosw(
-  st.n.help(ok(SETTINGS.get(SCALE_ID, 100)), {
+  st.n.help(SETTINGS.get(SCALE_ID, 100), {
     min: st.ok(50),
     max: st.ok(400),
     unit: st.ok("%"),
@@ -105,23 +102,29 @@ export const ScrollbarModes = {
 export type ScrollbarModes =
   (typeof ScrollbarModes)[keyof typeof ScrollbarModes];
 
-const SCROLLBAR_MODES = st.h.enums.list<ScrollbarModes>({
-  [ScrollbarModes.Thin]: {
-    name: "Thin",
-    description: "Thin modern scrollbar",
-  },
-  [ScrollbarModes.Medium]: { name: "Medium", description: "Normal scrollbar" },
-  [ScrollbarModes.Wide]: {
-    name: "Wide",
-    description: "Large touch friendly scrollbar",
-  },
-});
+const SCROLLBAR_MODES = st.ok(
+  st.e.list<ScrollbarModes>({
+    [ScrollbarModes.Thin]: {
+      name: "Thin",
+      description: "Thin modern scrollbar",
+    },
+    [ScrollbarModes.Medium]: {
+      name: "Medium",
+      description: "Normal scrollbar",
+    },
+    [ScrollbarModes.Wide]: {
+      name: "Wide",
+      description: "Large touch friendly scrollbar",
+    },
+  }),
+);
 
 const SCROLLBAR_ID = "scrollbar";
-const PRIVATE_SCROLLBAR_MODE = st.s.ros_ws.ok(
-  SETTINGS.get(SCROLLBAR_ID, ScrollbarModes.Thin as ScrollbarModes),
+const PRIVATE_SCROLLBAR_MODE = st.rosw(
+  st.e.help(SETTINGS.get(SCROLLBAR_ID, ScrollbarModes.Thin as ScrollbarModes), {
+    list: SCROLLBAR_MODES,
+  }),
   true,
-  st.h.enums.helper(st.ok(SCROLLBAR_MODES)),
 );
 SETTINGS.register(
   "scrollbar",
@@ -145,34 +148,38 @@ export const InputModes = {
 } as const;
 export type InputModes = (typeof InputModes)[keyof typeof InputModes];
 
-const INPUT_MODES = st.h.enums.list<InputModes>({
-  [InputModes.Mouse]: {
-    name: "Mouse",
-    description: "Mouse input",
-    icon: material_hardware_mouse_rounded,
-  },
-  [InputModes.Pen]: {
-    name: "Pen",
-    description: "Pen input",
-    icon: material_image_edit_rounded,
-  },
-  [InputModes.Touch]: {
-    name: "Touch",
-    description: "Touch input",
-    icon: material_action_touch_app_rounded,
-  },
-});
+const INPUT_MODES = st.ok(
+  st.e.list<InputModes>({
+    [InputModes.Mouse]: {
+      name: "Mouse",
+      description: "Mouse input",
+      icon: material_hardware_mouse_rounded,
+    },
+    [InputModes.Pen]: {
+      name: "Pen",
+      description: "Pen input",
+      icon: material_image_edit_rounded,
+    },
+    [InputModes.Touch]: {
+      name: "Touch",
+      description: "Touch input",
+      icon: material_action_touch_app_rounded,
+    },
+  }),
+);
 
 const INPUT_MODE_ID = "input_mode";
-const PRIVATE_INPUT_MODE = st.s.ros_ws.ok(
-  SETTINGS.get(
-    INPUT_MODE_ID,
-    matchMedia("(pointer: coarse)").matches
-      ? InputModes.Touch
-      : (InputModes.Mouse as InputModes),
+const PRIVATE_INPUT_MODE = st.rosw(
+  st.e.help(
+    SETTINGS.get(
+      INPUT_MODE_ID,
+      matchMedia("(pointer: coarse)").matches
+        ? InputModes.Touch
+        : (InputModes.Mouse as InputModes),
+    ),
+    { list: INPUT_MODES },
   ),
   true,
-  st.h.enums.helper(st.ok(INPUT_MODES)),
 );
 SETTINGS.register(
   INPUT_MODE_ID,
@@ -197,20 +204,24 @@ export const AnimationLevels = {
 export type AnimationLevels =
   (typeof AnimationLevels)[keyof typeof AnimationLevels];
 
-const ANIMATION_LEVELS = st.h.enums.list<AnimationLevels>({
-  [AnimationLevels.All]: { name: "All", description: "All animations" },
-  [AnimationLevels.Some]: {
-    name: "Functional",
-    description: "Only functional animations that improve usability",
-  },
-  [AnimationLevels.None]: { name: "None", description: "No animations" },
-});
+const ANIMATION_LEVELS = st.ok(
+  st.e.list<AnimationLevels>({
+    [AnimationLevels.All]: { name: "All", description: "All animations" },
+    [AnimationLevels.Some]: {
+      name: "Functional",
+      description: "Only functional animations that improve usability",
+    },
+    [AnimationLevels.None]: { name: "None", description: "No animations" },
+  }),
+);
 
 const ANIMATION_LEVEL_ID = "animation_level";
-const PRIVATE_ANIMATION_LEVEL = st.s.ros_ws.ok(
-  SETTINGS.get(ANIMATION_LEVEL_ID, AnimationLevels.None as AnimationLevels),
+const PRIVATE_ANIMATION_LEVEL = st.rosw(
+  st.e.help(
+    SETTINGS.get(ANIMATION_LEVEL_ID, AnimationLevels.None as AnimationLevels),
+    { list: ANIMATION_LEVELS },
+  ),
   true,
-  st.h.enums.helper(st.ok(ANIMATION_LEVELS)),
 );
 SETTINGS.register(
   ANIMATION_LEVEL_ID,
@@ -228,10 +239,15 @@ export const ANIMATION_LEVEL = PRIVATE_ANIMATION_LEVEL.read_write;
 //      / ____ \| |\  |_| |_| |  | |/ ____ \| |   _| || |__| | |\  |  ____) | |    | |____| |____| |__| |
 //     /_/    \_\_| \_|_____|_|  |_/_/    \_\_|  |_____\____/|_| \_| |_____/|_|    |______|______|_____/
 const ANIMATION_SPEED_ID = "animation_speed";
-const PRIVATE_ANIMATION_SPEED = st.s.ros_ws.ok(
-  SETTINGS.get(ANIMATION_SPEED_ID, 200),
+const PRIVATE_ANIMATION_SPEED = st.rosw(
+  st.n.help(SETTINGS.get(ANIMATION_SPEED_ID, 200), {
+    min: st.ok(50),
+    max: st.ok(1000),
+    unit: st.ok("ms"),
+    start: st.ok(0),
+    step: st.ok(50),
+  }),
   true,
-  st.h.nums.helper(st.ok(50), st.ok(1000), st.ok("ms"), st.ok(0), st.ok(50)),
 );
 SETTINGS.register(
   ANIMATION_SPEED_ID,

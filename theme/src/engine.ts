@@ -13,7 +13,7 @@ import {
 } from "./settings";
 import { BOTTOM_GROUPS } from "./shared";
 
-export const theme_engine = new (class ThemeEngine {
+class ThemeEngine {
   constructor() {
     DOCUMENT_HANDLER.events.on("added", (e) => {
       this.#apply_all_to_doc(e.data);
@@ -135,7 +135,9 @@ export const theme_engine = new (class ThemeEngine {
       doc.documentElement.style.setProperty(key, variable[theme_buff]);
     });
   }
-})();
+}
+
+export const theme_engine = new ThemeEngine();
 
 THEME.sub((val) => {
   theme_engine.apply_theme(val.value);
