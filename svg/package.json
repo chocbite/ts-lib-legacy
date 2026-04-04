@@ -1,20 +1,20 @@
 {
   "name": "@chocbite/ts-lib-svg",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Library to help with svg generation in typescript",
   "author": "chocolateandmilkwin",
   "license": "MIT",
   "type": "module",
   "private": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "publishConfig": {
     "access": "public"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     }
   },
   "files": [
@@ -22,21 +22,25 @@
   ],
   "scripts": {
     "dev": "vite --port 9952",
-    "build": "tsup src/index.ts --format esm --dts",
+    "build": "tsdown src/index.ts",
     "lint": "eslint src/**/*.ts",
     "test": "vitest run",
-    "prepublishOnly": "npm run build"
+    "check-trials": "tsc --noEmit",
+    "prepublishOnly": "npm run check-trials && npm run build",
+    "upgrades": "npx npm-check-updates --target semver",
+    "upgrade": "npx npm-check-updates --target semver -u && npm install"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2",
+    "tsdown": "^0.21.7",
+    "vite": "^8.0.3",
+    "vitest": "^4.1.2",
+    "eslint": "^10.2.0",
+    "typescript-eslint": "^8.58.0",
+    "@vitest/browser-playwright": "^4.1.2",
+    "@chocbite/ts-supplement-eslint": "^1.0.0"
   },
   "dependencies": {
     "@chocbite/ts-lib-math": "1.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "tsup": "^8.0.0",
-    "vite": "^7.0.0",
-    "vitest": "^4.0.0",
-    "eslint": "^9.0.0",
-    "typescript-eslint": "^8.0.0",
-    "@vitest/browser-playwright": "^4.0.0"
   }
 }
