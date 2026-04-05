@@ -1,6 +1,6 @@
 {
   "name": "@chocbite/ts-lib-svg",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Library to help with svg generation in typescript",
   "author": "chocolateandmilkwin",
   "license": "MIT",

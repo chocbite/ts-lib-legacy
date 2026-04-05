@@ -1,3 +1,4 @@
+import { SVGAttributes } from "./attributes";
 import { circle, circle_arc } from "./primitives/circle";
 import { ellipse, ellipse_arc } from "./primitives/ellipse";
 import { group } from "./primitives/group";
@@ -15,6 +16,7 @@ import { angle_to_anchor_point } from "./util/angleToAnchorPoint";
 
 export const svg = {
   create: create_svg_element,
+  attr: (elem: SVGElement) => new SVGAttributes(elem),
   //Primitives
   circle: circle,
   circle_arc: circle_arc,
