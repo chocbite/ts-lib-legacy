@@ -43,3 +43,27 @@ define_element(ListNumberField);
 export function number_field() {
   return new ListNumberField();
 }
+
+export class ListNodeField<T extends Node> extends ListField {
+  static element_name() {
+    return "nodefield";
+  }
+
+  constructor(node: T) {
+    super();
+    this.appendChild(node);
+  }
+
+  set node(node: T) {
+    this.replaceChildren(node);
+  }
+
+  get node() {
+    return this.firstChild! as unknown as T;
+  }
+}
+define_element(ListNodeField);
+
+export function node_field<T extends Node>(node: T) {
+  return new ListNodeField<T>(node);
+}

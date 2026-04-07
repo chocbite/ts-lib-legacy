@@ -1,5 +1,5 @@
 import { container } from "./container";
-import { number_field, text_field } from "./field";
+import { node_field, number_field, text_field } from "./field";
 import { column } from "./types";
 
 export const list = {
@@ -7,6 +7,7 @@ export const list = {
   container,
   text_field,
   number_field,
+  node_field,
 };
 
 export { ListField } from "./field";

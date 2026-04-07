@@ -231,24 +231,27 @@ class Container<
   #update_rows(rows: readonly R[]) {
     if (rows.length === 0) this.#child_box.replaceChildren();
     const read = state.a.read(rows);
-    for (let i = 0; i < rows.length; i++) {
+    for (let i = 0; i < read.length; i++) {
       const row = read[i];
       if (row.type === "fresh") {
-        const min = Math.min(this.#child_box.childElementCount, rows.length);
+        const min = Math.min(
+          this.#child_box.childElementCount,
+          row.items.length,
+        );
         for (let i = 0; i < min; i++)
-          (this.#child_box.children[i] as ListRow<R, T, A>).data = rows[i];
-        if (rows.length > this.#child_box.childElementCount)
+          (this.#child_box.children[i] as ListRow<R, T, A>).data = row.items[i];
+        if (row.items.length > this.#child_box.childElementCount)
           this.#child_box.append(
-            ...rows
+            ...row.items
               .slice(this.#child_box.childElementCount)
               .map(
                 (row) => new ListRow<R, T, A>(this.#root, this.#parent, row),
               ),
           );
-        else if (rows.length < this.#child_box.childElementCount) {
+        else if (row.items.length < this.#child_box.childElementCount) {
           for (
             let i = this.#child_box.childElementCount - 1;
-            i >= rows.length;
+            i >= row.items.length;
             i--
           )
             (this.#child_box.children[i] as ListRow<R, T, A>).remove();

@@ -60,7 +60,7 @@ export class ListKeyField<A extends ListType<any>> extends Base {
   }
 
   set icon(value: SVGFunc | undefined) {
-    if (!value && this.#icon) this.#icon.remove();
+    if (this.#icon) this.#icon.remove();
     this.#icon = undefined;
     if (!value) return;
     this.#icon = value();
