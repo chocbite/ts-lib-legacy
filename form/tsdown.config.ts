@@ -1,6 +1,6 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  banner: { js: "import './index.css';" },
+  banner: { js: "import './style.css';" },
   sourcemap: "inline",
 });
