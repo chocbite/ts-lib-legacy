@@ -1,9 +1,9 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { Spinner } from "@chocbite/ts-lib-spinner";
 import "./buffer.scss";
-import { ContextMenuLine } from "./line";
+import { MenuLine } from "./line";
 
-export class Buffer extends ContextMenuLine {
+export class Buffer extends MenuLine {
   /**Returns the name used to define the element */
   static element_name() {
     return "buffer";

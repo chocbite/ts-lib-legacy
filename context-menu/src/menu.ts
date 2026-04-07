@@ -2,15 +2,17 @@ import { Base, define_element } from "@chocbite/ts-lib-base";
 import { material_navigation_close_rounded } from "@chocbite/ts-lib-icons";
 import { Buffer } from "./buffer";
 import { Container } from "./container";
-import { ContextMenuLine } from "./line";
+import { ContextMenuLine, MenuLine } from "./line";
 import "./menu.scss";
-import { ContextMenuOption } from "./option";
+import { MenuOption } from "./option";
 import "./shared";
-import { ContextMenuSub } from "./submenu";
+import { MenuSub } from "./submenu";
 
 export type ContextMenuLines = ContextMenuLine[];
 
-export class ContextMenu extends Base {
+export interface ContextMenu {}
+
+export class Menu extends Base implements ContextMenu {
   /**Returns the name used to define the element */
   static element_name() {
     return "menu";
@@ -21,8 +23,8 @@ export class ContextMenu extends Base {
   }
 
   container: Container | undefined;
-  readonly submenu: ContextMenuSub | undefined;
-  #closer: ContextMenuOption | undefined;
+  readonly submenu: MenuSub | undefined;
+  #closer: MenuOption | undefined;
   #x: number | undefined;
   #y: number | undefined;
   #element: Element | undefined;
@@ -66,7 +68,7 @@ export class ContextMenu extends Base {
       if (e.code === "Tab" || e.code === "ArrowUp" || e.code === "ArrowDown")
         this.focus_next(e.shiftKey || e.code === "ArrowUp");
       else if (e.code === "ArrowLeft") {
-        const parent = this.parentElement as ContextMenuSub | Container;
+        const parent = this.parentElement as MenuSub | Container;
         if (!(parent instanceof Container)) {
           parent.focus();
           parent.close_down();
@@ -103,28 +105,28 @@ export class ContextMenu extends Base {
     if (this.#closer) this.appendChild(this.#closer);
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      if (line) this.appendChild(line);
+      if (line) this.appendChild(line as MenuLine);
     }
   }
 
   /**Changes focus to the next line
    * @param direction false is first child, true is last child */
   focus_next(direction: boolean) {
-    if (direction) (this.lastChild as ContextMenuLine)?.do_focus();
-    else (this.firstChild as ContextMenuLine)?.do_focus(true);
+    if (direction) (this.lastChild as MenuLine)?.do_focus();
+    else (this.firstChild as MenuLine)?.do_focus(true);
   }
 
   set closer(closer: boolean) {
     if (closer && !this.#closer) {
       this.classList.add("closer");
-      this.#closer = new ContextMenuOption(
+      this.#closer = new MenuOption(
         "Close",
         () => {},
         material_navigation_close_rounded(),
       );
       this.#closer.onclick = (e) => {
         e.stopPropagation();
-        if (this.parentElement instanceof ContextMenuSub) {
+        if (this.parentElement instanceof MenuSub) {
           this.parentElement.close_down();
         } else {
           this.close_up();
@@ -221,7 +223,7 @@ export class ContextMenu extends Base {
     this.focus();
   }
 }
-define_element(ContextMenu);
+define_element(Menu);
 
 export function context_menu(
   lines:
@@ -232,5 +234,5 @@ export function context_menu(
     | (() => (ContextMenuLine | undefined)[])
     | (() => Promise<(ContextMenuLine | undefined)[]>),
 ): ContextMenu {
-  return new ContextMenu(lines);
+  return new Menu(lines);
 }

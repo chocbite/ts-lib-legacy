@@ -1,6 +1,6 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
 import "./container.scss";
-import { ContextMenu } from "./menu";
+import { Menu } from "./menu";
 
 export class Container extends Base {
   #active_element_buffer: HTMLOrSVGElement | null | undefined;
@@ -34,7 +34,7 @@ export class Container extends Base {
   }
 
   /**Attaches a menu to the container */
-  attach_menu(menu: ContextMenu) {
+  attach_menu(menu: Menu) {
     menu.container = this;
     this.#active_element_buffer = this.ownerDocument
       .activeElement as HTMLOrSVGElement | null;

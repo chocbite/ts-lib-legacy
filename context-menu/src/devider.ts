@@ -1,8 +1,10 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import "./devider.scss";
-import { ContextMenuLine } from "./line";
+import { ContextMenuLine, MenuLine } from "./line";
 
-export class Devider extends ContextMenuLine {
+export interface ContextMenuDevider extends ContextMenuLine {}
+
+export class Devider extends MenuLine implements ContextMenuDevider {
   /**Returns the name used to define the element */
   static element_name() {
     return "devider";
@@ -14,6 +16,6 @@ export class Devider extends ContextMenuLine {
 }
 define_element(Devider);
 
-export function context_devider() {
+export function context_devider(): ContextMenuDevider {
   return new Devider();
 }

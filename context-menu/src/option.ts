@@ -1,9 +1,11 @@
 import { define_element } from "@chocbite/ts-lib-base";
-import { ContextMenuLine } from "./line";
-import { ContextMenu } from "./menu";
+import { ContextMenuLine, MenuLine } from "./line";
+import { Menu } from "./menu";
 import "./option.scss";
 
-export class ContextMenuOption extends ContextMenuLine {
+export interface ContextMenuOption extends ContextMenuLine {}
+
+export class MenuOption extends MenuLine implements ContextMenuOption {
   readonly func: () => void;
 
   /**Returns the name used to define the element */
@@ -38,7 +40,7 @@ export class ContextMenuOption extends ContextMenuLine {
       e.stopPropagation();
       this.func();
       navigator?.vibrate(25);
-      (this.parentElement as ContextMenu).close_up();
+      (this.parentElement as Menu).close_up();
     };
 
     this.onkeydown = (e) => {
@@ -51,7 +53,7 @@ export class ContextMenuOption extends ContextMenuLine {
         case "Enter":
         case "Space":
           this.func();
-          (this.parentElement as ContextMenu).close_up();
+          (this.parentElement as Menu).close_up();
           break;
         case "ArrowLeft":
         case "Escape":
@@ -66,7 +68,7 @@ export class ContextMenuOption extends ContextMenuLine {
     this.focus();
   }
 }
-define_element(ContextMenuOption);
+define_element(MenuOption);
 
 export function context_line(
   text: string,
@@ -74,6 +76,6 @@ export function context_line(
   icon?: SVGSVGElement,
   shortcut?: string,
   checkmark?: boolean,
-) {
-  return new ContextMenuOption(text, func, icon, shortcut, checkmark);
+): ContextMenuOption {
+  return new MenuOption(text, func, icon, shortcut, checkmark);
 }

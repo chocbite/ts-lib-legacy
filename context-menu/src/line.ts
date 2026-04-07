@@ -2,7 +2,9 @@ import { Base } from "@chocbite/ts-lib-base";
 import "./option.scss";
 import "./shared";
 
-export abstract class ContextMenuLine extends Base {
+export interface ContextMenuLine {}
+
+export abstract class MenuLine extends Base implements ContextMenuLine {
   /**Returns the name used to define the element */
   static element_name() {
     return "@abstract@";
@@ -19,17 +21,15 @@ export abstract class ContextMenuLine extends Base {
   focus_next(direction?: boolean) {
     if (direction) {
       if (this.previousElementSibling) {
-        (this.previousElementSibling as ContextMenuLine).do_focus(true);
+        (this.previousElementSibling as MenuLine).do_focus(true);
       } else if (this.parentElement?.lastElementChild !== this) {
-        (this.parentElement?.lastElementChild as ContextMenuLine).do_focus(
-          true,
-        );
+        (this.parentElement?.lastElementChild as MenuLine).do_focus(true);
       }
     } else {
       if (this.nextElementSibling) {
-        (this.nextElementSibling as ContextMenuLine).do_focus();
+        (this.nextElementSibling as MenuLine).do_focus();
       } else if (this.parentElement?.firstElementChild !== this) {
-        (this.parentElement?.firstElementChild as ContextMenuLine).do_focus();
+        (this.parentElement?.firstElementChild as MenuLine).do_focus();
       }
     }
   }

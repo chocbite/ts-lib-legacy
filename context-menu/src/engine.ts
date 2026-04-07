@@ -2,7 +2,7 @@ import { DOCUMENT_HANDLER } from "@chocbite/ts-lib-document";
 import type { Option } from "@chocbite/ts-lib-result";
 import { Container } from "./container";
 import "./engine.scss";
-import { ContextMenu } from "./menu";
+import { ContextMenu, Menu } from "./menu";
 
 export const CONTEXT_MENY_SYMBOL = Symbol("context_menu");
 
@@ -16,7 +16,7 @@ declare global {
 }
 
 /**Reference to document handler*/
-let default_menu: (ContextMenu | (() => Option<ContextMenu>)) | undefined;
+let default_menu: (Menu | (() => Option<Menu>)) | undefined;
 
 DOCUMENT_HANDLER.events.on("added", (e) => {
   apply_to_doc(e.data);
@@ -36,15 +36,8 @@ function apply_to_doc(doc: Document) {
 export function context_menu_attach(
   element: Element,
   lines: ContextMenu | (() => Option<ContextMenu>),
-  overwrite: boolean = false,
 ) {
-  if (element[CONTEXT_MENY_SYMBOL]) {
-    if (overwrite) context_menu_dettach(element);
-    else {
-      console.error("Context menu already attached to node", element);
-      return;
-    }
-  }
+  if (element[CONTEXT_MENY_SYMBOL]) context_menu_dettach(element);
   const listener = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
@@ -67,7 +60,7 @@ export function context_menu_dettach(element: Element) {
   if (element[CONTEXT_MENY_SYMBOL]) {
     element.removeEventListener("contextmenu", element[CONTEXT_MENY_SYMBOL]);
     delete element[CONTEXT_MENY_SYMBOL];
-  } else console.error("No context menu registered with node", element);
+  }
 }
 
 /**Summons a context menu at a given location
@@ -98,7 +91,7 @@ export function context_menu_summon(
       }
     }
     container
-      .attach_menu(menu)
+      .attach_menu(menu as Menu)
       .set_position(x, y, dont_cover ? element : undefined);
   } else console.error("No context menu container available");
 }
@@ -107,7 +100,7 @@ export function context_menu_summon(
  * If set to a boolean the operating system context menu is disabled and nothing will appear
  * If set undefined the operating systems context menu will be used*/
 export function context_menu_default(
-  lines: (ContextMenu | (() => Option<ContextMenu>)) | false,
+  lines: (Menu | (() => Option<Menu>)) | false,
 ) {
   if (default_menu)
     DOCUMENT_HANDLER.for_documents((doc) => {
