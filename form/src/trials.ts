@@ -17,6 +17,9 @@ import {
 import form, { FormColors, FormDateTimeType } from ".";
 
 const form_cont = document.createElement("div");
+document.body.appendChild(form_cont);
+form_cont.style.display = "flex";
+form_cont.style.flexDirection = "column";
 form_cont.style.flexGrow = "1";
 form_cont.style.overflow = "auto";
 
