@@ -4,6 +4,7 @@ import {
   context_menu_default,
   context_menu_dettach,
   context_menu_summon,
+  CONTEXT_MENY_SYMBOL,
 } from "./engine";
 import { context_menu } from "./menu";
 import { context_line } from "./option";
@@ -14,6 +15,9 @@ export const ctm = {
   default: context_menu_default,
   dettach: context_menu_dettach,
   summon: context_menu_summon,
+  has(element: Element) {
+    return Boolean(element[CONTEXT_MENY_SYMBOL]);
+  },
   menu: context_menu,
   line: context_line,
   sub: context_sub,

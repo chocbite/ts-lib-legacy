@@ -4,7 +4,7 @@ import { Container } from "./container";
 import "./engine.scss";
 import { ContextMenu } from "./menu";
 
-const CONTEXT_MENY_SYMBOL = Symbol("context_menu");
+export const CONTEXT_MENY_SYMBOL = Symbol("context_menu");
 
 declare global {
   interface Document {
