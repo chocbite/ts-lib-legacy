@@ -20,3 +20,5 @@ export const ctm = {
   devider: context_devider,
 };
 export default ctm;
+
+export type { ContextMenu, ContextMenuLines } from "./menu";
