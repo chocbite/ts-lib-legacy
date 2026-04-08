@@ -228,7 +228,10 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
   }
 
   #update_rows(rows: readonly R[]) {
-    if (rows.length === 0) this.#child_box.replaceChildren();
+    if (rows.length === 0) {
+      this.#child_box.replaceChildren();
+      return;
+    }
     const read = state.a.read(rows);
     for (let i = 0; i < read.length; i++) {
       const row = read[i];
