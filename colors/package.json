@@ -1,34 +1,40 @@
 {
   "name": "@chocbite/ts-lib-colors",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Simple colors library for TypeScript projects.",
   "author": "chocolateandmilkwin",
   "license": "MIT",
   "type": "module",
   "private": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "publishConfig": {
     "access": "public"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
+    "dev": "vite --port 9962",
+    "build": "tsdown src/index.ts",
     "lint": "eslint src/**/*.ts",
-    "prepublishOnly": "npm run build"
+    "test": "vitest run",
+    "check-deps": "npx depcheck",
+    "check-trials": "tsc --noEmit",
+    "prepublishOnly": "npm run check-deps && npm run check-trials && npm run build",
+    "upgrades": "npx npm-check-updates --target semver",
+    "upgrade": "npx npm-check-updates --target semver -u && npm install"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "tsup": "^8.0.0",
-    "eslint": "^9.0.0",
-    "typescript-eslint": "^8.0.0"
+    "@chocbite/ts-supplement-eslint": "^1.0.0",
+    "typescript": "^6.0.2",
+    "tsdown": "^0.21.8",
+    "eslint": "^10.2.0"
   }
 }
