@@ -7,7 +7,7 @@ interface DocumentHandlerEvents {
   removed: Document;
 }
 
-export const DOCUMENT_HANDLER = new (class DocumentHandler {
+class DocumentHandler {
   /**Stores all managed documents */
   #documents: Set<Document> = new Set();
   /**Stores the main docuement of the manager */
@@ -64,4 +64,6 @@ export const DOCUMENT_HANDLER = new (class DocumentHandler {
     this.#documents.delete(document);
     this.#events.emit("removed", document);
   }
-})(document);
+}
+
+export const DOCUMENT_HANDLER = new DocumentHandler(document);
