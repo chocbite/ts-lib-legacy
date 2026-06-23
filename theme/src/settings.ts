@@ -1,9 +1,9 @@
 import {
-  material_action_touch_app_rounded,
-  material_device_dark_mode_rounded,
-  material_device_light_mode_rounded,
-  material_hardware_mouse_rounded,
-  material_image_edit_rounded,
+  material_dark_mode_rounded,
+  material_edit_rounded,
+  material_light_mode_rounded,
+  material_mouse_rounded,
+  material_touch_app_rounded,
 } from "@chocbite/ts-lib-icons";
 import { settings_init } from "@chocbite/ts-lib-settings";
 import { state as st } from "@chocbite/ts-lib-state";
@@ -33,12 +33,12 @@ const THEMES = st.ok(
     [Themes.Light]: {
       name: "Light",
       description: "Theme optimized for daylight",
-      icon: material_device_light_mode_rounded,
+      icon: material_light_mode_rounded,
     },
     [Themes.Dark]: {
       name: "Dark",
       description: "Theme optimized for night time",
-      icon: material_device_dark_mode_rounded,
+      icon: material_dark_mode_rounded,
     },
   }),
 );
@@ -153,17 +153,17 @@ const INPUT_MODES = st.ok(
     [InputModes.Mouse]: {
       name: "Mouse",
       description: "Mouse input",
-      icon: material_hardware_mouse_rounded,
+      icon: material_mouse_rounded,
     },
     [InputModes.Pen]: {
       name: "Pen",
       description: "Pen input",
-      icon: material_image_edit_rounded,
+      icon: material_edit_rounded,
     },
     [InputModes.Touch]: {
       name: "Touch",
       description: "Touch input",
-      icon: material_action_touch_app_rounded,
+      icon: material_touch_app_rounded,
     },
   }),
 );
