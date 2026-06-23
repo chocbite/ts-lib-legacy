@@ -1,5 +1,5 @@
 import { define_element } from "@chocbite/ts-lib-base";
-import { material_navigation_chevron_right_rounded } from "@chocbite/ts-lib-icons";
+import { material_chevron_right_rounded } from "@chocbite/ts-lib-icons";
 import { ContextMenuLine, MenuLine } from "./line";
 import { Menu } from "./menu";
 import "./submenu.scss";
@@ -33,7 +33,7 @@ export class MenuSub extends MenuLine implements ContextMenuSub {
     const shortcut_box = this.appendChild(document.createElement("div"));
     shortcut_box.className = "shortcut";
     const chevron_box = this.appendChild(document.createElement("div"));
-    chevron_box.appendChild(material_navigation_chevron_right_rounded());
+    chevron_box.appendChild(material_chevron_right_rounded());
     chevron_box.className = "chevron";
 
     this.onclick = (e) => {

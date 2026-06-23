@@ -1,5 +1,5 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
-import { material_navigation_close_rounded } from "@chocbite/ts-lib-icons";
+import { material_close_rounded } from "@chocbite/ts-lib-icons";
 import { Buffer } from "./buffer";
 import { Container } from "./container";
 import { ContextMenuLine, MenuLine } from "./line";
@@ -122,7 +122,7 @@ export class Menu extends Base implements ContextMenu {
       this.#closer = new MenuOption(
         "Close",
         () => {},
-        material_navigation_close_rounded(),
+        material_close_rounded(),
       );
       this.#closer.onclick = (e) => {
         e.stopPropagation();
