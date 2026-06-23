@@ -1,8 +1,8 @@
 import { AccessTypes, define_element } from "@chocbite/ts-lib-base";
 import type { Prettify } from "@chocbite/ts-lib-common";
 import {
-  material_navigation_unfold_less_rounded,
-  material_navigation_unfold_more_rounded,
+  material_unfold_less_rounded,
+  material_unfold_more_rounded,
 } from "@chocbite/ts-lib-icons";
 import { err, ok, type Option, type Result } from "@chocbite/ts-lib-result";
 import {
@@ -183,12 +183,8 @@ export class FormGroup<
       this.#collapse_button = document.createElement("span");
       this.#collapse_button.tabIndex = 0;
       this.#collapse_button.appendChild(document.createElement("span"));
-      this.#collapse_button.appendChild(
-        material_navigation_unfold_less_rounded(),
-      );
-      this.#collapse_button.appendChild(
-        material_navigation_unfold_more_rounded(),
-      );
+      this.#collapse_button.appendChild(material_unfold_less_rounded());
+      this.#collapse_button.appendChild(material_unfold_more_rounded());
       this.#collapse_button.onclick = () => (this.collapsed = !this.collapsed);
       this.#collapse_button.onkeydown = (e) => {
         if (e.key === "Enter" || e.key === " ") {
