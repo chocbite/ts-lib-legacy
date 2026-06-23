@@ -1,7 +1,7 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import {
-  material_action_calendar_month_rounded,
-  material_action_schedule_rounded,
+  material_calendar_month_rounded,
+  material_schedule_rounded,
 } from "@chocbite/ts-lib-icons";
 import type { Option } from "@chocbite/ts-lib-result";
 import { FormValueWrite, type FormValueOptions } from "../../base";
@@ -49,9 +49,9 @@ class FormDateTimeInput<
     this.warn_input.lang = "da-DK";
     this.warn_input.step = "0.1";
     this.appendChild(this.warn_input);
-    this.appendChild(material_action_calendar_month_rounded()).onclick = () =>
+    this.appendChild(material_calendar_month_rounded()).onclick = () =>
       this.warn_input.showPicker();
-    this.appendChild(material_action_schedule_rounded()).onclick = () =>
+    this.appendChild(material_schedule_rounded()).onclick = () =>
       this.warn_input.showPicker();
     this.warn_input.onchange = () => {
       if (this.warn_input.value) {

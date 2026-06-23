@@ -1,6 +1,6 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { set_cursor_end, sync_resolve } from "@chocbite/ts-lib-common";
-import { material_editor_drag_handle_rounded } from "@chocbite/ts-lib-icons";
+import { material_drag_handle_rounded } from "@chocbite/ts-lib-icons";
 import { err, none, type Result } from "@chocbite/ts-lib-result";
 import type { StateStringRelated } from "@chocbite/ts-lib-state";
 import { string_byte_length, string_byte_limit } from "@chocbite/ts-lib-string";
@@ -43,7 +43,7 @@ class FormTextMultiline<ID extends string | undefined> extends FormValueWrite<
   constructor(id?: ID) {
     super(id);
     this.appendChild(this.warn_input);
-    this.#resizer.appendChild(material_editor_drag_handle_rounded());
+    this.#resizer.appendChild(material_drag_handle_rounded());
     this.#resizer.onpointerdown = (e) => {
       e.preventDefault();
       const height = this.#value_box.getBoundingClientRect().height;

@@ -4,8 +4,8 @@ import {
   IPVersion,
 } from "@chocbite/ts-lib-common";
 import {
-  material_av_add_to_queue_rounded,
-  material_av_remove_from_queue_rounded,
+  material_add_to_queue_rounded,
+  material_remove_from_queue_rounded,
 } from "@chocbite/ts-lib-icons";
 import state from "@chocbite/ts-lib-state";
 import {
@@ -281,7 +281,7 @@ form_cont.appendChild(
     .button({
       id: "test",
       text: "YOYOYOYO",
-      icon: material_av_add_to_queue_rounded,
+      icon: material_add_to_queue_rounded,
       color: FormColors.Yellow,
     })
     .opts({
@@ -296,7 +296,7 @@ form_cont.appendChild(
   form.lamp({
     text: "Status Lamp",
     colors: [FormColors.Red, FormColors.Green],
-    icon: material_av_add_to_queue_rounded,
+    icon: material_add_to_queue_rounded,
   }),
 ).value_by_state = bool;
 
@@ -314,17 +314,17 @@ form_cont.appendChild(
       {
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
         value: 2,
-        icon: material_av_add_to_queue_rounded,
+        icon: material_add_to_queue_rounded,
       },
       {
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
         value: 3,
-        icon: material_av_remove_from_queue_rounded,
+        icon: material_remove_from_queue_rounded,
       },
       {
         text: "YPYP",
         value: 6,
-        icon: material_av_remove_from_queue_rounded,
+        icon: material_remove_from_queue_rounded,
       },
     ],
   }),
@@ -335,12 +335,12 @@ form_cont.appendChild(
   form.dropdown({
     default:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-    default_icon: material_av_add_to_queue_rounded,
+    default_icon: material_add_to_queue_rounded,
     selections: array_from_range(0, 100, (i) => {
       return {
         value: i,
         text: `Option ${i + 1}`,
-        icon: material_av_remove_from_queue_rounded,
+        icon: material_remove_from_queue_rounded,
       };
     }),
   }),
@@ -351,7 +351,7 @@ form_cont.appendChild(
   form.dropdown({
     default:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-    default_icon: material_av_add_to_queue_rounded,
+    default_icon: material_add_to_queue_rounded,
     selections: array_from_range(0, 100, (i) => {
       return {
         value: i,
@@ -374,17 +374,17 @@ form_cont.appendChild(
       {
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
         value: 2,
-        icon: material_av_add_to_queue_rounded,
+        icon: material_add_to_queue_rounded,
       },
       {
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
         value: 3,
-        icon: material_av_remove_from_queue_rounded,
+        icon: material_remove_from_queue_rounded,
       },
       {
         text: "YPYP",
         value: 6,
-        icon: material_av_remove_from_queue_rounded,
+        icon: material_remove_from_queue_rounded,
       },
     ],
   }),
@@ -397,7 +397,7 @@ form_cont.appendChild(
       return {
         value: i,
         text: `Option ${i + 1}`,
-        icon: material_av_remove_from_queue_rounded,
+        icon: material_remove_from_queue_rounded,
       };
     }),
   }),

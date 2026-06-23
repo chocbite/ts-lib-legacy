@@ -1,8 +1,8 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { sleep, sync_resolve } from "@chocbite/ts-lib-common";
 import {
-  material_content_add_rounded,
-  material_content_remove_rounded,
+  material_add_rounded,
+  material_remove_rounded,
 } from "@chocbite/ts-lib-icons";
 import { number_step_start_decimal } from "@chocbite/ts-lib-math";
 import { err, type Result } from "@chocbite/ts-lib-result";
@@ -30,12 +30,12 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
   #start: number = 0;
   #live: boolean = false;
   #icon_dec = this.#stepper_func(
-    this.appendChild(material_content_remove_rounded()),
+    this.appendChild(material_remove_rounded()),
     false,
   );
   #text = this.appendChild(document.createElement("span"));
   #icon_inc = this.#stepper_func(
-    this.appendChild(material_content_add_rounded()),
+    this.appendChild(material_add_rounded()),
     true,
   );
   #value_box = this.#text.appendChild(document.createElement("span"));
@@ -206,17 +206,14 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
   set icon_decrease(icon: SVGFunc | undefined) {
     this.replaceChild(
       this.#icon_dec,
-      this.#stepper_func(
-        icon ? icon() : material_content_remove_rounded(),
-        false,
-      ),
+      this.#stepper_func(icon ? icon() : material_remove_rounded(), false),
     );
   }
 
   set icon_increase(icon: SVGFunc | undefined) {
     this.replaceChild(
       this.#icon_inc,
-      this.#stepper_func(icon ? icon() : material_content_add_rounded(), true),
+      this.#stepper_func(icon ? icon() : material_add_rounded(), true),
     );
   }
 
