@@ -1,7 +1,7 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { material_chevron_right_rounded } from "@chocbite/ts-lib-icons";
 import { ContextMenuLine, MenuLine } from "./line";
-import { Menu } from "./menu";
+import { ContextMenu } from "./menu";
 import "./submenu.scss";
 
 export interface ContextMenuSub extends ContextMenuLine {}
@@ -10,7 +10,7 @@ type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 export class MenuSub extends MenuLine implements ContextMenuSub {
-  #menu: Menu;
+  #menu: ContextMenu;
   #is_open?: boolean;
   #hover_time?: number;
   #block_time?: number;
@@ -20,7 +20,7 @@ export class MenuSub extends MenuLine implements ContextMenuSub {
     return "submenu";
   }
 
-  constructor(text: string, menu: Menu, icon?: SVGSVGElement) {
+  constructor(text: string, menu: ContextMenu, icon?: SVGSVGElement) {
     super();
     this.#menu = menu;
     this.tabIndex = 0;
@@ -85,9 +85,9 @@ export class MenuSub extends MenuLine implements ContextMenuSub {
 
   /**Opens the sub menu */
   open() {
-    const sub = this.parentElement as Mutable<Menu>;
+    const sub = this.parentElement as Mutable<ContextMenu>;
     if (sub) sub.close_down();
-    (this.parentElement as Mutable<Menu>).submenu = this;
+    (this.parentElement as Mutable<ContextMenu>).submenu = this;
     this.appendChild(this.#menu);
     this.#menu.set_position(0, 0, this);
     this.#is_open = true;
@@ -100,7 +100,7 @@ export class MenuSub extends MenuLine implements ContextMenuSub {
   /**Closes menu by calling parent*/
   close() {
     this.focus();
-    (this.parentElement as Mutable<Menu>).submenu = undefined;
+    (this.parentElement as Mutable<ContextMenu>).submenu = undefined;
     this.removeChild(this.#menu);
     this.#is_open = false;
   }
@@ -114,14 +114,14 @@ export class MenuSub extends MenuLine implements ContextMenuSub {
   /**Closes the context menu up the tree to the root*/
   close_up() {
     this.close();
-    (this.parentElement as Menu).close_up();
+    (this.parentElement as ContextMenu).close_up();
   }
 }
 define_element(MenuSub);
 
 export function context_sub(
   text: string,
-  menu: Menu,
+  menu: ContextMenu,
   icon?: SVGSVGElement,
 ): ContextMenuSub {
   return new MenuSub(text, menu, icon);

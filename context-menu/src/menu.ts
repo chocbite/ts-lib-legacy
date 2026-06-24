@@ -10,9 +10,7 @@ import { MenuSub } from "./submenu";
 
 export type ContextMenuLines = ContextMenuLine[];
 
-export interface ContextMenu {}
-
-export class Menu extends Base implements ContextMenu {
+export class ContextMenu extends Base {
   /**Returns the name used to define the element */
   static element_name() {
     return "menu";
@@ -223,7 +221,7 @@ export class Menu extends Base implements ContextMenu {
     this.focus();
   }
 }
-define_element(Menu);
+define_element(ContextMenu);
 
 export function context_menu(
   lines:
@@ -234,5 +232,5 @@ export function context_menu(
     | (() => (ContextMenuLine | undefined)[])
     | (() => Promise<(ContextMenuLine | undefined)[]>),
 ): ContextMenu {
-  return new Menu(lines);
+  return new ContextMenu(lines);
 }

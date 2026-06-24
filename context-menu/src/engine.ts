@@ -2,7 +2,7 @@ import { DOCUMENT_HANDLER } from "@chocbite/ts-lib-document";
 import type { Option } from "@chocbite/ts-lib-result";
 import { Container } from "./container";
 import "./engine.scss";
-import { ContextMenu, Menu } from "./menu";
+import { ContextMenu } from "./menu";
 
 export const CONTEXT_MENY_SYMBOL = Symbol("context_menu");
 
@@ -16,7 +16,7 @@ declare global {
 }
 
 /**Reference to document handler*/
-let default_menu: (Menu | (() => Option<Menu>)) | undefined;
+let default_menu: (ContextMenu | (() => Option<ContextMenu>)) | undefined;
 
 DOCUMENT_HANDLER.events.on("added", (e) => {
   apply_to_doc(e.data);
@@ -32,15 +32,20 @@ function apply_to_doc(doc: Document) {
   if (default_menu) context_menu_attach(doc.documentElement, default_menu);
 }
 
-/**Attaches a context menu to the given element*/
+/**Attaches a context menu to the given element
+ * @param element the element to attach the context menu to
+ * @param lines the context menu to attach, if a function is given it will be called when the context menu is summoned
+ * @param block a function that returns true if the context menu should not be summoned, if undefined the context menu will always be summoned*/
 export function context_menu_attach(
   element: Element,
   lines: ContextMenu | (() => Option<ContextMenu>),
+  block?: () => boolean,
 ) {
   if (element[CONTEXT_MENY_SYMBOL]) context_menu_dettach(element);
   const listener = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
+    if (block && block()) return;
     const lineses =
       typeof lines === "function" ? lines().unwrap_or(undefined) : lines;
     if (!lineses) return;
@@ -91,7 +96,7 @@ export function context_menu_summon(
       }
     }
     container
-      .attach_menu(menu as Menu)
+      .attach_menu(menu)
       .set_position(x, y, dont_cover ? element : undefined);
   } else console.error("No context menu container available");
 }
@@ -100,7 +105,7 @@ export function context_menu_summon(
  * If set to a boolean the operating system context menu is disabled and nothing will appear
  * If set undefined the operating systems context menu will be used*/
 export function context_menu_default(
-  lines: (Menu | (() => Option<Menu>)) | false,
+  lines: (ContextMenu | (() => Option<ContextMenu>)) | false,
 ) {
   if (default_menu)
     DOCUMENT_HANDLER.for_documents((doc) => {

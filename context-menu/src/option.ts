@@ -1,6 +1,6 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { ContextMenuLine, MenuLine } from "./line";
-import { Menu } from "./menu";
+import { ContextMenu } from "./menu";
 import "./option.scss";
 
 export interface ContextMenuOption extends ContextMenuLine {}
@@ -40,7 +40,7 @@ export class MenuOption extends MenuLine implements ContextMenuOption {
       e.stopPropagation();
       this.func();
       navigator?.vibrate(25);
-      (this.parentElement as Menu).close_up();
+      (this.parentElement as ContextMenu).close_up();
     };
 
     this.onkeydown = (e) => {
@@ -53,7 +53,7 @@ export class MenuOption extends MenuLine implements ContextMenuOption {
         case "Enter":
         case "Space":
           this.func();
-          (this.parentElement as Menu).close_up();
+          (this.parentElement as ContextMenu).close_up();
           break;
         case "ArrowLeft":
         case "Escape":
