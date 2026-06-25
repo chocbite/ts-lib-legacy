@@ -9,7 +9,7 @@ export const point_on_circle = (
   center_x: number,
   center_y: number,
   radius: number,
-  angle: Radians
+  angle: Radians,
 ) => {
   return {
     x: radius * Math.cos(angle) + center_x,

@@ -1,6 +1,6 @@
 {
   "name": "@chocbite/ts-lib-math",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Common math library for TypeScript projects.",
   "author": "chocolateandmilkwin",
   "license": "MIT",
@@ -32,12 +32,12 @@
     "upgrade": "npx npm-check-updates --target semver -u && npm install"
   },
   "devDependencies": {
-    "@chocbite/ts-supplement-eslint": "^1.0.0",
-    "typescript": "^6.0.2",
-    "tsdown": "^0.21.8",
-    "vite": "^8.0.8",
-    "vitest": "^4.1.4",
-    "eslint": "^10.2.0",
-    "@vitest/browser-playwright": "^4.1.4"
+    "@chocbite/ts-supplement-eslint": "^1.0.3",
+    "typescript": "^6.0.3",
+    "tsdown": "^0.21.10",
+    "vite": "^8.1.0",
+    "vitest": "^4.1.9",
+    "eslint": "^10.5.0",
+    "@vitest/browser-playwright": "^4.1.9"
   }
 }
