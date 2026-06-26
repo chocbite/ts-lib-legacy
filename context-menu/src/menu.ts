@@ -38,6 +38,15 @@ export class ContextMenu extends Base {
     this.set_position(this.#x, this.#y, this.#element);
   };
 
+  #lines:
+    | (
+        | (ContextMenuLine | undefined)[]
+        | Promise<(ContextMenuLine | undefined)[]>
+      )
+    | (() =>
+        | (ContextMenuLine | undefined)[]
+        | Promise<(ContextMenuLine | undefined)[]>);
+
   constructor(
     lines:
       | (
@@ -49,15 +58,7 @@ export class ContextMenu extends Base {
           | Promise<(ContextMenuLine | undefined)[]>),
   ) {
     super();
-    lines = typeof lines === "function" ? lines() : lines;
-    if (lines instanceof Promise) {
-      const buffer = this.appendChild(new Buffer());
-      lines.then((line) => {
-        buffer.remove();
-        this.lines = line;
-        this.set_position(this.#x, this.#y, this.#element);
-      });
-    } else this.lines = lines;
+    this.#lines = lines;
     this.tabIndex = 0;
     this.onscroll = () => {
       this.close_down();
@@ -79,6 +80,16 @@ export class ContextMenu extends Base {
 
   protected connectedCallback(): void {
     super.connectedCallback();
+    const lines =
+      typeof this.#lines === "function" ? this.#lines() : this.#lines;
+    if (lines instanceof Promise) {
+      const buffer = this.appendChild(new Buffer());
+      lines.then((line) => {
+        buffer.remove();
+        this.lines = line;
+        this.set_position(this.#x, this.#y, this.#element);
+      });
+    } else this.lines = lines;
     this.addEventListener("focusout", this.#focus_out_handler, {
       capture: true,
     });
