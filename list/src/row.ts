@@ -37,7 +37,7 @@ export class ListRow<R, T extends {}, A extends ListType<R>, S extends boolean>
   #key_field?: ListKeyField<A>;
   #field_box: HTMLDivElement;
   #child_box: HTMLSpanElement;
-  #add_row?: ListAddRow<A>;
+  #add_row?: ListAddRow<R, T, A, S>;
   #fields: ListField[];
   #state_sub?: StateInferSub<State<R[]>>;
   state!: A;
@@ -164,7 +164,9 @@ export class ListRow<R, T extends {}, A extends ListType<R>, S extends boolean>
     } else if (options) {
       if (!this.#add_row) {
         this.classList.add("addrow");
-        this.#add_row = this.appendChild(new ListAddRow<A>(this));
+        this.#add_row = this.appendChild(
+          new ListAddRow<R, T, A, S>(this.#root, this),
+        );
       }
       this.#add_row.options = options;
     }

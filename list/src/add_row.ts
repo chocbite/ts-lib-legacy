@@ -4,7 +4,7 @@ import { state, type State } from "@chocbite/ts-lib-state";
 import type { SVGFunc } from "@chocbite/ts-lib-svg";
 import "./add_row.scss";
 import { ListKeyField } from "./key_field";
-import type { ListRowParent, ListType } from "./types";
+import type { ListRoot, ListRowParent, ListType } from "./types";
 
 export interface ListAddRowOptions {
   text: string | State<string>;
@@ -13,7 +13,12 @@ export interface ListAddRowOptions {
   on_add: () => void;
 }
 
-export class ListAddRow<A extends ListType<any>>
+export class ListAddRow<
+  R,
+  T extends {},
+  A extends ListType<any>,
+  S extends boolean,
+>
   extends Base
   implements ListRowParent<A>
 {
@@ -27,10 +32,10 @@ export class ListAddRow<A extends ListType<any>>
   #button: HTMLSpanElement;
   readonly depth: number;
 
-  constructor(parent: ListRowParent<A>) {
+  constructor(root: ListRoot<R, T, A, S>, parent: ListRowParent<A>) {
     super();
     this.depth = parent.depth + 1;
-    this.appendChild(new ListKeyField(this));
+    if (root.sub_rows) this.appendChild(new ListKeyField(this));
     this.#button = this.appendChild(document.createElement("span"));
     this.#button.tabIndex = 0;
   }

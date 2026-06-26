@@ -129,7 +129,7 @@ class Container<
   #box = this.appendChild(document.createElement("div"));
   #header?: HeaderRow<R, T, A, S>;
   #child_box: HTMLDivElement;
-  #add_row?: ListAddRow<A>;
+  #add_row?: ListAddRow<R, T, A, S>;
   #state_sub?: StateInferSub<State<R[]>>;
 
   constructor(
@@ -211,7 +211,9 @@ class Container<
     } else if (options) {
       if (!this.#add_row) {
         this.#box.classList.add("addrow");
-        this.#add_row = this.#box.appendChild(new ListAddRow<A>(this.#parent));
+        this.#add_row = this.#box.appendChild(
+          new ListAddRow<R, T, A, S>(this.#root, this.#parent),
+        );
       }
       this.#add_row.options = options;
     }

@@ -206,6 +206,12 @@ const test_list3 = list.container(
     };
   },
   st_rows,
-  { headless: true },
+  {
+    headless: true,
+    add_row: {
+      text: "Add Row",
+      on_add: () => st_rows.array.push(st_rows.array.get.length),
+    },
+  },
 );
 document.body.appendChild(test_list3);
