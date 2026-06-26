@@ -1,7 +1,8 @@
-import type { BaseObserver } from "@chocbite/ts-lib-base";
+import type { BaseIntersectObserver } from "@chocbite/ts-lib-base";
 import { type Option } from "@chocbite/ts-lib-result";
 import type { State } from "@chocbite/ts-lib-state";
-import type { ListField } from "./field";
+import list from ".";
+import type { ListField, ListTextField } from "./field";
 import type { ListRow, ListRowOptions } from "./row";
 
 export type ListType<R> = R[] | State<R[]>;
@@ -38,30 +39,53 @@ export interface ListColumnOptions<V, C extends ListField> {
   field_apply(field: C, value: V): void;
 }
 
+/**Helper to create a column object */
 export function column<V, C extends ListField>(
   options: ListColumnOptions<V, C>,
 ): ListColumnOptions<V, C> {
   return options;
 }
 
-export type ListRowTransformer<R, T extends {}, A extends ListType<any>> = (
+/**Special helper to create a string value column */
+export function column_string(
+  /**Column title*/
+  title: string,
+): ListColumnOptions<string, ListTextField> {
+  return {
+    title,
+    field_gen: () => list.text_field(),
+    field_apply: (field, value) => (field.text = value),
+  };
+}
+
+export type ListRowTransformer<
+  R,
+  T extends {},
+  A extends ListType<any>,
+  S extends boolean,
+> = (
   /**Test */
   data: R,
-  row: ListRow<R, T, A>,
+  row: ListRow<R, T, A, S>,
   state: A,
-) => ListRowOptions<R, T>;
+) => ListRowOptions<R, T, S>;
 
-export interface ListRoot<R, T extends {}, A extends ListType<any>> {
+export interface ListRoot<
+  R,
+  T extends {},
+  A extends ListType<any>,
+  S extends boolean,
+> {
   /**Sub rows */
-  readonly sub_rows: boolean;
+  readonly sub_rows: S;
   /**Columns options mapped by column key */
   readonly columns: Map<keyof T, ListColumnOptions<T[keyof T], ListField>>;
   /**Order of visible columns by column key */
   columns_visible: (keyof T)[];
   /**Function to transform a row data into row options */
-  transform: ListRowTransformer<R, T, A>;
+  transform: ListRowTransformer<R, T, A, S>;
   /**Observer for the container if observer is active */
-  observer?: BaseObserver;
+  observer?: BaseIntersectObserver;
 }
 
 export interface ListRowParent<A extends ListType<any>> {

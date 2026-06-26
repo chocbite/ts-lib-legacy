@@ -1,7 +1,7 @@
 import {
   Base,
   define_element,
-  type BaseObserverOptions,
+  type BaseIntersectObserver,
 } from "@chocbite/ts-lib-base";
 import { state, type State, type StateInferSub } from "@chocbite/ts-lib-state";
 import { px_to_rem } from "@chocbite/ts-lib-theme";
@@ -73,7 +73,12 @@ class HeaderField extends Base {
 }
 define_element(HeaderField);
 
-class HeaderRow extends Base {
+class HeaderRow<
+  R,
+  T extends {},
+  A extends ListType<R>,
+  S extends boolean,
+> extends Base {
   static element_name() {
     return "headerrow";
   }
@@ -82,23 +87,34 @@ class HeaderRow extends Base {
   }
 
   set fields(fields: HeaderField[]) {
-    this.replaceChildren(text_field(), ...fields);
+    if (this.#root.sub_rows) this.replaceChildren(text_field(), ...fields);
+    else this.replaceChildren(...fields);
+  }
+
+  #root: ListRoot<R, T, A, S>;
+
+  constructor(root: ListRoot<R, T, A, S>) {
+    super();
+    this.#root = root;
   }
 }
 define_element(HeaderRow);
 
-interface ContainerOptions {
+interface ContainerOptions<S extends boolean = false> {
+  /**Should header row be omitted */
+  headless?: boolean;
   /**Can rows have sub rows */
-  sub_rows: boolean;
+  sub_rows?: S;
   /**Options for an add row button */
   add_row?: ListAddRowOptions;
   /**If list should use a container to give fields the option of attach/detach to states when visible */
-  observer?: BaseObserverOptions;
+  observer?: BaseIntersectObserver;
 }
 
 class Container<
   A extends ListType<any>,
   T extends { [key: string]: ListColumnOptions<any, any> },
+  S extends boolean = false,
   R = ListTypeExtract<A>,
 > extends Base {
   static element_name() {
@@ -108,27 +124,29 @@ class Container<
     return "list";
   }
 
-  #root: ListRoot<R, T, A>;
+  #root: ListRoot<R, T, A, S>;
   #parent: ListRowParent<A>;
   #box = this.appendChild(document.createElement("div"));
-  #header: HeaderRow;
+  #header?: HeaderRow<R, T, A, S>;
   #child_box: HTMLDivElement;
   #add_row?: ListAddRow<A>;
   #state_sub?: StateInferSub<State<R[]>>;
 
   constructor(
     columns: { [K in keyof T]: ListColumnOptions<T[K], any> },
-    transform: ListRowTransformer<R, T, A>,
+    transform: ListRowTransformer<R, T, A, S>,
     rows: A,
-    options?: ContainerOptions,
+    options?: ContainerOptions<S>,
   ) {
     super();
     this.#root = {
-      sub_rows: options?.sub_rows ?? false,
+      sub_rows: options?.sub_rows ?? (false as S),
       columns: new Map(),
       columns_visible: [],
       transform,
-      observer: options?.observer ? this.observer(options.observer) : undefined,
+      observer: options?.observer
+        ? this.intersect_observer(options.observer)
+        : undefined,
     };
     this.#parent = {
       depth: -1,
@@ -137,7 +155,8 @@ class Container<
       state: rows,
     };
 
-    this.#header = this.#box.appendChild(new HeaderRow());
+    if (!options?.headless)
+      this.#header = this.#box.appendChild(new HeaderRow(this.#root));
     this.#child_box = this.#box.appendChild(document.createElement("div"));
     if (options?.sub_rows) this.#box.classList.add("sub-rows");
     this.add_row = options?.add_row;
@@ -166,23 +185,21 @@ class Container<
     }
 
     this.#update_column_widths();
-    this.#header.fields = fields;
+    if (this.#header) this.#header.fields = fields;
   }
 
   #update_column_widths() {
-    const widths: string[] = [
-      "min-content",
-      ...this.#root.columns_visible.map((key) => {
-        const col = this.#root.columns.get(key)!;
-        const width = col.fixed_width ?? col.init_width;
-        if (width) {
-          if (width === "min") return "min-content";
-          else if (width === "max") return "max-content";
-          return `${Math.max(width, 1)}rem`;
-        }
-        return "auto";
-      }),
-    ];
+    const widths: string[] = this.#root.columns_visible.map((key) => {
+      const col = this.#root.columns.get(key)!;
+      const width = col.fixed_width ?? col.init_width;
+      if (width) {
+        if (width === "min") return "min-content";
+        else if (width === "max") return "max-content";
+        return `${Math.max(width, 1)}rem`;
+      }
+      return "auto";
+    });
+    if (this.#root.sub_rows) widths.unshift("min-content");
     this.#box.style.gridTemplateColumns = widths.join(" ");
   }
 
@@ -194,7 +211,7 @@ class Container<
     } else if (options) {
       if (!this.#add_row) {
         this.#box.classList.add("addrow");
-        this.#add_row = this.#box.appendChild(new ListAddRow(this.#parent));
+        this.#add_row = this.#box.appendChild(new ListAddRow<A>(this.#parent));
       }
       this.#add_row.options = options;
     }
@@ -211,9 +228,9 @@ class Container<
     let count = this.#child_box.childElementCount;
     if (rec)
       for (let i = 0; i < this.#child_box.childElementCount; i++)
-        count += (this.#child_box.children[i] as ListRow<R, T, A>).amount_rows(
-          true,
-        );
+        count += (
+          this.#child_box.children[i] as ListRow<R, T, A, S>
+        ).amount_rows(true);
     return count;
   }
 
@@ -242,13 +259,14 @@ class Container<
           row.items.length,
         );
         for (let i = 0; i < min; i++)
-          (this.#child_box.children[i] as ListRow<R, T, A>).data = row.items[i];
+          (this.#child_box.children[i] as ListRow<R, T, A, S>).data =
+            row.items[i];
         if (row.items.length > this.#child_box.childElementCount)
           this.#child_box.append(
             ...row.items
               .slice(this.#child_box.childElementCount)
               .map(
-                (row) => new ListRow<R, T, A>(this.#root, this.#parent, row),
+                (row) => new ListRow<R, T, A, S>(this.#root, this.#parent, row),
               ),
           );
         else if (row.items.length < this.#child_box.childElementCount) {
@@ -257,14 +275,14 @@ class Container<
             i >= row.items.length;
             i--
           )
-            (this.#child_box.children[i] as ListRow<R, T, A>).remove();
+            (this.#child_box.children[i] as ListRow<R, T, A, S>).remove();
         }
       } else if (row.type === "added") {
         const child = this.#child_box.children[row.index] as
-          | ListRow<R, T, A>
+          | ListRow<R, T, A, S>
           | undefined;
         const rows = row.items.map(
-          (row) => new ListRow<R, T, A>(this.#root, this.#parent, row),
+          (row) => new ListRow<R, T, A, S>(this.#root, this.#parent, row),
         );
         if (child) child.before(...rows);
         else this.#child_box.append(...rows);
@@ -273,21 +291,23 @@ class Container<
           this.#child_box.children[row.index].remove();
       else if (row.type === "changed")
         for (let i = 0; i < row.items.length; i++)
-          (this.#child_box.children[row.index + i] as ListRow<R, T, A>).data =
-            row.items[i];
+          (
+            this.#child_box.children[row.index + i] as ListRow<R, T, A, S>
+          ).data = row.items[i];
       else if (row.type === "moved") {
         const extracted = [];
         for (let i = 0; i < row.items.length; i++) {
           const child = this.#child_box.children[row.from_index + i] as ListRow<
             R,
             T,
-            A
+            A,
+            S
           >;
           extracted.push(child);
           child.remove();
         }
         const child = this.#child_box.children[row.to_index] as
-          | ListRow<R, T, A>
+          | ListRow<R, T, A, S>
           | undefined;
         for (let i = 0; i < extracted.length; i++) {
           if (child) child.before(extracted[i]);
@@ -302,12 +322,13 @@ define_element(Container);
 export function container<
   A extends ListType<any>,
   T extends {},
+  S extends boolean = false,
   R = ListTypeExtract<A>,
 >(
   columns: { [K in keyof T]: ListColumnOptions<T[K], any> },
-  transform: ListRowTransformer<R, NoInfer<T>, A>,
+  transform: ListRowTransformer<R, NoInfer<T>, A, S>,
   rows: A,
-  options?: ContainerOptions,
+  options?: ContainerOptions<S>,
 ) {
-  return new Container<A, T, R>(columns, transform, rows, options);
+  return new Container<A, T, S, R>(columns, transform, rows, options);
 }

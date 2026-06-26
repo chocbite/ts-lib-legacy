@@ -9,7 +9,6 @@ list-keyfield {
   position: sticky;
   left: 0;
   display: flex;
-  align-items: center;
   z-index: 2;
   outline: none;
   user-select: none;
@@ -75,14 +74,14 @@ list-keyfield {
       list-addrow > &,
       list-row:not(.addrow) > span > list-row:last-child > * > &,
       div:not(.addrow) > div > list-row:last-child > * > & {
-        height: 50%;
+        height: calc(var(--list-row-size) / 2);
       }
     }
     &::after {
       content: "";
       display: block;
       position: absolute;
-      height: calc(50% - 0.5px);
+      height: calc(var(--list-row-size) / 2);
       width: 50%;
       top: 0;
       left: 50%;
@@ -150,7 +149,9 @@ list-keyfield {
 
   &::after {
     content: "";
-    border-top: 1px solid var(--list-colors-border-column);
+    height: 50%;
+    border-bottom: 1px solid var(--list-colors-border-column);
     flex-grow: 1;
+    height: calc(var(--list-row-size) / 2);
   }
 }

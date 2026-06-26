@@ -10,17 +10,17 @@ import type { ListRoot, ListRowParent, ListType } from "./types";
 
 export type ListSubRows<R> = () => R[] | State<R[]>;
 
-export interface ListRowOptions<R, T extends {}> {
+export interface ListRowOptions<R, T extends {}, S extends boolean> {
   opened?: boolean;
   openable?: boolean | State<boolean>;
   key_field?: ListKeyFieldOptions;
-  sub_rows?: ListSubRows<R>;
+  sub_rows?: S extends true ? ListSubRows<R> : never;
   add_row?: ListAddRowOptions;
   context_menu?: ContextMenu | (() => Option<ContextMenu>);
   values: T;
 }
 
-export class ListRow<R, T extends {}, A extends ListType<R>>
+export class ListRow<R, T extends {}, A extends ListType<R>, S extends boolean>
   extends Base
   implements ListRowParent<A>
 {
@@ -30,11 +30,11 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
   static element_name_space(): string {
     return "list";
   }
-  #root: ListRoot<R, T, A>;
+  #root: ListRoot<R, T, A, S>;
   #parent: ListRowParent<A>;
   #sub_rows?: ListSubRows<R>;
   readonly depth: number;
-  #key_field: ListKeyField<A>;
+  #key_field?: ListKeyField<A>;
   #field_box: HTMLDivElement;
   #child_box: HTMLSpanElement;
   #add_row?: ListAddRow<A>;
@@ -42,26 +42,31 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
   #state_sub?: StateInferSub<State<R[]>>;
   state!: A;
 
-  constructor(root: ListRoot<R, T, A>, parent: ListRowParent<A>, data: R) {
+  constructor(root: ListRoot<R, T, A, S>, parent: ListRowParent<A>, data: R) {
     super();
     this.#root = root;
     this.#parent = parent;
     this.depth = parent.depth + 1;
     this.style.setProperty("--i-" + this.depth, "var(--c)");
-    this.#key_field = new ListKeyField(this);
-    if (this.#root.observer)
-      this.#key_field.attach_to_observer(this.#root.observer);
+    if (this.#root.sub_rows) {
+      this.#key_field = new ListKeyField(this);
+      if (this.#root.observer)
+        this.#key_field.attach_to_intersect_observer(this.#root.observer);
+    }
     this.#field_box = this.appendChild(document.createElement("div"));
     this.#child_box = this.appendChild(document.createElement("span"));
 
     this.#fields = this.#root.columns_visible.map((key) => {
       const field = this.#root.columns.get(key)!.field_gen();
-      if (this.#root.observer) field.attach_to_observer(this.#root.observer);
+      if (this.#root.observer)
+        field.attach_to_intersect_observer(this.#root.observer);
       return field;
     });
 
     //Generate fields
-    this.#field_box.replaceChildren(this.#key_field, ...this.#fields);
+    if (this.#key_field)
+      this.#field_box.replaceChildren(this.#key_field, ...this.#fields);
+    else this.#field_box.replaceChildren(...this.#fields);
 
     //Updates row data
     this.data = data;
@@ -78,29 +83,29 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
     direction: "next" | "previous" | "p_next" | "p_previous" | "last",
     field: Option<number>,
   ) {
+    if (!this.#key_field) return;
     if (direction === "next" || direction === "p_next") {
       if (direction === "next" && this.open)
         (
-          this.#child_box.firstElementChild! as ListRow<R, T, A>
-        ).#key_field.focus();
+          this.#child_box.firstElementChild! as ListRow<R, T, A, false>
+        ).#key_field!.focus();
       else {
         const sibling = this.nextElementSibling;
-        if (sibling instanceof ListRow) sibling.#key_field.focus();
+        if (sibling instanceof ListRow) sibling.#key_field!.focus();
         else this.#parent.select_adjacent("p_next", field);
       }
     } else if (direction === "previous") {
       const sibling = this.previousElementSibling;
       if (sibling instanceof ListRow) {
         if (sibling.open) sibling.select_adjacent("last", field);
-        else sibling.#key_field.focus();
+        else sibling.#key_field!.focus();
       } else this.#parent.select_adjacent("p_previous", field);
     } else if (direction === "p_previous") this.#key_field.focus();
     else if (direction === "last") {
       if (this.open) {
-        (this.#child_box.lastElementChild as ListRow<R, T, A>).select_adjacent(
-          "last",
-          field,
-        );
+        (
+          this.#child_box.lastElementChild as ListRow<R, T, A, S>
+        ).select_adjacent("last", field);
       } else this.#key_field.focus();
     }
   }
@@ -114,7 +119,7 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
 
   set data(data: R) {
     const row_options = this.#root.transform(data, this, this.#parent.state);
-    this.#key_field.options = row_options.key_field;
+    if (this.#key_field) this.#key_field.options = row_options.key_field;
     this.#sub_rows = row_options.sub_rows;
 
     this.add_row = row_options.add_row;
@@ -174,10 +179,10 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
 
   set openable(value: boolean) {
     if (!value) this.open = false;
-    this.#key_field.openable = value;
+    if (this.#key_field) this.#key_field.openable = value;
   }
   get openable(): boolean {
-    return this.#key_field.openable;
+    return this.#key_field?.openable ?? false;
   }
 
   set open(open: boolean) {
@@ -210,9 +215,9 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
     let count = this.#child_box.childElementCount;
     if (rec)
       for (let i = 0; i < this.#child_box.childElementCount; i++)
-        count += (this.#child_box.children[i] as ListRow<R, T, A>).amount_rows(
-          true,
-        );
+        count += (
+          this.#child_box.children[i] as ListRow<R, T, A, S>
+        ).amount_rows(true);
     return count;
   }
 
@@ -241,12 +246,13 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
           row.items.length,
         );
         for (let i = 0; i < min; i++)
-          (this.#child_box.children[i] as ListRow<R, T, A>).data = row.items[i];
+          (this.#child_box.children[i] as ListRow<R, T, A, S>).data =
+            row.items[i];
         if (row.items.length > this.#child_box.childElementCount)
           this.#child_box.append(
             ...row.items
               .slice(this.#child_box.childElementCount)
-              .map((row) => new ListRow<R, T, A>(this.#root, this, row)),
+              .map((row) => new ListRow<R, T, A, S>(this.#root, this, row)),
           );
         else if (row.items.length < this.#child_box.childElementCount) {
           for (
@@ -254,14 +260,14 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
             i >= row.items.length;
             i--
           )
-            (this.#child_box.children[i] as ListRow<R, T, A>).remove();
+            (this.#child_box.children[i] as ListRow<R, T, A, S>).remove();
         }
       } else if (row.type === "added") {
         const child = this.#child_box.children[row.index] as
-          | ListRow<R, T, A>
+          | ListRow<R, T, A, S>
           | undefined;
         const rows = row.items.map(
-          (row) => new ListRow<R, T, A>(this.#root, this, row),
+          (row) => new ListRow<R, T, A, S>(this.#root, this, row),
         );
         if (child) child.before(...rows);
         else this.#child_box.append(...rows);
@@ -270,21 +276,23 @@ export class ListRow<R, T extends {}, A extends ListType<R>>
           this.#child_box.children[row.index].remove();
       else if (row.type === "changed")
         for (let i = 0; i < row.items.length; i++)
-          (this.#child_box.children[row.index + i] as ListRow<R, T, A>).data =
-            row.items[i];
+          (
+            this.#child_box.children[row.index + i] as ListRow<R, T, A, S>
+          ).data = row.items[i];
       else if (row.type === "moved") {
         const extracted = [];
         for (let i = 0; i < row.items.length; i++) {
           const child = this.#child_box.children[row.from_index + i] as ListRow<
             R,
             T,
-            A
+            A,
+            S
           >;
           extracted.push(child);
           child.remove();
         }
         const child = this.#child_box.children[row.to_index] as
-          | ListRow<R, T, A>
+          | ListRow<R, T, A, S>
           | undefined;
         for (let i = 0; i < extracted.length; i++) {
           if (child) child.before(extracted[i]);

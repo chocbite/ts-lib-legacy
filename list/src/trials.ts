@@ -1,6 +1,6 @@
 import { array_from_length } from "@chocbite/ts-lib-common";
 import ctm from "@chocbite/ts-lib-context-menu";
-import { material_av_add_to_queue_rounded } from "@chocbite/ts-lib-icons";
+import { material_add_to_queue_rounded } from "@chocbite/ts-lib-icons";
 import { ok } from "@chocbite/ts-lib-result";
 import state from "@chocbite/ts-lib-state";
 import list from ".";
@@ -54,8 +54,7 @@ const test_list = list.container(
     return {
       openable: Math.random() > 0.5,
       key_field: {
-        icon:
-          Math.random() > 0.5 ? material_av_add_to_queue_rounded : undefined,
+        icon: Math.random() > 0.5 ? material_add_to_queue_rounded : undefined,
       },
       sub_rows: () => sub_rows,
       add_row,
@@ -143,8 +142,7 @@ const test_list2 = list.container(
     return {
       openable: Math.random() > 0.5,
       key_field: {
-        icon:
-          Math.random() > 0.5 ? material_av_add_to_queue_rounded : undefined,
+        icon: Math.random() > 0.5 ? material_add_to_queue_rounded : undefined,
       },
       sub_rows: () => sub_rows,
       add_row,
@@ -176,3 +174,38 @@ const test_list2 = list.container(
   },
 );
 document.body.appendChild(test_list2);
+
+const test_list3 = list.container(
+  {
+    col1: list.column_string("Column 1"),
+  },
+  (item) => {
+    const sub_rows = state.rosw(
+      state.a.help(ok(array_from_length(3, (i) => i))),
+      true,
+    );
+    const add_row =
+      Math.random() > 0.5
+        ? {
+            disabled: state.p.ros(sub_rows.related().value.length, (len) =>
+              ok(len.value >= 3),
+            ).state,
+            text: "Add New Row",
+            on_add: () => sub_rows.write(state.a.write.push(Math.random())),
+          }
+        : undefined;
+    return {
+      openable: Math.random() > 0.5,
+      key_field: {
+        icon: Math.random() > 0.5 ? material_add_to_queue_rounded : undefined,
+      },
+      add_row,
+      values: {
+        col1: item.toString(),
+      },
+    };
+  },
+  st_rows,
+  { headless: true },
+);
+document.body.appendChild(test_list3);
