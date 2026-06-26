@@ -152,7 +152,7 @@ export class ListRow<R, T extends {}, A extends ListType<R>, S extends boolean>
     }
 
     //Setup context menu
-    ctm.dettach(this);
+    ctm.detach(this);
     if (row_options.context_menu) ctm.attach(this, row_options.context_menu);
   }
 
