@@ -41,7 +41,7 @@ export function context_menu_attach(
   lines: ContextMenu | (() => Option<ContextMenu>),
   block?: () => boolean,
 ) {
-  if (element[CONTEXT_MENY_SYMBOL]) context_menu_dettach(element);
+  if (element[CONTEXT_MENY_SYMBOL]) context_menu_detach(element);
   const listener = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
@@ -61,7 +61,7 @@ export function context_menu_attach(
 }
 
 /**Dettaches the context menu from the given element */
-export function context_menu_dettach(element: Element) {
+export function context_menu_detach(element: Element) {
   if (element[CONTEXT_MENY_SYMBOL]) {
     element.removeEventListener("contextmenu", element[CONTEXT_MENY_SYMBOL]);
     delete element[CONTEXT_MENY_SYMBOL];
@@ -109,7 +109,7 @@ export function context_menu_default(
 ) {
   if (default_menu)
     DOCUMENT_HANDLER.for_documents((doc) => {
-      context_menu_dettach(doc.documentElement);
+      context_menu_detach(doc.documentElement);
     });
   if (lines) {
     default_menu = lines;
