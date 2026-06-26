@@ -29,11 +29,13 @@ list-row {
 
     > * {
       overflow: hidden;
-    }
-
-    > *:not(:first-child) {
       border-top: 1px solid var(--list-colors-border-row);
     }
+
+    list-container > div.sub-rows & > *:first-child {
+      border-top: none;
+    }
+
     > *:not(:last-child) {
       border-right: 1px solid var(--list-colors-border-column);
     }
