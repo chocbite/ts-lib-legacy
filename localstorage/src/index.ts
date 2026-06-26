@@ -8,7 +8,7 @@ export const settings_set_name_transform = (
   name_transformer = transform;
 };
 
-const packages = localStorage["settings/packageVersions"] as string | undefined;
+const packages = localStorage["storage/packageVersions"] as string | undefined;
 let package_versions: { [key: string]: string } = {};
 try {
   package_versions = packages

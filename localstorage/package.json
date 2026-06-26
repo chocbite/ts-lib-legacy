@@ -1,6 +1,6 @@
 {
   "name": "@chocbite/ts-lib-localstorage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Helpers for using localStorage and states in a Typescript",
   "author": "chocolateandmilkwin",
   "license": "MIT",
