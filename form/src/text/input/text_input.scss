@@ -28,7 +28,8 @@ form-textinput {
     all: unset;
     @include base.value-font;
     display: block;
-    padding: 0.3rem;
+    padding-inline: 0.2rem;
+    padding-top: 0.1rem;
     box-sizing: border-box;
     outline: none;
     width: max-content;

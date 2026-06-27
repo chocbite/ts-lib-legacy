@@ -117,7 +117,7 @@ form-slider {
     @include number_base.svg-stepper-button;
     z-index: 1;
 
-    &:nth-child(2) {
+    &:nth-child(1) {
       left: -(base.$border_thickness);
     }
 
@@ -132,6 +132,7 @@ form-slider {
     inset: 0;
     padding-left: calc(base.$size_height + 0.4rem);
     padding-right: calc(base.$size_height + 0.4rem);
+    padding-top: 0.1rem;
     justify-content: space-between;
     align-items: center;
     gap: 0.4rem;
@@ -140,6 +141,7 @@ form-slider {
     .touch & {
       padding-left: calc(base.$size_touchHeight + 0.4rem);
       padding-right: calc(base.$size_touchHeight + 0.4rem);
+      padding-top: 0.2rem;
     }
 
     > * {

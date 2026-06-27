@@ -112,10 +112,14 @@ export class FormDropdown<
 
   set open(open: boolean) {
     if (open && !this.is_open) {
-      this.#open.replaceChildren(material_unfold_less_rounded());
+      const old = this.#open;
+      this.#open = material_unfold_less_rounded();
+      old.replaceWith(this.#open);
       box.open_menu(this.#map, this, this.buffer);
     } else if (!open && this.is_open) {
-      this.#open.replaceChildren(material_unfold_more_rounded());
+      const old = this.#open;
+      this.#open = material_unfold_more_rounded();
+      old.replaceWith(this.#open);
       box.close_menu();
     }
     this.is_open = open;
@@ -352,6 +356,7 @@ class DropDownBox extends Base {
   close_menu() {
     if (!this.#is_open) return;
     this.#is_open = false;
+    if (this.#dropdown) this.#dropdown.open = false;
     this.classList.remove("open");
     this.#table.replaceChildren();
     if (this.#dropdown) {

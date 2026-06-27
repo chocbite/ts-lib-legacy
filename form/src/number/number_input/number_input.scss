@@ -51,7 +51,7 @@ form-numberinput {
 
   > span:nth-child(2) {
     @include base.unit-container;
-    padding-left: 0.3rem;
+    padding-inline: 0.2rem;
     -webkit-user-select: none;
     user-select: none;
   }
@@ -64,6 +64,7 @@ form-numberinput {
     flex-grow: 1;
     padding-right: 0.3rem;
     align-items: flex-end;
+    padding-top: 0.1rem;
 
     > span {
       @include base.limit-legend;

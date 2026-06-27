@@ -89,6 +89,7 @@ form-group {
       cursor: pointer;
       user-select: none;
       outline: none;
+      margin: -(base.$border_thickness);
 
       .touch & {
         min-height: base.$size_touchHeight;
@@ -133,7 +134,7 @@ form-group {
         .touch & {
           height: base.$size_touchHeight;
           max-width: base.$size_touchHeight + 1rem;
-          padding: 0.5rem;
+          padding: 0.2rem;
         }
       }
     }

@@ -1,4 +1,5 @@
 @use "../../base";
+@use "sass:math" as math;
 
 form-textmultiline {
   @include base.base;
@@ -18,14 +19,17 @@ form-textmultiline {
   }
 
   > textarea {
-    @include base.value-font;
     all: unset;
+    @include base.value-font;
     display: block;
-    padding: 0.3rem;
+    padding-inline: 0.2rem;
+    padding-top: 0.2rem;
     box-sizing: border-box;
     outline: none;
     width: 100%;
-    min-height: base.$size_height;
+    min-height: base.$size_height - 0.2rem;
+    height: base.$size_height - 0.2rem;
+    border-radius: base.$size_cornerRadius;
 
     .touch & {
       min-height: base.$size_touchHeight;
@@ -33,6 +37,7 @@ form-textmultiline {
 
     @media (pointer: fine) {
       &:hover {
+        box-shadow: base.$shadow_in;
         background-color: base.$color_background_hover;
       }
     }
@@ -49,7 +54,7 @@ form-textmultiline {
     justify-content: center;
 
     .touch & {
-      height: calc(base.$size_touchHeight / 2);
+      height: calc(base.$size_touchHeight / 1.2);
     }
 
     @media (pointer: fine) {
@@ -60,6 +65,12 @@ form-textmultiline {
 
     > svg {
       fill: base.$color_text;
+      width: auto;
+      height: 1.6rem;
+
+      .touch & {
+        height: 2.6rem;
+      }
     }
   }
 

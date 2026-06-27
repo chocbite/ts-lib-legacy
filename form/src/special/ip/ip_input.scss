@@ -16,8 +16,7 @@ form-ipinput {
   user-select: none;
   outline: none;
   overflow: hidden;
-  padding: 0.2rem;
-  font-size: base.$font_size;
+  padding-inline: 0.2rem;
 
   &:focus-within {
     box-shadow: base.$shadow_in_focus_out;
@@ -36,7 +35,8 @@ form-ipinput {
 
   > div {
     all: unset;
-    color: base.$color_text;
+    @include base.value-font;
+    padding-top: 0.2rem;
     display: flex;
     align-items: center;
     justify-content: center;

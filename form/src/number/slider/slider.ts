@@ -162,9 +162,7 @@ export class FormSlider<ID extends string | undefined> extends FormNumberWrite<
   }
   #update_min_legend() {
     this.#left_legend.textContent =
-      this.#min === -Infinity
-        ? ""
-        : "Min: " + this.#min.toFixed(this.#decimals) + this.#unit;
+      this.#min === -Infinity ? "" : "Min:" + this.#min.toFixed(this.#decimals);
   }
 
   set max(max: number | undefined) {
@@ -175,9 +173,7 @@ export class FormSlider<ID extends string | undefined> extends FormNumberWrite<
 
   #update_max_legend() {
     this.#right_legend.textContent =
-      this.#max === Infinity
-        ? ""
-        : this.#max.toFixed(this.#decimals) + this.#unit + " :Max";
+      this.#max === Infinity ? "" : this.#max.toFixed(this.#decimals) + ":Max";
   }
 
   #update_min_max() {

@@ -44,11 +44,14 @@ form-dropdown {
 
   > svg:first-child {
     fill: base.$color_text;
-    max-height: calc(base.$size_height - 2px);
-    box-sizing: border-box;
-    padding: 0.1rem;
+    height: calc(base.$size_height - 2px);
+    width: auto;
+    padding-inline: 0.2rem;
     flex-shrink: 0;
-    flex-basis: base.$size_height;
+
+    .touch & {
+      height: calc(base.$size_touchHeight - 0.4rem);
+    }
   }
 
   > div {
@@ -67,9 +70,9 @@ form-dropdown {
   }
 
   > svg:nth-last-child(2) {
+    fill: base.$color_text;
     box-sizing: border-box;
     flex-shrink: 0;
-    fill: base.$color_text;
     width: 1.6rem;
   }
 }

@@ -91,12 +91,12 @@ form-togglebutton {
       }
 
       > svg {
-        height: calc(
-          base.$size_height - $padding * 2 - base.$border_thickness * 2
-        );
+        margin: -$padding;
+        height: calc(base.$size_height - $padding - base.$border_thickness * 2);
         width: auto;
 
         .touch & {
+          margin: 0;
           height: calc(
             base.$size_touchHeight - $padding * 2 - base.$border_thickness * 2
           );

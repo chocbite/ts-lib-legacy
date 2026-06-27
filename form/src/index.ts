@@ -4,7 +4,7 @@ import { form_lamp } from "./boolean/lamp/lamp";
 import { form_switch } from "./boolean/switch/switch";
 import { form_group } from "./group/group";
 import { form_list_field } from "./list/list_field";
-import { form_number_input } from "./number/numberInput/number_input";
+import { form_number_input } from "./number/number_input/number_input";
 import { form_progress } from "./number/progress/progress";
 import { form_slider } from "./number/slider/slider";
 import { form_stepper } from "./number/stepper/stepper";

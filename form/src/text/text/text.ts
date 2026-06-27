@@ -34,7 +34,8 @@ class FormText extends FormElement {
 
   /**Sets the current text of the element*/
   set size(size: number) {
-    this.style.fontSize = `${size}rem`;
+    this.style.fontSize = size + "rem";
+    this.style.lineHeight = size + "rem";
   }
 }
 define_element(FormText);

@@ -10,6 +10,7 @@ import {
 import state from "@chocbite/ts-lib-state";
 import {
   ANIMATION_LEVEL,
+  ANIMATION_SPEED,
   INPUT_MODE,
   SCALE,
   THEME,
@@ -39,6 +40,8 @@ form_cont.appendChild(
       form.toggle_button({ value_by_state: ANIMATION_LEVEL }),
       form.text({ text: "UI Scale" }),
       form.stepper({ value_by_state: SCALE }),
+      form.text({ text: "Animation Speed" }),
+      form.stepper({ value_by_state: ANIMATION_SPEED }),
     ],
   }),
 );
@@ -271,6 +274,12 @@ form_cont.appendChild(
   form.text({
     text: "Hello World!",
     size: 2,
+  }),
+);
+form_cont.appendChild(
+  form.text({
+    text: "Hello World!, This is a long text that should wrap around the container and be visible in multiple lines.",
+    size: 1,
   }),
 );
 

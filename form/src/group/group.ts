@@ -23,6 +23,15 @@ export const FormGroupBorderStyle = {
 export type FormGroupBorderStyle =
   (typeof FormGroupBorderStyle)[keyof typeof FormGroupBorderStyle];
 
+/**Different layout styles for the component group*/
+export const FormGroupLayout = {
+  FlexRow: "fr",
+  FlexColumn: "fc",
+  Grid: "grid",
+} as const;
+export type FormGroupLayout =
+  (typeof FormGroupLayout)[keyof typeof FormGroupLayout];
+
 type ExtractB<Arr extends any[]> = Arr extends [infer Head, ...infer Tail]
   ? Head extends FormValue<infer T, infer ID>
     ? [FormValue<T, ID>, ...ExtractB<Tail>]
@@ -137,7 +146,9 @@ export class FormGroup<
         if (ANIMATION_LEVEL.get().value === AnimationLevels.All) {
           this.#collapsible.style.overflowY = "hidden";
           const full_height =
-            this.#collapsible.getBoundingClientRect().height + "px";
+            this.#collapsible.getBoundingClientRect().height -
+            (this.#collapse_button?.getBoundingClientRect().height || 0) / 2 +
+            "px";
           const animation = this.#collapsible.animate(
             [{ height: full_height }, { height: "0" }],
             {
@@ -158,7 +169,9 @@ export class FormGroup<
         if (ANIMATION_LEVEL.get().value === AnimationLevels.All) {
           this.#collapsible.style.overflowY = "hidden";
           const full_height =
-            this.#collapsible.getBoundingClientRect().height + "px";
+            this.#collapsible.getBoundingClientRect().height -
+            (this.#collapse_button?.getBoundingClientRect().height || 0) / 2 +
+            "px";
           const animation = this.#collapsible.animate(
             [{ height: "0" }, { height: full_height }],
             {

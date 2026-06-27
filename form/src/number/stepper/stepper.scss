@@ -89,11 +89,11 @@ form-stepper {
   > svg {
     @include number_base.svg-stepper-button;
 
-    &:nth-child(2) {
+    &:nth-child(1) {
       left: -(base.$border_thickness);
     }
 
-    &:last-child {
+    &:nth-child(3) {
       right: -(base.$border_thickness);
     }
   }

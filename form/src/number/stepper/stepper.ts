@@ -174,9 +174,7 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
   }
   #update_min_legend() {
     this.#min_legend.textContent =
-      this.#min === -Infinity
-        ? ""
-        : "Min: " + this.#min.toFixed(this.#decimals) + this.#unit;
+      this.#min === -Infinity ? "" : "Min:" + this.#min.toFixed(this.#decimals);
   }
 
   set max(max: number | undefined) {
@@ -185,9 +183,7 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
   }
   #update_max_lengend() {
     this.#max_legend.textContent =
-      this.#max === Infinity
-        ? ""
-        : "Max: " + this.#max.toFixed(this.#decimals) + this.#unit;
+      this.#max === Infinity ? "" : "Max:" + this.#max.toFixed(this.#decimals);
   }
 
   set step(step: number | undefined) {

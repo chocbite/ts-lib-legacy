@@ -54,13 +54,13 @@ form-button {
     height: calc(base.$size_height - 2px);
     box-sizing: border-box;
     width: auto;
-    padding: 0.2rem;
+    padding: 0.1rem;
     flex-shrink: 0;
 
     .touch & {
       height: base.$size_touchHeight;
       max-width: base.$size_touchHeight + 1rem;
-      padding: 0.5rem;
+      padding: 0.3rem;
     }
   }
 

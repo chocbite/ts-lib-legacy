@@ -34,7 +34,7 @@ $color_basic_blue: var(--form-colors-basic-blue);
 $color_basic_yellow: var(--form-colors-basic-yellow);
 
 //Sizes
-$size_cornerRadius: 0.6rem;
+$size_cornerRadius: 0.4rem;
 $size_height: var(--form-size-height);
 $size_touchHeight: var(--form-size-touchHeight);
 
@@ -105,9 +105,9 @@ $shadow_in_focus_in: $focus_in, $shadow_in;
   }
 }
 
-$value_font_size: 0.9rem;
+$value_font_size: 0.8rem;
 $touch_value_font_size: $value_font_size * 1.4;
-$unit_font_size: 0.7rem;
+$unit_font_size: 0.6rem;
 $touch_unit_font_size: $unit_font_size * 1.4;
 $value_unit_font_height: max($value_font_size, $unit_font_size) + 0.4rem;
 $touch_value_unit_font_height: max(
@@ -119,22 +119,22 @@ $touch_value_unit_font_height: max(
 @mixin value-font {
   color: $color_text;
   font-size: $value_font_size;
-  line-height: $value_unit_font_height;
+  line-height: $value_font_size;
 
   .touch & {
     font-size: $touch_value_font_size;
-    line-height: $touch_value_unit_font_height;
+    line-height: $touch_value_font_size;
   }
 }
 
 @mixin unit-font {
   color: $color_text;
   font-size: $unit_font_size;
-  line-height: $value_unit_font_height;
+  line-height: $unit_font_size;
 
   .touch & {
     font-size: $touch_unit_font_size;
-    line-height: $touch_value_unit_font_height;
+    line-height: $unit_font_size;
   }
 }
 
@@ -160,12 +160,13 @@ $touch_unit_width: $touch_unit_font_size * 5.6;
 
 @mixin limit-legend {
   color: $color_text;
-  font-size: 0.7rem;
-  line-height: 0.7rem;
+  white-space: nowrap;
+  font-size: 0.6rem;
+  line-height: 0.6rem;
 
   .touch & {
-    font-size: 0.9rem;
-    line-height: 1rem;
+    font-size: 0.8rem;
+    line-height: 0.8rem;
   }
 }
 

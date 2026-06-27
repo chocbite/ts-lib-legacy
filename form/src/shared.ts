@@ -333,8 +333,8 @@ sizes.make_variable(
   "height",
   "Height",
   "Default height used in all form elements",
-  "1.6rem",
-  "1.6rem",
+  "1.3rem",
+  "1.3rem",
   "Length",
   { min: 0.1, max: 10 },
 );
@@ -343,8 +343,8 @@ sizes.make_variable(
   "touchHeight",
   "Touch Height",
   "Minimum height for touch devices used in all form elements",
-  "2.6rem",
-  "2.6rem",
+  "2.0rem",
+  "2.0rem",
   "Length",
   { min: 0.1, max: 10 },
 );
@@ -367,8 +367,8 @@ font.make_variable(
   "size",
   "Font Size",
   "Default font size used in all form elements",
-  "1rem",
-  "1rem",
+  "0.9rem",
+  "0.9rem",
   "Length",
   { min: 0.1, max: 10 },
 );

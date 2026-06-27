@@ -21,7 +21,9 @@ form-lamp {
   }
 
   .anim-all & {
-    transition: min-height base.$animation, border-color base.$animation,
+    transition:
+      min-height base.$animation,
+      border-color base.$animation,
       background-color base.$animation;
   }
 
@@ -32,16 +34,18 @@ form-lamp {
     width: auto;
     flex-shrink: 0;
     background-color: initial;
-    padding: 0.2rem;
+    padding: 0.1rem;
     padding-left: 0.4rem;
 
     .touch & {
       height: calc(base.$size_touchHeight - 2px);
-      padding: 0.5rem;
+      padding: 0.3rem;
     }
 
     .anim-all & {
-      transition: fill base.$animation, height base.$animation;
+      transition:
+        fill base.$animation,
+        height base.$animation;
     }
   }
 

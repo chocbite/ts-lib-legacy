@@ -16,7 +16,8 @@ form-datetimeinput {
   user-select: none;
   outline: none;
   overflow: hidden;
-  padding: 0.3rem;
+  padding-inline: 0.2rem;
+  padding-top: 0.1rem;
 
   &:focus-within {
     box-shadow: base.$shadow_in_focus_out;
@@ -33,7 +34,7 @@ form-datetimeinput {
   }
 
   > input {
-    color: base.$color_text;
+    @include base.value-font;
     display: block;
     outline: none;
     appearance: none;
