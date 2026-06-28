@@ -17,8 +17,8 @@ form-button {
   min-width: min-content;
   outline: none;
 
-  .touch & {
-    min-height: base.$size_touchHeight;
+  &.center {
+    justify-content: center;
   }
 
   &.active {
@@ -31,6 +31,10 @@ form-button {
     &.active {
       box-shadow: base.$shadow_out_active_focus_out;
     }
+  }
+
+  .touch & {
+    min-height: base.$size_touchHeight;
   }
 
   @media (pointer: fine) {
@@ -55,6 +59,7 @@ form-button {
     box-sizing: border-box;
     width: auto;
     padding: 0.1rem;
+    padding-left: 0.3rem;
     flex-shrink: 0;
 
     .touch & {
@@ -65,13 +70,13 @@ form-button {
   }
 
   > svg + span {
-    padding-left: 0.4rem !important;
+    padding-left: 0.1rem !important;
   }
 
   > span {
     color: base.$color_text;
     justify-content: center;
-    padding-inline: 0.8rem;
+    padding-inline: 0.4rem;
 
     .touch & {
       font-size: base.$touch_font_size;

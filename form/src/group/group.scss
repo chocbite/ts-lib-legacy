@@ -1,162 +1,49 @@
 @use "../base";
-
-$padding: 0.6rem;
+@use "./group_base";
 
 form-group {
   @include base.base;
-  --max_height: none;
+  @include group_base.base;
 
-  display: flex;
-  flex-direction: column;
+  --max_height: none;
   background-color: inherit;
   z-index: 0;
+  max-height: var(--max_height);
+  padding: group_base.$padding;
+  min-width: fit-content;
+  box-sizing: border-box;
 
-  &.inset {
-    border: base.$border;
-    box-shadow: base.$shadow_in;
-    border-radius: base.$size_cornerRadius;
-  }
+  &.grid-row {
+    display: grid;
+    gap: base.$element_spacing;
+    grid-auto-flow: column;
 
-  &.outset {
-    border: base.$border;
-    border-radius: base.$size_cornerRadius;
-  }
-
-  & + form-group {
-    &:not(.collapsible) {
-      padding-top: 0rem;
-    }
-
-    &.collapsible {
-      > div {
-        padding-top: 0rem;
-      }
+    > * {
+      margin: 0;
     }
   }
+  &.grid-col {
+    display: grid;
+    gap: base.$element_spacing;
+    grid-auto-flow: row;
 
-  &:not(.collapsible) {
-    max-height: var(--max_height);
-    padding: $padding;
-    min-width: fit-content;
-
-    &.max_height {
-      overflow-y: auto;
-    }
-
-    &.embed {
-      padding: 0;
-    }
-
-    &.outset {
-      box-shadow: base.$shadow_out;
-    }
-
-    &:empty {
-      display: none;
+    > * {
+      margin: 0;
     }
   }
 
-  &.collapsible {
-    &.embed {
-      > div {
-        padding: 0;
-        padding-bottom: base.$element_spacing;
-      }
-    }
-
-    &.max_height {
-      > div {
-        overflow-y: auto;
-      }
-    }
-
-    > div {
-      max-height: var(--max_height);
-      padding: $padding;
-      min-width: fit-content;
-      border-radius: 0.5rem;
-    }
-    > span {
-      z-index: 2;
-      border: base.$border;
-      min-height: base.$size_height;
-      box-shadow: base.$shadow_out;
-      border-radius: base.$size_cornerRadius;
-      background-color: base.$color_background;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-      outline: none;
-      margin: -(base.$border_thickness);
-
-      .touch & {
-        min-height: base.$size_touchHeight;
-      }
-
-      @media (hover: hover) and (pointer: fine) {
-        &:hover {
-          background-color: base.$color_background_hover;
-        }
-      }
-
-      &:focus-visible {
-        box-shadow: base.$focus_out;
-
-        &.active {
-          box-shadow: base.$focus_out;
-        }
-      }
-
-      > span {
-        color: base.$color_text;
-        font-size: base.$font_size;
-        line-height: calc(base.$font_size + 0.2rem);
-        padding-left: 0.2rem;
-        flex-grow: 1;
-        text-align: center;
-
-        .touch & {
-          font-size: base.$touch_font_size;
-          line-height: calc(base.$touch_font_size + 0.2rem);
-        }
-      }
-
-      > svg {
-        fill: base.$color_text;
-        max-width: base.$size_height;
-        height: calc(base.$size_height - 2px);
-        box-sizing: border-box;
-        width: auto;
-        flex-shrink: 0;
-
-        .touch & {
-          height: base.$size_touchHeight;
-          max-width: base.$size_touchHeight + 1rem;
-          padding: 0.2rem;
-        }
-      }
-    }
+  &.flex-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
-  &.collapsed.collapsible {
-    > div {
-      display: none;
-    }
+  &.flex-col {
+    display: flex;
+    flex-direction: column;
 
-    > span {
-      > :nth-last-child(2) {
-        display: none;
-      }
-    }
-  }
-
-  &:not(.collapsed).collapsible {
-    > span {
-      > :last-child {
-        display: none;
-      }
+    > * {
+      flex-shrink: 0;
     }
   }
 }

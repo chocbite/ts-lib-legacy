@@ -2,7 +2,8 @@ import { FormColors } from "./base";
 import { form_button } from "./boolean/button/button";
 import { form_lamp } from "./boolean/lamp/lamp";
 import { form_switch } from "./boolean/switch/switch";
-import { form_group } from "./group/group";
+import { form_group_col } from "./group/group";
+import { form_group_collapser } from "./group/group_collapser";
 import { form_list_field } from "./list/list_field";
 import { form_number_input } from "./number/number_input/number_input";
 import { form_progress } from "./number/progress/progress";
@@ -19,7 +20,7 @@ import {
 import { form_ip_input } from "./special/ip/ip_input";
 import { form_password_input } from "./special/password/password_input";
 import { form_text_input } from "./text/input/text_input";
-import { form_text_multiline } from "./text/multiLine/text_multi_line";
+import { form_text_multiline } from "./text/multi_line/text_multi_line";
 import { form_text } from "./text/text/text";
 
 /**Form elements with label */
@@ -30,8 +31,10 @@ export const form = {
   button: form_button,
   switch: form_switch,
   lamp: form_lamp,
+
   //Group
-  group: form_group,
+  group_col: form_group_col,
+  group_collapser: form_group_collapser,
 
   //Special
   color_input: form_color_input,

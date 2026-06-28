@@ -15,6 +15,8 @@ export interface FormLampOptions<
   text?: string;
   /**Icon for lamp */
   icon?: SVGFunc;
+  /**Centers text and icon */
+  center?: boolean;
 }
 
 export class FormLamp<
@@ -54,6 +56,16 @@ export class FormLamp<
   set colors(colors: C) {
     this.#colors = colors;
     this.new_value(this.buffer!);
+  }
+
+  /**Centers text and icon */
+  set center(center: boolean) {
+    if (center) this.classList.add("center");
+    else this.classList.remove("center");
+  }
+
+  get center() {
+    return this.classList.contains("center");
   }
 
   /**Called when value is changed */
@@ -98,6 +110,7 @@ function from<
     lamp.colors = options.colors;
     if (options.text) lamp.text = options.text;
     if (options.icon) lamp.icon = options.icon;
+    if (options.center) lamp.center = options.center;
     FormValue.apply_options(lamp, options);
   }
   return lamp;

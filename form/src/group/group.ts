@@ -1,48 +1,13 @@
-import { AccessTypes, define_element } from "@chocbite/ts-lib-base";
-import type { Prettify } from "@chocbite/ts-lib-common";
-import {
-  material_unfold_less_rounded,
-  material_unfold_more_rounded,
-} from "@chocbite/ts-lib-icons";
-import { err, ok, type Option, type Result } from "@chocbite/ts-lib-result";
-import {
-  ANIMATION_LEVEL,
-  ANIMATION_SPEED,
-  AnimationLevels,
-} from "@chocbite/ts-lib-theme";
+import { define_element } from "@chocbite/ts-lib-base";
+import { type Prettify } from "@chocbite/ts-lib-common";
 import { FormElement, FormValue, type FormValueOptions } from "../base";
 import "./group.scss";
-
-/**Different border styles for the component group*/
-export const FormGroupBorderStyle = {
-  None: "none",
-  Inset: "inset",
-  Outset: "outset",
-  Line: "line",
-} as const;
-export type FormGroupBorderStyle =
-  (typeof FormGroupBorderStyle)[keyof typeof FormGroupBorderStyle];
-
-/**Different layout styles for the component group*/
-export const FormGroupLayout = {
-  FlexRow: "fr",
-  FlexColumn: "fc",
-  Grid: "grid",
-} as const;
-export type FormGroupLayout =
-  (typeof FormGroupLayout)[keyof typeof FormGroupLayout];
-
-type ExtractB<Arr extends any[]> = Arr extends [infer Head, ...infer Tail]
-  ? Head extends FormValue<infer T, infer ID>
-    ? [FormValue<T, ID>, ...ExtractB<Tail>]
-    : [...ExtractB<Tail>]
-  : [];
-
-type ToKeyVal<Arr extends FormValue<any, any>[]> = {
-  [K in Arr[number] as K["form_id"]]: K extends FormValue<infer T, any>
-    ? T
-    : never;
-};
+import {
+  FormGroupBase,
+  FormGroupBorderStyle,
+  GroupExtractVals,
+  GroupToKeyVal,
+} from "./group_base";
 
 export interface FormGroupOptions<
   L extends FormElement[],
@@ -51,25 +16,23 @@ export interface FormGroupOptions<
 > extends FormValueOptions<T, ID> {
   /**Elements to add to the group*/
   elements?: [...L];
-  /**Wether the group is collapsible, meaning it has a button to collapse and expand all content to the size of that button*/
-  collapsible?: boolean;
-  /**Wether the group is collapsed initially*/
-  collapsed?: boolean;
-  /**Text to show on the collapse button*/
-  collapse_text?: string;
   /**Border style for group*/
   border?: FormGroupBorderStyle;
   /**Removes padding when true allows for putting groups in groups without padding building up */
   embed?: boolean;
   /**Group max height in rem, undefined means no limit*/
   max_height?: number;
+  /**Columns, true is everything in one columns, just a number will make repeating columns of minimum that rem width, an array will make exactly that many colums with specified rem widths */
+  column?: true | string | string[];
+  /**Rows, true is everything in one row, just a number will make repeating rows of minimum that rem height, an array will make exactly that many rows with specified rem heights */
+  row?: true | string | string[];
 }
 
 /**Component group class which allows to add elements and controls the flow of the elements*/
 export class FormGroup<
   RT extends object,
   ID extends string | undefined,
-> extends FormValue<RT, ID> {
+> extends FormGroupBase<RT, ID> {
   static element_name() {
     return "group";
   }
@@ -77,16 +40,51 @@ export class FormGroup<
     return "form";
   }
 
-  #collapsible?: HTMLDivElement;
-  #collapsed: boolean = false;
-  #collapse_button?: HTMLSpanElement;
-  #value_elements: Map<string, FormValue<any, any>> = new Map();
+  constructor(id?: ID) {
+    super(id);
+    this.classList.add("flex-col");
+  }
+
+  set column(column: true | string | string[]) {
+    this.classList.remove("grid-row", "grid-col", "flex-row", "flex-col");
+    if (column === true) {
+      this.classList.add("flex-col");
+    } else {
+      this.classList.add("grid-col");
+
+      if (typeof column === "string") {
+        this.style.gridTemplateColumns =
+          "repeat(auto-fit, minmax(" + column + ", 1fr))";
+      } else {
+        this.style.gridTemplateColumns = column
+          .map((col) => "minmax(" + col + ", 1fr)")
+          .join(" ");
+      }
+    }
+  }
+
+  set row(row: true | string | string[]) {
+    this.classList.remove("grid-row", "grid-col", "flex-row", "flex-col");
+    if (row === true) {
+      this.classList.add("flex-row");
+    } else {
+      this.classList.add("grid-row");
+      if (typeof row === "string") {
+        this.style.gridTemplateRows =
+          "repeat(auto-fit, minmax(" + row + ", 1fr))";
+      } else {
+        this.style.gridTemplateRows = row
+          .map((col) => "minmax(" + col + ", 1fr)")
+          .join(" ");
+      }
+    }
+  }
 
   set elements(elements: FormElement[]) {
     for (let i = 0, n = elements.length; i < n; i++) {
       const comp = elements[i];
       if (comp instanceof FormValue && comp.form_id) {
-        if (this.#value_elements.has(comp.form_id as string)) {
+        if (this.value_elements.has(comp.form_id as string)) {
           console.error(
             "Form element with form id " +
               comp.form_id +
@@ -94,200 +92,32 @@ export class FormGroup<
           );
           continue;
         }
-        this.#value_elements.set(comp.form_id as string, comp);
+        this.value_elements.set(comp.form_id as string, comp);
       }
-      if (this.#collapsible) this.#collapsible.appendChild(comp);
-      else this.appendChild(comp);
+      this.appendChild(comp);
     }
   }
 
   get elements(): FormElement[] {
-    return [...this.#value_elements.values()];
-  }
-
-  /**This places the group at an absolute position in one of the corners of the container*/
-  set border(border: FormGroupBorderStyle | undefined) {
-    this.classList.remove(
-      FormGroupBorderStyle.Inset,
-      FormGroupBorderStyle.Outset,
-    );
-    if (border && border !== FormGroupBorderStyle.None)
-      this.classList.add(border);
-  }
-
-  set collapsible(collapsible: boolean) {
-    if (collapsible && !this.#collapsible) {
-      this.#collapsible = document.createElement("div");
-      if (this.children.length > 1)
-        this.#collapsible.replaceChildren(...this.children);
-      this.appendChild(this.#collapsible);
-      this.classList.add("collapsible");
-      this.appendChild(
-        this.#collapse_button ||
-          (this.collapse_text = "") ||
-          this.#collapse_button!,
-      );
-      this.collapsed = true;
-    } else if (!collapsible && this.#collapsible) {
-      this.collapsed = false;
-      this.replaceChildren(...this.#collapsible.children);
-      this.#collapsible = undefined;
-      this.classList.remove("collapsible");
-    }
-  }
-  get collapsible(): boolean {
-    return this.#collapsible !== undefined;
-  }
-
-  set collapsed(collapsed: boolean) {
-    if (this.#collapsible) {
-      if (collapsed && !this.#collapsed) {
-        //# Animation
-        if (ANIMATION_LEVEL.get().value === AnimationLevels.All) {
-          this.#collapsible.style.overflowY = "hidden";
-          const full_height =
-            this.#collapsible.getBoundingClientRect().height -
-            (this.#collapse_button?.getBoundingClientRect().height || 0) / 2 +
-            "px";
-          const animation = this.#collapsible.animate(
-            [{ height: full_height }, { height: "0" }],
-            {
-              duration: ANIMATION_SPEED.get().value,
-              easing: "ease-in",
-            },
-          );
-          animation.onfinish = () => {
-            this.classList.add("collapsed");
-            if (this.#collapsible) this.#collapsible.style.overflowY = "";
-          };
-        } else {
-          this.classList.add("collapsed");
-        }
-      } else if (!collapsed && this.#collapsed) {
-        this.classList.remove("collapsed");
-        //# Animation
-        if (ANIMATION_LEVEL.get().value === AnimationLevels.All) {
-          this.#collapsible.style.overflowY = "hidden";
-          const full_height =
-            this.#collapsible.getBoundingClientRect().height -
-            (this.#collapse_button?.getBoundingClientRect().height || 0) / 2 +
-            "px";
-          const animation = this.#collapsible.animate(
-            [{ height: "0" }, { height: full_height }],
-            {
-              duration: ANIMATION_SPEED.get().value,
-              easing: "ease-out",
-            },
-          );
-          animation.onfinish = () => {
-            if (this.#collapsible) this.#collapsible.style.overflowY = "";
-          };
-        }
-      }
-      this.#collapsed = collapsed;
-    }
-  }
-  get collapsed(): boolean {
-    return this.#collapsed;
-  }
-
-  set collapse_text(text: string) {
-    if (!this.#collapse_button) {
-      this.#collapse_button = document.createElement("span");
-      this.#collapse_button.tabIndex = 0;
-      this.#collapse_button.appendChild(document.createElement("span"));
-      this.#collapse_button.appendChild(material_unfold_less_rounded());
-      this.#collapse_button.appendChild(material_unfold_more_rounded());
-      this.#collapse_button.onclick = () => (this.collapsed = !this.collapsed);
-      this.#collapse_button.onkeydown = (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          this.collapsed = !this.collapsed;
-        }
-      };
-    }
-    this.#collapse_button.firstChild!.textContent = text;
-  }
-
-  set max_height(height: number | undefined) {
-    this.style.setProperty("--max_height", height ? height + "rem" : "none");
-    if (height) this.classList.add("max_height");
-    else this.classList.remove("max_height");
-  }
-
-  set embed(embed: boolean) {
-    if (embed) this.classList.add("embed");
-    else this.classList.remove("embed");
-  }
-
-  set value(val: RT) {
-    super.value = val;
-  }
-
-  /**Returns value of the component*/
-  get value(): Result<RT, string> {
-    if (this._state) return err("State based component");
-    const result: RT = {} as RT;
-    for (const [key, comp] of this.#value_elements) {
-      const val = comp.value;
-      if (val.err) return err("Component with id " + key + " has no value");
-      result[key as keyof RT] = val.value as RT[keyof RT];
-    }
-    return ok(result);
-  }
-
-  protected new_value(val: RT): void {
-    for (const key in val)
-      if (this.#value_elements.has(key))
-        this.#value_elements.get(key)!.value = val[key as keyof RT];
-  }
-
-  protected clear_value(): void {
-    for (const comp of this.#value_elements.values()) comp.clear();
-  }
-
-  protected new_error(err: string): void {
-    console.error(err);
-  }
-
-  protected clear_error(): void {}
-
-  protected state_related(_related: Option<{}>): void {}
-
-  protected on_access(access: AccessTypes): void {
-    switch (access) {
-      case AccessTypes.Read: {
-        this.tabIndex = 0;
-        this.onfocus = () => {
-          document.body.focus();
-        };
-        break;
-      }
-      case AccessTypes.Write: {
-        this.removeAttribute("tabIndex");
-        this.onfocus = null;
-        break;
-      }
-    }
+    return [...this.value_elements.values()];
   }
 }
 define_element(FormGroup);
 
-/**Creates a dropdown form element */
-export function form_group<
+/**Creates a form group with elements in a column */
+export function form_group_col<
   L extends FormElement[],
   ID extends string | undefined,
-  T extends object = Prettify<Partial<ToKeyVal<ExtractB<L>>>>,
+  T extends object = Prettify<Partial<GroupToKeyVal<GroupExtractVals<L>>>>,
 >(options?: FormGroupOptions<L, ID, T>): FormGroup<T, ID> {
   const slide = new FormGroup<T, ID>(options?.id);
   if (options) {
     if (options.border) slide.border = options.border;
     if (options.elements) slide.elements = options.elements;
-    if (options.collapse_text) slide.collapse_text = options.collapse_text;
-    if (options.collapsible) slide.collapsible = options.collapsible;
-    if (options.collapsed) slide.collapsed = options.collapsed;
     if (options.max_height) slide.max_height = options.max_height;
     if (options.embed) slide.embed = options.embed;
+    if (options.column) slide.column = options.column;
+    else if (options.row) slide.row = options.row;
     FormValue.apply_options(slide, options);
   }
   return slide;

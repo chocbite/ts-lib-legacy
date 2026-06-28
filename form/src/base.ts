@@ -4,6 +4,8 @@ import { err, ok, type Option, type Result } from "@chocbite/ts-lib-result";
 import type { State, StateSub } from "@chocbite/ts-lib-state";
 import "./shared";
 
+export interface FormOptions {}
+
 /**Colors for form elements that have selectable colors*/
 export const FormColors = {
   None: "none",
@@ -23,6 +25,8 @@ export abstract class FormElement extends Base {
   static element_name_space(): string {
     return "form";
   }
+
+  static apply_options(_element: FormElement, _options: FormOptions) {}
 }
 
 //##################################################################################################
@@ -33,7 +37,10 @@ export abstract class FormElement extends Base {
 //        \  / ____ \| |___| |__| | |____  | | \ \| |____ / ____ \| |__| |
 //         \/_/    \_\______\____/|______| |_|  \_\______/_/    \_\_____/
 
-export interface FormValueOptions<RT, ID extends string | undefined> {
+export interface FormValueOptions<
+  RT,
+  ID extends string | undefined,
+> extends FormOptions {
   /**ID form form element */
   id?: ID;
   /**Value for form element */
@@ -61,6 +68,7 @@ export abstract class FormValue<
     if (options.description) element.description = options.description;
     if (options.value_by_state) element.value_by_state = options.value_by_state;
     else if (options.value !== undefined) element.value = options.value;
+    super.apply_options(element, options);
   }
 
   readonly form_id: ID;

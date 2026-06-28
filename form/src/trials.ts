@@ -25,25 +25,26 @@ form_cont.style.flexGrow = "1";
 form_cont.style.overflow = "auto";
 
 form_cont.appendChild(
-  form.group({
-    border: "inset",
-    max_height: 16,
-    collapsible: true,
-    collapsed: true,
-    collapse_text: "Theme",
-    elements: [
-      form.text({ text: "Theme" }),
-      form.toggle_button({ value_by_state: THEME }),
-      form.text({ text: "Input Mode" }),
-      form.toggle_button({ value_by_state: INPUT_MODE }),
-      form.text({ text: "Animation Level" }),
-      form.toggle_button({ value_by_state: ANIMATION_LEVEL }),
-      form.text({ text: "UI Scale" }),
-      form.stepper({ value_by_state: SCALE }),
-      form.text({ text: "Animation Speed" }),
-      form.stepper({ value_by_state: ANIMATION_SPEED }),
-    ],
-  }),
+  form.group_collapser(
+    form.group_col({
+      border: "inset",
+      max_height: 16,
+      embed: false,
+      elements: [
+        form.text({ text: "Theme" }),
+        form.toggle_button({ value_by_state: THEME }),
+        form.text({ text: "Input Mode" }),
+        form.toggle_button({ value_by_state: INPUT_MODE }),
+        form.text({ text: "Animation Level" }),
+        form.toggle_button({ value_by_state: ANIMATION_LEVEL }),
+        form.text({ text: "UI Scale" }),
+        form.stepper({ value_by_state: SCALE }),
+        form.text({ text: "Animation Speed" }),
+        form.stepper({ value_by_state: ANIMATION_SPEED }),
+      ],
+    }),
+    { collapsed: true, close_text: "Theme Options" },
+  ),
 );
 
 //      _____         _____ _______          ______  _____  _____
@@ -203,9 +204,39 @@ form_cont.appendChild(
 //     | | |_ |  _  /| |  | | |  | |  ___/
 //     | |__| | | \ \| |__| | |__| | |
 //      \_____|_|  \_\\____/ \____/|_|
+form_cont.appendChild(form.text({ text: "Grid Box" }));
+form_cont.appendChild(
+  form.group_collapser(
+    form.group_col({
+      border: "inset",
+      column: "10rem",
+      elements: [
+        form.button({ text: "Click Me", center: true }),
+        form.button({
+          text: "Click Me, long text ahead, please mister autocomplete make some long text for me",
+          center: true,
+          icon: material_add_to_queue_rounded,
+        }),
+        form.lamp({
+          text: "Click Me, long text ahead, please mister autocomplete make some long text for me",
+          center: true,
+          icon: material_add_to_queue_rounded,
+          colors: [FormColors.Red, FormColors.Green],
+        }),
+        form.button({ text: "Click Me", center: true }),
+        form.button({
+          text: "Click Me",
+          center: true,
+          icon: material_add_to_queue_rounded,
+        }),
+      ],
+    }),
+  ),
+);
+
 form_cont.appendChild(form.text({ text: "Group Box" }));
 const grouptest = form_cont.appendChild(
-  form.group({
+  form.group_col({
     border: "outset",
     max_height: 6,
     elements: [
@@ -238,36 +269,58 @@ grouptest.value = {
   test: true,
   slider_in_group: 50,
 };
-grouptest.value.map(console.error);
-
-form_cont.appendChild(form.text({ text: "Group Box" }));
 form_cont.appendChild(
-  form.group({
-    border: "outset",
-    collapsible: true,
-    collapse_text: "Toggle",
+  form.group_col({
+    border: "none",
+    embed: false,
     elements: [
-      form.text({ text: "Hello inside group!", size: 2 }),
       form.text({ text: "Button in Group" }),
-      form.button({ text: "Click Me" }).opts({ access: "r" }),
+      form.button({ text: "Click Me" }),
+    ],
+  }),
+);
+form_cont.appendChild(
+  form.group_col({
+    border: "none",
+    embed: false,
+    elements: [
+      form.text({ text: "Button in Group" }),
+      form.button({ text: "Click Me" }),
     ],
   }),
 );
 
 form_cont.appendChild(form.text({ text: "Group Box" }));
 form_cont.appendChild(
-  form.group({
-    border: "inset",
-    collapsible: true,
-    collapsed: true,
-    collapse_text:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-    elements: [
-      form.text({ text: "Hello inside group!", size: 2 }),
-      form.text({ text: "Button in Group" }),
-      form.button({ text: "Click Me" }).opts({ access: "r" }),
-    ],
-  }),
+  form.group_collapser(
+    form.group_col({
+      border: "outset",
+      elements: [
+        form.text({ text: "Hello inside group!", size: 2 }),
+        form.text({ text: "Button in Group" }),
+        form.button({ text: "Click Me" }).opts({ access: "r" }),
+      ],
+    }),
+  ),
+);
+
+form_cont.appendChild(form.text({ text: "Group Box" }));
+form_cont.appendChild(
+  form.group_collapser(
+    form.group_col({
+      border: "inset",
+      elements: [
+        form.text({ text: "Hello inside group!", size: 2 }),
+        form.text({ text: "Button in Group" }),
+        form.button({ text: "Click Me" }).opts({ access: "r" }),
+      ],
+    }),
+    {
+      collapsed: true,
+      close_text:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
+    },
+  ),
 );
 
 form_cont.appendChild(
@@ -293,9 +346,18 @@ form_cont.appendChild(
       icon: material_add_to_queue_rounded,
       color: FormColors.Yellow,
     })
-    .opts({
-      access: "w",
-    }),
+    .opts({ access: "w" }),
+).value_by_state = bool;
+form_cont.appendChild(
+  form
+    .button({
+      id: "test2",
+      text: "YOYOYOYO",
+      icon: material_add_to_queue_rounded,
+      color: FormColors.Yellow,
+      center: true,
+    })
+    .opts({ access: "w" }),
 ).value_by_state = bool;
 
 form_cont.appendChild(form.text({ text: "Toggle Me" }));
@@ -306,6 +368,15 @@ form_cont.appendChild(
     text: "Status Lamp",
     colors: [FormColors.Red, FormColors.Green],
     icon: material_add_to_queue_rounded,
+  }),
+).value_by_state = bool;
+
+form_cont.appendChild(
+  form.lamp({
+    text: "Status Lamp",
+    colors: [FormColors.Red, FormColors.Green],
+    icon: material_add_to_queue_rounded,
+    center: true,
   }),
 ).value_by_state = bool;
 

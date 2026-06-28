@@ -23,6 +23,8 @@ interface FormButtonOptions<
   toggle?: boolean;
   /**Changes the buttons color */
   color?: FormColors;
+  /**Centers text and icon */
+  center?: boolean;
 }
 
 class FormButton<ID extends string | undefined> extends FormValueWrite<
@@ -133,6 +135,16 @@ class FormButton<ID extends string | undefined> extends FormValueWrite<
     else this.setAttribute("color", color);
   }
 
+  /**Centers text and icon */
+  set center(center: boolean) {
+    if (center) this.classList.add("center");
+    else this.classList.remove("center");
+  }
+
+  get center() {
+    return this.classList.contains("center");
+  }
+
   /**Called when value is changed */
   protected new_value(value: boolean) {
     if (value) this.classList.add("active");
@@ -172,6 +184,7 @@ export function form_button<ID extends string | undefined>(
     if (options.on_click) butt.on_click = options.on_click;
     if (options.toggle) butt.toggle = options.toggle;
     if (options.color) butt.color = options.color;
+    if (options.center) butt.center = options.center;
     FormValue.apply_options(butt, options);
   }
   return butt;
