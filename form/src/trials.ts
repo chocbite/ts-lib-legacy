@@ -26,7 +26,7 @@ form_cont.style.overflow = "auto";
 
 form_cont.appendChild(
   form.group_collapser(
-    form.group_col({
+    form.group({
       border: "inset",
       max_height: 16,
       embed: false,
@@ -207,7 +207,7 @@ form_cont.appendChild(
 form_cont.appendChild(form.text({ text: "Grid Box" }));
 form_cont.appendChild(
   form.group_collapser(
-    form.group_col({
+    form.group({
       border: "inset",
       column: "10rem",
       elements: [
@@ -236,7 +236,7 @@ form_cont.appendChild(
 
 form_cont.appendChild(form.text({ text: "Group Box" }));
 const grouptest = form_cont.appendChild(
-  form.group_col({
+  form.group({
     border: "outset",
     max_height: 6,
     elements: [
@@ -270,7 +270,7 @@ grouptest.value = {
   slider_in_group: 50,
 };
 form_cont.appendChild(
-  form.group_col({
+  form.group({
     border: "none",
     embed: false,
     elements: [
@@ -280,7 +280,7 @@ form_cont.appendChild(
   }),
 );
 form_cont.appendChild(
-  form.group_col({
+  form.group({
     border: "none",
     embed: false,
     elements: [
@@ -293,7 +293,7 @@ form_cont.appendChild(
 form_cont.appendChild(form.text({ text: "Group Box" }));
 form_cont.appendChild(
   form.group_collapser(
-    form.group_col({
+    form.group({
       border: "outset",
       elements: [
         form.text({ text: "Hello inside group!", size: 2 }),
@@ -307,7 +307,7 @@ form_cont.appendChild(
 form_cont.appendChild(form.text({ text: "Group Box" }));
 form_cont.appendChild(
   form.group_collapser(
-    form.group_col({
+    form.group({
       border: "inset",
       elements: [
         form.text({ text: "Hello inside group!", size: 2 }),

@@ -104,8 +104,8 @@ export class FormGroup<
 }
 define_element(FormGroup);
 
-/**Creates a form group with elements in a column */
-export function form_group_col<
+/**Creates a form group with elements */
+export function form_group<
   L extends FormElement[],
   ID extends string | undefined,
   T extends object = Prettify<Partial<GroupToKeyVal<GroupExtractVals<L>>>>,
