@@ -17,15 +17,15 @@ export interface FormGroupCollapserOptions extends FormOptions {
   /**Wether the group is collapsed initially*/
   collapsed?: boolean;
   /**Text to show on the collapser when open*/
-  open_text?: string;
+  opened_text?: string;
   /**Text to show on the collapser when closed*/
-  close_text?: string;
+  closed_text?: string;
 }
 
-const open_text = document.createElement("span");
-open_text.textContent = "Collapse";
-const close_text = document.createElement("span");
-close_text.textContent = "Expand";
+const opened_text = document.createElement("span");
+opened_text.textContent = "Collapse";
+const closed_text = document.createElement("span");
+closed_text.textContent = "Expand";
 
 /**Component group class which allows to add elements and controls the flow of the elements*/
 export class FormGroupCollapser extends FormElement {
@@ -39,8 +39,8 @@ export class FormGroupCollapser extends FormElement {
   #group;
   #collapse_button;
   #collapsed: boolean = false;
-  #open_text = node_clone(open_text);
-  #close_text = node_clone(close_text);
+  #open_text = node_clone(opened_text);
+  #close_text = node_clone(closed_text);
 
   constructor(group: FormGroupBase<any, any>, collapsed?: boolean) {
     super();
@@ -129,11 +129,11 @@ export class FormGroupCollapser extends FormElement {
     return this.#collapsed;
   }
 
-  set open_text(text: string) {
+  set opened_text(text: string) {
     this.#open_text.textContent = text;
   }
 
-  set close_text(text: string) {
+  set closed_text(text: string) {
     this.#close_text.textContent = text;
   }
 }
@@ -146,8 +146,8 @@ export function form_group_collapser(
 ): FormGroupCollapser {
   const slide = new FormGroupCollapser(group, options?.collapsed);
   if (options) {
-    if (options.open_text) slide.open_text = options.open_text;
-    if (options.close_text) slide.close_text = options.close_text;
+    if (options.opened_text) slide.opened_text = options.opened_text;
+    if (options.closed_text) slide.closed_text = options.closed_text;
     FormElement.apply_options(slide, options);
   }
   return slide;

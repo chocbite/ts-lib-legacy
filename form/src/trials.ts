@@ -43,7 +43,7 @@ form_cont.appendChild(
         form.stepper({ value_by_state: ANIMATION_SPEED }),
       ],
     }),
-    { collapsed: true, close_text: "Theme Options" },
+    { collapsed: true, closed_text: "Theme Options" },
   ),
 );
 
@@ -317,7 +317,7 @@ form_cont.appendChild(
     }),
     {
       collapsed: true,
-      close_text:
+      closed_text:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
     },
   ),

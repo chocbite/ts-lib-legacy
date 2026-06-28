@@ -103,7 +103,7 @@ form-slider {
 
       > span:last-child {
         @include base.unit-container;
-        line-height: base.$unit_font_size - 0.1rem;
+        line-height: base.$unit_font_size - 0.2rem;
         text-align: center;
 
         .touch & {
