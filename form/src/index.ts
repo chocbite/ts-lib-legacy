@@ -66,5 +66,5 @@ export const form = {
 };
 export default form;
 
-export { FormColors } from "./base";
+export { FormColors, FormElement } from "./base";
 export { FormDateTimeType } from "./special/date_time/date_time_input";
