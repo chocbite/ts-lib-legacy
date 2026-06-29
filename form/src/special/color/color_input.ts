@@ -3,7 +3,7 @@ import type { Option } from "@chocbite/ts-lib-result";
 import { FormValueWrite, type FormValueOptions } from "../../base";
 import "./color_input.scss";
 
-export interface FormColorInputOptions<
+interface FormColorInputOptions<
   ID extends string | undefined,
   RT = string,
 > extends FormValueOptions<RT, ID> {
@@ -11,10 +11,9 @@ export interface FormColorInputOptions<
   live?: boolean;
 }
 
-class FormColorInput<ID extends string | undefined> extends FormValueWrite<
-  string,
-  ID
-> {
+export class FormColorInput<
+  ID extends string | undefined,
+> extends FormValueWrite<string, ID> {
   static element_name() {
     return "colorinput";
   }

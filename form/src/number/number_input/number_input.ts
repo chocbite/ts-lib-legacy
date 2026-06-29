@@ -12,7 +12,9 @@ import { FormNumberWrite, type FormNumberWriteOptions } from "../number_base";
 import "./number_input.scss";
 
 /**Slide Selector, displays all options in a slider*/
-class NumberInput<ID extends string | undefined> extends FormNumberWrite<ID> {
+export class FormNumberInput<
+  ID extends string | undefined,
+> extends FormNumberWrite<ID> {
   static element_name() {
     return "numberinput";
   }
@@ -194,13 +196,13 @@ class NumberInput<ID extends string | undefined> extends FormNumberWrite<ID> {
     return this.set_value_check((this.buffer || 0) + (dir ? step : -step));
   }
 }
-define_element(NumberInput);
+define_element(FormNumberInput);
 
 /**Creates a dropdown form element */
 export function form_number_input<ID extends string | undefined>(
   options?: FormNumberWriteOptions<ID>,
-): NumberInput<ID> {
-  const input = new NumberInput<ID>(options?.id);
+): FormNumberInput<ID> {
+  const input = new FormNumberInput<ID>(options?.id);
   if (options) {
     FormNumberWrite.apply_options(input, options);
   }

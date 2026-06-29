@@ -27,7 +27,7 @@ interface FormButtonOptions<
   center?: boolean;
 }
 
-class FormButton<ID extends string | undefined> extends FormValueWrite<
+export class FormButton<ID extends string | undefined> extends FormValueWrite<
   boolean,
   ID
 > {

@@ -20,10 +20,9 @@ export interface FormTextInputOptions<
   filter?: RegExp;
 }
 
-class FormTextInput<ID extends string | undefined> extends FormValueWrite<
-  string,
-  ID
-> {
+export class FormTextInput<
+  ID extends string | undefined,
+> extends FormValueWrite<string, ID> {
   static element_name() {
     return "textinput";
   }

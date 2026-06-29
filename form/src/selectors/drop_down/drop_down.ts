@@ -17,7 +17,7 @@ interface SelOptions {
   icon?: SVGFunc;
 }
 
-export interface FormDropDownOptions<
+interface FormDropDownOptions<
   RT,
   ID extends string | undefined,
 > extends FormSelectorBaseOptions<RT, ID> {

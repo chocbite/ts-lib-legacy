@@ -21,10 +21,9 @@ export interface FormTextInputOptions<
   filter?: RegExp;
 }
 
-class FormTextMultiline<ID extends string | undefined> extends FormValueWrite<
-  string,
-  ID
-> {
+export class FormTextMultiline<
+  ID extends string | undefined,
+> extends FormValueWrite<string, ID> {
   static element_name() {
     return "textmultiline";
   }

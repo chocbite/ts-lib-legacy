@@ -13,7 +13,7 @@ import { FormElement, FormOptions } from "../base";
 import { FormGroupBase } from "./group_base";
 import "./group_collapser.scss";
 
-export interface FormGroupCollapserOptions extends FormOptions {
+interface FormGroupCollapserOptions extends FormOptions {
   /**Wether the group is collapsed initially*/
   collapsed?: boolean;
   /**Text to show on the collapser when open*/

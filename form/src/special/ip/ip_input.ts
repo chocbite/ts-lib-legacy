@@ -18,7 +18,7 @@ export interface IpInputOptions<
   type: IPVersion;
 }
 
-class FormIpInput<ID extends string | undefined> extends FormValueWrite<
+export class FormIpInput<ID extends string | undefined> extends FormValueWrite<
   IPAddress,
   ID
 > {

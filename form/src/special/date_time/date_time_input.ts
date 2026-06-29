@@ -7,7 +7,7 @@ import type { Option } from "@chocbite/ts-lib-result";
 import { FormValueWrite, type FormValueOptions } from "../../base";
 import "./date_time_input.scss";
 
-export interface DateTimeInputOptions<
+interface DateTimeInputOptions<
   RT,
   ID extends string | undefined,
 > extends FormValueOptions<RT, ID> {
@@ -29,7 +29,7 @@ const DateTimeMode = {
   NUMBER: "number",
 } as const;
 
-class FormDateTimeInput<
+export class FormDateTimeInput<
   RT extends Date | string | number,
   ID extends string | undefined,
 > extends FormValueWrite<RT, ID> {

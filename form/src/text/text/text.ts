@@ -10,7 +10,7 @@ interface FormTextOptions {
 }
 
 /**Component for simple text */
-class FormText extends FormElement {
+export class FormText extends FormElement {
   static element_name() {
     return "text";
   }

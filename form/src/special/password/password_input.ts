@@ -10,10 +10,9 @@ export interface FormPasswordInputOptions<
   filter?: RegExp;
 }
 
-class FormPasswordInput<ID extends string | undefined> extends FormValueWrite<
-  string,
-  ID
-> {
+export class FormPasswordInput<
+  ID extends string | undefined,
+> extends FormValueWrite<string, ID> {
   static element_name() {
     return "passwordinput";
   }

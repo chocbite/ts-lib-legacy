@@ -8,7 +8,7 @@ interface FormSpacerOptions {
   space?: number;
 }
 
-class FormSpacer extends FormElement {
+export class FormSpacer extends FormElement {
   static element_name() {
     return "spacer";
   }
