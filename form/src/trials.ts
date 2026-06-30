@@ -164,7 +164,7 @@ setInterval(() => {
 const text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Text Input" }));
 form_cont.appendChild(
-  form.input_text({
+  form.text_input({
     placeholder: "Enter text here...",
     max_length: 20,
     max_bytes: 20,
@@ -174,7 +174,7 @@ form_cont.appendChild(
 );
 form_cont.appendChild(form.text({ text: "Text Input 2" }));
 form_cont.appendChild(
-  form.input_text({
+  form.text_input({
     placeholder: "Enter text here...",
     max_length: 20,
     max_bytes: 20,
@@ -182,7 +182,7 @@ form_cont.appendChild(
   }),
 );
 const text_input = form_cont.appendChild(
-  form.input_text({
+  form.text_input({
     placeholder: "Enter text here...",
     max_length: 20,
     max_bytes: 20,
@@ -195,7 +195,7 @@ setInterval(() => {
 const multi_line_text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Multiline Text Input" }));
 form_cont.appendChild(
-  form.multiline_text({
+  form.text_multiline({
     placeholder: "Enter text here...",
     max_length: 20,
     max_bytes: 20,
@@ -205,7 +205,7 @@ form_cont.appendChild(
 
 form_cont.appendChild(form.text({ text: "Multiline Text Input2" }));
 form_cont.appendChild(
-  form.multiline_text({
+  form.text_multiline({
     placeholder: "Enter text here...",
     max_length: 20,
     max_bytes: 20,
@@ -213,7 +213,7 @@ form_cont.appendChild(
   }),
 );
 const multi_line_text_input = form_cont.appendChild(
-  form.multiline_text({
+  form.text_multiline({
     placeholder: "Enter text here...",
     max_length: 20,
     max_bytes: 20,
@@ -232,7 +232,7 @@ setInterval(() => {
 //     |_| \_|\____/|_|  |_|____/|______|_|  \_\ |_____|_| \_|_|     \____/   |_|
 form_cont.appendChild(form.text({ text: "Number Input" }));
 const number_input = form_cont.appendChild(
-  form.input_number({
+  form.number_input({
     unit: "mA",
     min: -100,
     max: 100,

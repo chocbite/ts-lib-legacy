@@ -100,7 +100,7 @@ export const form = {
 
   //Number
   progress: form_progress,
-  input_number: form_number_input,
+  number_input: form_number_input,
   slider: form_slider,
   stepper: form_stepper,
 
@@ -113,8 +113,8 @@ export const form = {
 
   //Text
   text: form_text,
-  input_text: form_text_input,
-  multiline_text: form_text_multiline,
+  text_input: form_text_input,
+  text_multiline: form_text_multiline,
 
   //List
   list_field: form_list_field,
