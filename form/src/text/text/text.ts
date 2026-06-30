@@ -2,7 +2,7 @@ import { define_element } from "@chocbite/ts-lib-base";
 import { FormElement } from "../../base";
 import "./text.scss";
 
-interface FormTextOptions {
+export interface FormTextOptions {
   /**Buttons text */
   text?: string;
   /**Text size */

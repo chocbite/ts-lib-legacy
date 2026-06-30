@@ -7,7 +7,7 @@ import type { Option } from "@chocbite/ts-lib-result";
 import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./date_time_input.scss";
 
-interface DateTimeInputOptions<
+export interface FormDateTimeOptions<
   RT,
   ID extends string | undefined,
 > extends FormValueWriteOptions<RT, ID> {
@@ -29,7 +29,7 @@ const DateTimeMode = {
   NUMBER: "number",
 } as const;
 
-export class FormDateTimeInput<
+export class FormDateTime<
   RT extends Date | string | number,
   ID extends string | undefined,
 > extends FormValueWrite<RT, ID> {
@@ -117,14 +117,14 @@ export class FormDateTimeInput<
 
   protected state_related(_related: Option<{}>): void {}
 }
-define_element(FormDateTimeInput);
+define_element(FormDateTime);
 
-/**Creates a color input form element */
-export function form_date_time_input<
+/**Creates a date time input form element */
+export function form_date_time<
   RT extends Date | string | number,
   ID extends string | undefined,
->(options?: DateTimeInputOptions<RT, ID>): FormDateTimeInput<RT, ID> {
-  const input = new FormDateTimeInput<RT, ID>(options?.id);
+>(options?: FormDateTimeOptions<RT, ID>): FormDateTime<RT, ID> {
+  const input = new FormDateTime<RT, ID>(options?.id);
   if (options) {
     if (options.type) input.type = options.type;
     FormValueWrite.apply_options(input, options);

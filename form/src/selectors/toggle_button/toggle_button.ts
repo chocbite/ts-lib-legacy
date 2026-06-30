@@ -6,7 +6,7 @@ import {
 } from "../selector_base";
 import "./toggle_button.scss";
 
-interface SelOptions {
+export interface FormToggleButtonSelection {
   top: HTMLDivElement;
   bot: HTMLDivElement;
 }
@@ -24,7 +24,7 @@ export class FormToggleButton<
     return "form";
   }
 
-  #map: Map<RT, SelOptions> = new Map();
+  #map: Map<RT, FormToggleButtonSelection> = new Map();
   #values: RT[] = [];
   #selected: number = -1;
 

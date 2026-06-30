@@ -4,7 +4,7 @@ import type { SVGFunc } from "@chocbite/ts-lib-svg";
 import { FormColors, FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./switch.scss";
 
-interface FormSwitchOptions<
+export interface FormSwitchOptions<
   ID extends string | undefined,
 > extends FormValueWriteOptions<boolean, ID> {
   /**Icon to use for left side*/

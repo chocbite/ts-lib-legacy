@@ -11,14 +11,14 @@ import type { Option } from "@chocbite/ts-lib-result";
 import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./ip_input.scss";
 
-export interface IpInputOptions<
+export interface FormIpOptions<
   ID extends string | undefined,
 > extends FormValueWriteOptions<IPAddress, ID> {
   /**Ip address type, this is overwritten if supplied with an ipaddress with a different type*/
   type: IPVersion;
 }
 
-export class FormIpInput<ID extends string | undefined> extends FormValueWrite<
+export class FormIp<ID extends string | undefined> extends FormValueWrite<
   IPAddress,
   ID
 > {
@@ -219,13 +219,13 @@ export class FormIpInput<ID extends string | undefined> extends FormValueWrite<
 
   protected state_related(_related: Option<{}>): void {}
 }
-define_element(FormIpInput);
+define_element(FormIp);
 
-/**Creates a color input form element */
-export function form_ip_input<ID extends string | undefined>(
-  options: IpInputOptions<ID>,
-): FormIpInput<ID> {
-  const input = new FormIpInput<ID>(options.type, options?.id);
+/**Creates an IP input form element */
+export function form_ip<ID extends string | undefined>(
+  options: FormIpOptions<ID>,
+): FormIp<ID> {
+  const input = new FormIp<ID>(options.type, options?.id);
   if (options) {
     FormValueWrite.apply_options(input, options);
   }

@@ -4,15 +4,28 @@ import {
   FormValueOptions,
   FormValueWriteOptions,
 } from "./base";
-import { form_button, FormButton } from "./boolean/button/button";
-import { form_lamp, FormLamp } from "./boolean/lamp/lamp";
-import { form_switch, FormSwitch } from "./boolean/switch/switch";
-import { form_group, FormGroup } from "./group/group";
+import {
+  form_button,
+  FormButton,
+  type FormButtonOptions,
+} from "./boolean/button/button";
+import { form_lamp, FormLamp, type FormLampOptions } from "./boolean/lamp/lamp";
+import {
+  form_switch,
+  FormSwitch,
+  type FormSwitchOptions,
+} from "./boolean/switch/switch";
+import { form_group, FormGroup, type FormGroupOptions } from "./group/group";
 import {
   form_group_collapser,
   FormGroupCollapser,
+  type FormGroupCollapserOptions,
 } from "./group/group_collapser";
 import { form_list_field, ListFormField } from "./list/list_field";
+import {
+  type FormNumberOptions,
+  type FormNumberWriteOptions,
+} from "./number/number_base";
 import {
   form_number_input,
   FormNumberInput,
@@ -20,29 +33,50 @@ import {
 import { form_progress, FormProgress } from "./number/progress/progress";
 import { form_slider, FormSlider } from "./number/slider/slider";
 import { form_stepper, FormStepper } from "./number/stepper/stepper";
-import { form_dropdown, FormDropdown } from "./selectors/drop_down/drop_down";
+import {
+  form_dropdown,
+  FormDropdown,
+  type FormDropDownOptions,
+  type FormDropDownSelection,
+} from "./selectors/drop_down/drop_down";
 import {
   form_toggle_button,
   FormToggleButton,
+  type FormToggleButtonSelection,
 } from "./selectors/toggle_button/toggle_button";
-import { form_spacer, FormSpacer } from "./spacing/spacer";
-import { form_color_input, FormColorInput } from "./special/color/color_input";
 import {
-  form_date_time_input,
-  FormDateTimeInput,
+  form_spacer,
+  FormSpacer,
+  type FormSpacerOptions,
+} from "./spacing/spacer";
+import {
+  form_color,
+  FormColor,
+  type FormColorOptions,
+} from "./special/color/color_input";
+import {
+  form_date_time,
+  FormDateTime,
   FormDateTimeType,
+  type FormDateTimeOptions,
 } from "./special/date_time/date_time_input";
-import { form_ip_input, FormIpInput } from "./special/ip/ip_input";
+import { form_ip, FormIp, type FormIpOptions } from "./special/ip/ip_input";
 import {
-  form_password_input,
-  FormPasswordInput,
+  form_password,
+  FormPassword,
+  type FormPasswordOptions,
 } from "./special/password/password_input";
-import { form_text_input, FormTextInput } from "./text/input/text_input";
+import {
+  form_text_input,
+  FormTextInput,
+  type FormTextInputOptions,
+} from "./text/input/text_input";
 import {
   form_text_multiline,
   FormTextMultiline,
+  type FormTextMultilineOptions,
 } from "./text/multi_line/text_multi_line";
-import { form_text, FormText } from "./text/text/text";
+import { form_text, FormText, type FormTextOptions } from "./text/text/text";
 
 /**Form elements with label */
 export const form = {
@@ -58,11 +92,11 @@ export const form = {
   group_collapser: form_group_collapser,
 
   //Special
-  color_input: form_color_input,
-  date_time_input: form_date_time_input,
+  color: form_color,
+  date_time: form_date_time,
   FormDateTimeType,
-  ip_input: form_ip_input,
-  password_input: form_password_input,
+  ip: form_ip,
+  password: form_password,
 
   //Number
   progress: form_progress,
@@ -89,25 +123,43 @@ export default form;
 
 export type {
   FormButton,
-  FormColorInput,
-  FormDateTimeInput,
+  FormButtonOptions,
+  FormColor,
+  FormColorOptions,
+  FormDateTime,
+  FormDateTimeOptions,
   FormDropdown,
+  FormDropDownOptions,
+  FormDropDownSelection,
   FormGroup,
   FormGroupCollapser,
-  FormIpInput,
+  FormGroupCollapserOptions,
+  FormGroupOptions,
+  FormIp,
+  FormIpOptions,
   FormLamp,
+  FormLampOptions,
   FormNumberInput,
+  FormNumberOptions,
+  FormNumberWriteOptions,
   FormOptions,
-  FormPasswordInput,
+  FormPassword,
+  FormPasswordOptions,
   FormProgress,
   FormSlider,
   FormSpacer,
+  FormSpacerOptions,
   FormStepper,
   FormSwitch,
+  FormSwitchOptions,
   FormText,
   FormTextInput,
+  FormTextInputOptions,
   FormTextMultiline,
+  FormTextMultilineOptions,
+  FormTextOptions,
   FormToggleButton,
+  FormToggleButtonSelection,
   FormValueOptions,
   FormValueWriteOptions,
   ListFormField,

@@ -3,16 +3,17 @@ import type { Option } from "@chocbite/ts-lib-result";
 import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./password_input.scss";
 
-export interface FormPasswordInputOptions<
+export interface FormPasswordOptions<
   ID extends string | undefined,
 > extends FormValueWriteOptions<string, ID> {
   /**Allowed characters for the password input */
   filter?: RegExp;
 }
 
-export class FormPasswordInput<
-  ID extends string | undefined,
-> extends FormValueWrite<string, ID> {
+export class FormPassword<ID extends string | undefined> extends FormValueWrite<
+  string,
+  ID
+> {
   static element_name() {
     return "passwordinput";
   }
@@ -64,13 +65,13 @@ export class FormPasswordInput<
 
   protected state_related(_related: Option<{}>): void {}
 }
-define_element(FormPasswordInput);
+define_element(FormPassword);
 
-/**Creates a dropdown form element */
-export function form_password_input<ID extends string | undefined>(
-  options?: FormPasswordInputOptions<ID>,
-): FormPasswordInput<ID> {
-  const input = new FormPasswordInput<ID>(options?.id);
+/**Creates a password input form element */
+export function form_password<ID extends string | undefined>(
+  options?: FormPasswordOptions<ID>,
+): FormPassword<ID> {
+  const input = new FormPassword<ID>(options?.id);
   if (options) {
     if (options.filter) input.filter = options.filter;
     FormValueWrite.apply_options(input, options);

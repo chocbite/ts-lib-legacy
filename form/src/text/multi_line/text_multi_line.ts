@@ -7,7 +7,7 @@ import { string_byte_length, string_byte_limit } from "@chocbite/ts-lib-string";
 import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./text_multi_line.scss";
 
-export interface FormTextInputOptions<
+export interface FormTextMultilineOptions<
   ID extends string | undefined,
   RT = string,
 > extends FormValueWriteOptions<RT, ID> {
@@ -193,7 +193,7 @@ define_element(FormTextMultiline);
 
 /**Creates a multi line text input form element */
 export function form_text_multiline<ID extends string | undefined>(
-  options?: FormTextInputOptions<ID>,
+  options?: FormTextMultilineOptions<ID>,
 ): FormTextMultiline<ID> {
   const input = new FormTextMultiline<ID>(options?.id);
   if (options) {

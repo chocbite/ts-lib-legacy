@@ -12,12 +12,12 @@ import {
 } from "../selector_base";
 import "./drop_down.scss";
 
-interface SelOptions {
+export interface FormDropDownSelection {
   text: string;
   icon?: SVGFunc;
 }
 
-interface FormDropDownOptions<
+export interface FormDropDownOptions<
   RT,
   ID extends string | undefined,
 > extends FormSelectorBaseOptions<RT, ID> {
@@ -39,7 +39,7 @@ export class FormDropdown<
     return "form";
   }
 
-  #map: Map<RT, SelOptions> = new Map();
+  #map: Map<RT, FormDropDownSelection> = new Map();
   #values: RT[] = [];
   #selected: number = -1;
 
@@ -279,7 +279,7 @@ class DropDownBox extends Base {
   }
 
   open_menu(
-    map: Map<any, SelOptions>,
+    map: Map<any, FormDropDownSelection>,
     parent: FormDropdown<any, any>,
     value: any,
   ) {

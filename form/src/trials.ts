@@ -57,13 +57,13 @@ const password_state = state.ok_w("");
 password_state.sub(console.error);
 form_cont.appendChild(form.text({ text: "Password Input" }));
 form_cont.appendChild(
-  form.password_input({
+  form.password({
     value_by_state: password_state,
     filter: /[0-9]/,
   }),
 );
 const password_input = form_cont.appendChild(
-  form.password_input({
+  form.password({
     filter: /[0-9]/,
     change: (val) => {
       console.warn(val);
@@ -83,14 +83,14 @@ setInterval(() => {
 const ip_state = state.ok_w(new IPAddress("192.168.1.1"));
 form_cont.appendChild(form.text({ text: "IP Input" }));
 form_cont.appendChild(
-  form.ip_input({
+  form.ip({
     type: IPVersion.V4,
     value_by_state: ip_state,
   }),
 );
 form_cont.appendChild(form.text({ text: "IP Input" }));
 const ip_input = form_cont.appendChild(
-  form.ip_input({
+  form.ip({
     type: IPVersion.V6,
   }),
 );
@@ -109,18 +109,18 @@ setInterval(() => {
 const color_state = state.ok_w("#00ff00");
 form_cont.appendChild(form.text({ text: "Color Input" }));
 form_cont.appendChild(
-  form.color_input({
+  form.color({
     value_by_state: color_state,
   }),
 );
 form_cont.appendChild(form.text({ text: "Color Input 2" }));
 form_cont.appendChild(
-  form.color_input({
+  form.color({
     live: true,
     value_by_state: color_state,
   }),
 );
-const color_input = form_cont.appendChild(form.color_input({}));
+const color_input = form_cont.appendChild(form.color({}));
 setInterval(() => {
   color_input.value = "#" + Math.floor(Math.random() * 16777215).toString(16);
 }, 1000);
@@ -134,20 +134,20 @@ setInterval(() => {
 const date_time_state = state.ok_w(new Date());
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
-  form.date_time_input({
+  form.date_time({
     type: FormDateTimeType.TIME,
     value_by_state: date_time_state,
   }),
 );
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
-  form.date_time_input({
+  form.date_time({
     value_by_state: date_time_state,
   }),
 );
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 const date_time_input = form_cont.appendChild(
-  form.date_time_input({
+  form.date_time({
     value: 5000 as number,
   }),
 );

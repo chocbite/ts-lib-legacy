@@ -3,7 +3,7 @@ import type { Option } from "@chocbite/ts-lib-result";
 import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./color_input.scss";
 
-interface FormColorInputOptions<
+export interface FormColorOptions<
   ID extends string | undefined,
   RT = string,
 > extends FormValueWriteOptions<RT, ID> {
@@ -11,9 +11,10 @@ interface FormColorInputOptions<
   live?: boolean;
 }
 
-export class FormColorInput<
-  ID extends string | undefined,
-> extends FormValueWrite<string, ID> {
+export class FormColor<ID extends string | undefined> extends FormValueWrite<
+  string,
+  ID
+> {
   static element_name() {
     return "colorinput";
   }
@@ -56,13 +57,13 @@ export class FormColorInput<
 
   protected state_related(_related: Option<{}>): void {}
 }
-define_element(FormColorInput);
+define_element(FormColor);
 
 /**Creates a color input form element */
-export function form_color_input<ID extends string | undefined>(
-  options?: FormColorInputOptions<ID, string>,
-): FormColorInput<ID> {
-  const input = new FormColorInput<ID>(options?.id);
+export function form_color<ID extends string | undefined>(
+  options?: FormColorOptions<ID, string>,
+): FormColor<ID> {
+  const input = new FormColor<ID>(options?.id);
   if (options) {
     if (options.live) input.live = options.live;
     FormValueWrite.apply_options(input, options);

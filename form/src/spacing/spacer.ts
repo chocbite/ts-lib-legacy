@@ -3,7 +3,7 @@ import { FormElement } from "../base";
 import "../shared";
 import "./spacer.scss";
 
-interface FormSpacerOptions {
+export interface FormSpacerOptions {
   /**Spacing amount  */
   space?: number;
 }

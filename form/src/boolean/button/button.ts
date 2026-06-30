@@ -5,7 +5,7 @@ import { FormColors, FormValueWrite, FormValueWriteOptions } from "../../base";
 import "../../shared";
 import "./button.scss";
 
-interface FormButtonOptions<
+export interface FormButtonOptions<
   ID extends string | undefined,
 > extends FormValueWriteOptions<boolean, ID> {
   /**Buttons text */

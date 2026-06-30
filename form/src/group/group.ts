@@ -9,7 +9,7 @@ import {
   GroupToKeyVal,
 } from "./group_base";
 
-interface FormGroupOptions<
+export interface FormGroupOptions<
   L extends FormElement[],
   ID extends string | undefined,
   T,
