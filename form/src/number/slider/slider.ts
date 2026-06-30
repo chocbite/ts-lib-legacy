@@ -57,6 +57,7 @@ export class FormSlider<ID extends string | undefined> extends FormNumberWrite<
         return;
       e.stopPropagation();
       this.#slider.classList.add("active");
+      this.selected = true;
       const box = this.#slider.getBoundingClientRect();
       const offset = this.#slider.contains(e.target as Node)
         ? e.clientX >= box.x
@@ -89,6 +90,7 @@ export class FormSlider<ID extends string | undefined> extends FormNumberWrite<
         };
         const reset = () => {
           this.#slider.classList.remove("active");
+          this.selected = false;
           this.#slider.releasePointerCapture(e.pointerId);
           this.#slider.onpointermove = null;
           this.#slider.onpointerup = null;
@@ -119,6 +121,7 @@ export class FormSlider<ID extends string | undefined> extends FormNumberWrite<
         };
         const reset = () => {
           this.#slider.classList.remove("active");
+          this.selected = false;
           this.#slider.releasePointerCapture(e.pointerId);
           this.#slider.onpointermove = null;
           this.#slider.onpointerup = null;

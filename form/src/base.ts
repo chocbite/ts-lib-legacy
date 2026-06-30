@@ -112,6 +112,7 @@ export abstract class FormValue<
 
   /**This sets the value of the component*/
   set value(val: RT) {
+    if (typeof this._buffer !== "undefined" && this._buffer === val) return;
     this._buffer = val;
     this.new_value(val);
   }
@@ -167,6 +168,15 @@ export abstract class FormValue<
 //       \ \/ / /\ \ | |   | |  | |  __|     \ \/  \/ / |  _  /  | |    | |  |  __|
 //        \  / ____ \| |___| |__| | |____     \  /\  /  | | \ \ _| |_   | |  | |____
 //         \/_/    \_\______\____/|______|     \/  \/   |_|  \_\_____|  |_|  |______|
+
+export interface FormValueWriteOptions<
+  RT,
+  ID extends string | undefined,
+> extends FormValueOptions<RT, ID> {
+  /**Change listener function*/
+  change?: (val: RT) => void;
+}
+
 /**Shared class for all components with values*/
 export abstract class FormValueWrite<
   RT,
@@ -176,10 +186,19 @@ export abstract class FormValueWrite<
     return "@abstract@";
   }
 
+  protected selected: boolean = false;
   protected warn_input: HTMLInputElement = document.createElement("input");
   #warn_timeout?: number;
   #changed: boolean = false;
   #change?: (val: RT) => void;
+
+  static apply_options<RT, ID extends string | undefined>(
+    element: FormValueWrite<RT, ID>,
+    options: FormValueWriteOptions<RT, ID>,
+  ) {
+    if (options.change) element.change = options.change;
+    super.apply_options(element, options);
+  }
 
   constructor(id?: ID) {
     super(id);
@@ -196,6 +215,15 @@ export abstract class FormValueWrite<
   /**Returns the value of the component if it has changed*/
   get changed(): boolean {
     return this.#changed;
+  }
+
+  set value(val: RT) {
+    if (!this.selected) super.value = val;
+    else this._buffer = val;
+  }
+
+  get value(): Result<RT, string> {
+    return super.value;
   }
 
   warn(message: string): void {

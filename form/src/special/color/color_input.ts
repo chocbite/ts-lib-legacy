@@ -1,12 +1,12 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import type { Option } from "@chocbite/ts-lib-result";
-import { FormValueWrite, type FormValueOptions } from "../../base";
+import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./color_input.scss";
 
 interface FormColorInputOptions<
   ID extends string | undefined,
   RT = string,
-> extends FormValueOptions<RT, ID> {
+> extends FormValueWriteOptions<RT, ID> {
   /**Whether the color input should update live*/
   live?: boolean;
 }

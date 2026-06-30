@@ -1,12 +1,12 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import type { Option } from "@chocbite/ts-lib-result";
 import type { SVGFunc } from "@chocbite/ts-lib-svg";
-import { FormColors, FormValueWrite, type FormValueOptions } from "../../base";
+import { FormColors, FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./switch.scss";
 
 interface FormSwitchOptions<
   ID extends string | undefined,
-> extends FormValueOptions<boolean, ID> {
+> extends FormValueWriteOptions<boolean, ID> {
   /**Icon to use for left side*/
   icon?: SVGFunc;
   /**Color when switch is on */

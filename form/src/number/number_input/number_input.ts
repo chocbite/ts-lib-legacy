@@ -22,7 +22,6 @@ export class FormNumberInput<
     return "form";
   }
 
-  #selected: boolean = false;
   #unit: string = "";
   #min: number = -Infinity;
   #max: number = Infinity;
@@ -41,7 +40,7 @@ export class FormNumberInput<
     this.appendChild(this.warn_input);
     this.#value_box.contentEditable = "true";
     this.onpointerdown = (e) => {
-      this.#selected = true;
+      this.selected = true;
       if (e.target !== this.#value_box) {
         e.preventDefault();
         set_cursor_end(this.#value_box);
@@ -49,12 +48,12 @@ export class FormNumberInput<
     };
     this.#value_box.addEventListener("focusin", (e) => {
       e.preventDefault();
-      if (this.#selected) return;
+      if (this.selected) return;
       set_selection_all(this.#value_box);
-      this.#selected = true;
+      this.selected = true;
     });
     this.#value_box.onblur = () => {
-      this.#selected = false;
+      this.selected = false;
       setTimeout(() => {
         this.#set(false);
       }, 0);

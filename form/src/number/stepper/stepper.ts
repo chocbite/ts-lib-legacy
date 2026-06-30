@@ -51,24 +51,35 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
 
     this.#value_box.setAttribute("tabindex", "-1");
     this.#value_box.contentEditable = "true";
-    let drag_blocker = false;
     this.#value_box.onfocus = async () => {
-      drag_blocker = true;
+      this.selected = true;
     };
     this.#value_box.onblur = async () => {
-      drag_blocker = false;
+      this.selected = false;
       await sleep(0);
       this.set_value_check(
         parseFloat(this.#value_box.textContent?.replace(",", ".") || "") || 0,
       );
     };
-    let reset = () => {};
+    this.#value_box.onpointerdown = () => {
+      this.selected = true;
+    };
+    let pointer_id: number | undefined;
+    const reset = () => {
+      this.selected = false;
+      this.#value_box.contentEditable = "true";
+      if (pointer_id) this.#text.releasePointerCapture(pointer_id);
+      this.#text.onpointermove = null;
+      this.#text.onpointerup = null;
+    };
     this.#text.onpointerdown = (e) => {
-      if (e.button === 0 && (e.target !== this.#value_box || !drag_blocker)) {
+      if (e.button === 0 && !this.selected) {
         e.stopPropagation();
+        this.selected = true;
         const initial_val = this.buffer || 0;
         let moving = false;
         this.#text.setPointerCapture(e.pointerId);
+        pointer_id = e.pointerId;
         this.#text.onpointermove = (ev) => {
           ev.stopPropagation();
           if (moving) {
@@ -79,12 +90,6 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
             this.#value_box.contentEditable = "false";
             moving = true;
           }
-        };
-        reset = () => {
-          this.#value_box.contentEditable = "true";
-          this.#text.releasePointerCapture(e.pointerId);
-          this.#text.onpointermove = null;
-          this.#text.onpointerup = null;
         };
         this.#text.onpointerup = (ev) => {
           ev.stopPropagation();
@@ -131,8 +136,9 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
       }
     };
     this.#value_box.onkeydown = (e) => {
-      if (e.key === "Enter") this.#value_box.blur();
-      else if (e.key === "Escape") {
+      if (e.key === "Enter") {
+        this.focus();
+      } else if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
         if (this.buffer !== undefined) this.new_value(this.buffer);

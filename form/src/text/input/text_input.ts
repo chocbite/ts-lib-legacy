@@ -3,13 +3,13 @@ import { set_cursor_end, sync_resolve } from "@chocbite/ts-lib-common";
 import { err, none, type Result } from "@chocbite/ts-lib-result";
 import type { StateStringRelated } from "@chocbite/ts-lib-state";
 import { string_byte_length, string_byte_limit } from "@chocbite/ts-lib-string";
-import { FormValueWrite, type FormValueOptions } from "../../base";
+import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./text_input.scss";
 
 export interface FormTextInputOptions<
   ID extends string | undefined,
   RT = string,
-> extends FormValueOptions<RT, ID> {
+> extends FormValueWriteOptions<RT, ID> {
   /**Placeholder text when input is empty */
   placeholder?: string;
   /**Maximum length of the input */
@@ -36,6 +36,12 @@ export class FormTextInput<
 
   constructor(id?: ID) {
     super(id);
+    this.warn_input.onfocus = () => {
+      this.selected = true;
+    };
+    this.warn_input.onblur = () => {
+      this.selected = false;
+    };
     this.warn_input.type = "text";
     this.appendChild(this.warn_input);
     this.warn_input.onchange = () => this.#set();

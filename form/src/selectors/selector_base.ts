@@ -1,7 +1,7 @@
 import { some } from "@chocbite/ts-lib-result";
 import state, { type StateEnumRelated } from "@chocbite/ts-lib-state";
 import type { SVGFunc } from "@chocbite/ts-lib-svg";
-import { FormValueWrite, type FormValueOptions } from "../base";
+import { FormValueWrite, FormValueWriteOptions } from "../base";
 
 export interface FormSelectorOption<RT> {
   /**Value to set when option is selected */
@@ -15,7 +15,7 @@ export interface FormSelectorOption<RT> {
 export interface FormSelectorBaseOptions<
   T,
   ID extends string | undefined,
-> extends FormValueOptions<T, ID> {
+> extends FormValueWriteOptions<T, ID> {
   /**Options for selector*/
   selections?: FormSelectorOption<T>[];
 }

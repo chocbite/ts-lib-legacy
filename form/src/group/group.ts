@@ -1,6 +1,6 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { type Prettify } from "@chocbite/ts-lib-common";
-import { FormElement, FormValue, type FormValueOptions } from "../base";
+import { FormElement, FormValueWrite, FormValueWriteOptions } from "../base";
 import "./group.scss";
 import {
   FormGroupBase,
@@ -13,7 +13,7 @@ interface FormGroupOptions<
   L extends FormElement[],
   ID extends string | undefined,
   T,
-> extends FormValueOptions<T, ID> {
+> extends FormValueWriteOptions<T, ID> {
   /**Elements to add to the group*/
   elements?: [...L];
   /**Border style for group*/
@@ -83,7 +83,7 @@ export class FormGroup<
   set elements(elements: FormElement[]) {
     for (let i = 0, n = elements.length; i < n; i++) {
       const comp = elements[i];
-      if (comp instanceof FormValue && comp.form_id) {
+      if (comp instanceof FormValueWrite && comp.form_id) {
         if (this.value_elements.has(comp.form_id as string)) {
           console.error(
             "Form element with form id " +
@@ -118,7 +118,7 @@ export function form_group<
     if (options.embed) slide.embed = options.embed;
     if (options.column) slide.column = options.column;
     else if (options.row) slide.row = options.row;
-    FormValue.apply_options(slide, options);
+    FormValueWrite.apply_options(slide, options);
   }
   return slide;
 }

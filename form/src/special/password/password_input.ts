@@ -1,11 +1,11 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import type { Option } from "@chocbite/ts-lib-result";
-import { FormValue, FormValueWrite, type FormValueOptions } from "../../base";
+import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./password_input.scss";
 
 export interface FormPasswordInputOptions<
   ID extends string | undefined,
-> extends FormValueOptions<string, ID> {
+> extends FormValueWriteOptions<string, ID> {
   /**Allowed characters for the password input */
   filter?: RegExp;
 }
@@ -26,6 +26,13 @@ export class FormPasswordInput<
     super(id);
     this.appendChild(this.warn_input);
     this.warn_input.type = "password";
+    this.warn_input.onfocus = () => {
+      this.warn_input.value = "";
+      this.selected = true;
+    };
+    this.warn_input.onblur = () => {
+      this.selected = false;
+    };
     this.warn_input.onchange = () => {
       this.set_value_check(this.warn_input.value);
     };
@@ -66,7 +73,7 @@ export function form_password_input<ID extends string | undefined>(
   const input = new FormPasswordInput<ID>(options?.id);
   if (options) {
     if (options.filter) input.filter = options.filter;
-    FormValue.apply_options(input, options);
+    FormValueWrite.apply_options(input, options);
   }
   return input;
 }

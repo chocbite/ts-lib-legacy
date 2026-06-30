@@ -1,7 +1,11 @@
 import { none } from "@chocbite/ts-lib-result";
 import type { StateNumberRelated } from "@chocbite/ts-lib-state";
 import type { SVGFunc } from "@chocbite/ts-lib-svg";
-import { FormValueWrite, type FormValueOptions } from "../base";
+import {
+  FormValueWrite,
+  FormValueWriteOptions,
+  type FormValueOptions,
+} from "../base";
 import "./number_base.scss";
 
 export interface FormNumberOptions<
@@ -21,7 +25,8 @@ export interface FormNumberOptions<
 export interface FormNumberWriteOptions<
   ID extends string | undefined,
   RT = number,
-> extends FormNumberOptions<ID, RT> {
+>
+  extends FormNumberOptions<ID, RT>, FormValueWriteOptions<RT, ID> {
   /**Step size, use 0 for automatic step size*/
   step?: number;
   /**Start for step, use 0 for automatic */

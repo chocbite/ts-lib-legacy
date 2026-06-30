@@ -4,13 +4,13 @@ import {
   material_schedule_rounded,
 } from "@chocbite/ts-lib-icons";
 import type { Option } from "@chocbite/ts-lib-result";
-import { FormValueWrite, type FormValueOptions } from "../../base";
+import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./date_time_input.scss";
 
 interface DateTimeInputOptions<
   RT,
   ID extends string | undefined,
-> extends FormValueOptions<RT, ID> {
+> extends FormValueWriteOptions<RT, ID> {
   /**Type of date time*/
   type?: FormDateTimeType;
 }
@@ -45,6 +45,13 @@ export class FormDateTimeInput<
 
   constructor(id?: ID) {
     super(id);
+    this.warn_input.onfocus = () => {
+      this.selected = true;
+    };
+    this.warn_input.onblur = () => {
+      this.selected = false;
+    };
+
     this.warn_input.type = "datetime-local";
     this.warn_input.lang = "da-DK";
     this.warn_input.step = "0.1";

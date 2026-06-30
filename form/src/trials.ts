@@ -55,13 +55,24 @@ form_cont.appendChild(
 //     |_| /_/    \_\_____/_____/    \/  \/   \____/|_|  \_\_____/
 const password_state = state.ok_w("");
 password_state.sub(console.error);
-form_cont.appendChild(form.text({ text: "IP Input" }));
+form_cont.appendChild(form.text({ text: "Password Input" }));
 form_cont.appendChild(
   form.password_input({
     value_by_state: password_state,
     filter: /[0-9]/,
   }),
 );
+const password_input = form_cont.appendChild(
+  form.password_input({
+    filter: /[0-9]/,
+    change: (val) => {
+      console.warn(val);
+    },
+  }),
+);
+setInterval(() => {
+  password_input.value = Math.floor(Math.random() * 1000000000000).toString();
+}, 1000);
 
 //      _____ _____    _____ _   _ _____  _    _ _______
 //     |_   _|  __ \  |_   _| \ | |  __ \| |  | |__   __|
@@ -78,11 +89,16 @@ form_cont.appendChild(
   }),
 );
 form_cont.appendChild(form.text({ text: "IP Input" }));
-form_cont.appendChild(
+const ip_input = form_cont.appendChild(
   form.ip_input({
     type: IPVersion.V6,
   }),
 );
+setInterval(() => {
+  ip_input.value = new IPAddress(
+    Math.floor(Math.random() * 2 ** 32).toString(),
+  );
+}, 1000);
 
 //       _____ ____  _      ____  _____    _____ _   _ _____  _    _ _______
 //      / ____/ __ \| |    / __ \|  __ \  |_   _| \ | |  __ \| |  | |__   __|
@@ -104,6 +120,10 @@ form_cont.appendChild(
     value_by_state: color_state,
   }),
 );
+const color_input = form_cont.appendChild(form.color_input({}));
+setInterval(() => {
+  color_input.value = "#" + Math.floor(Math.random() * 16777215).toString(16);
+}, 1000);
 
 //      _____       _______ ______ _______ _____ __  __ ______
 //     |  __ \   /\|__   __|  ____|__   __|_   _|  \/  |  ____|
@@ -126,11 +146,14 @@ form_cont.appendChild(
   }),
 );
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
-form_cont.appendChild(
+const date_time_input = form_cont.appendChild(
   form.date_time_input({
     value: 5000 as number,
   }),
 );
+setInterval(() => {
+  date_time_input.value = Math.floor(Math.random() * 100000);
+}, 1000);
 
 //      _______ ________   _________   _____ _   _ _____  _    _ _______
 //     |__   __|  ____\ \ / /__   __| |_   _| \ | |  __ \| |  | |__   __|
@@ -158,6 +181,16 @@ form_cont.appendChild(
     value_by_state: text_state,
   }),
 );
+const text_input = form_cont.appendChild(
+  form.input_text({
+    placeholder: "Enter text here...",
+    max_length: 20,
+    max_bytes: 20,
+  }),
+);
+setInterval(() => {
+  text_input.value = Math.random().toString(36).substring(2, 15);
+}, 1000);
 
 const multi_line_text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Multiline Text Input" }));
@@ -179,6 +212,17 @@ form_cont.appendChild(
     value_by_state: multi_line_text_state,
   }),
 );
+const multi_line_text_input = form_cont.appendChild(
+  form.multiline_text({
+    placeholder: "Enter text here...",
+    max_length: 20,
+    max_bytes: 20,
+  }),
+);
+
+setInterval(() => {
+  multi_line_text_input.value = Math.random().toString(36).substring(2, 15);
+}, 1000);
 
 //      _   _ _    _ __  __ ____  ______ _____    _____ _   _ _____  _    _ _______
 //     | \ | | |  | |  \/  |  _ \|  ____|  __ \  |_   _| \ | |  __ \| |  | |__   __|
@@ -187,7 +231,7 @@ form_cont.appendChild(
 //     | |\  | |__| | |  | | |_) | |____| | \ \   _| |_| |\  | |    | |__| |  | |
 //     |_| \_|\____/|_|  |_|____/|______|_|  \_\ |_____|_| \_|_|     \____/   |_|
 form_cont.appendChild(form.text({ text: "Number Input" }));
-form_cont.appendChild(
+const number_input = form_cont.appendChild(
   form.input_number({
     unit: "mA",
     min: -100,
@@ -197,6 +241,9 @@ form_cont.appendChild(
     decimals: 1,
   }),
 );
+setInterval(() => {
+  number_input.value = Math.random() * 200 - 100;
+}, 1000);
 
 //       _____ _____   ____  _    _ _____
 //      / ____|  __ \ / __ \| |  | |  __ \
@@ -427,7 +474,7 @@ form_cont.appendChild(
 ).value_by_state = num;
 
 form_cont.appendChild(form.text({ text: "Dropdown" }));
-form_cont.appendChild(
+const dropdown = form_cont.appendChild(
   form.dropdown({
     default:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
@@ -439,7 +486,10 @@ form_cont.appendChild(
       };
     }),
   }),
-).value_by_state = num;
+);
+setInterval(() => {
+  dropdown.value = Math.floor(Math.random() * 100);
+}, 1000);
 
 //      _______ ____   _____  _____ _      ______   ____  _    _ _______ _______ ____  _   _  _____
 //     |__   __/ __ \ / ____|/ ____| |    |  ____| |  _ \| |  | |__   __|__   __/ __ \| \ | |/ ____|
@@ -548,7 +598,7 @@ form_cont.appendChild(
 ).value_by_state = slider_num;
 
 form_cont.appendChild(form.text({ text: "Slider" }));
-form_cont.appendChild(
+const slider = form_cont.appendChild(
   form.slider({
     unit: "mA",
     min: -50,
@@ -559,6 +609,9 @@ form_cont.appendChild(
     live: true,
   }),
 );
+setInterval(() => {
+  slider.value = Math.random() * 100 - 50;
+}, 1000);
 
 //       _____ _______ ______ _____  _____  ______ _____
 //      / ____|__   __|  ____|  __ \|  __ \|  ____|  __ \
@@ -599,7 +652,7 @@ form_cont.appendChild(
   }),
 ).value_by_state = stepper_num;
 form_cont.appendChild(form.text({ text: "Stepper" }));
-form_cont.appendChild(
+const stepper = form_cont.appendChild(
   form.stepper({
     unit: "mA",
     min: -50,
@@ -609,6 +662,9 @@ form_cont.appendChild(
     decimals: 1,
   }),
 );
+setInterval(() => {
+  stepper.value = Math.random() * 100 - 50;
+}, 1000);
 
 //      _____  _____   ____   _____ _____  ______  _____ _____
 //     |  __ \|  __ \ / __ \ / ____|  __ \|  ____|/ ____/ ____|

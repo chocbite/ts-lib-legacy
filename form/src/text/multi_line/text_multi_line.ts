@@ -4,13 +4,13 @@ import { material_drag_handle_rounded } from "@chocbite/ts-lib-icons";
 import { err, none, type Result } from "@chocbite/ts-lib-result";
 import type { StateStringRelated } from "@chocbite/ts-lib-state";
 import { string_byte_length, string_byte_limit } from "@chocbite/ts-lib-string";
-import { FormValueWrite, type FormValueOptions } from "../../base";
+import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./text_multi_line.scss";
 
 export interface FormTextInputOptions<
   ID extends string | undefined,
   RT = string,
-> extends FormValueOptions<RT, ID> {
+> extends FormValueWriteOptions<RT, ID> {
   /**Placeholder text when input is empty */
   placeholder?: string;
   /**Maximum length of the input */
@@ -41,6 +41,12 @@ export class FormTextMultiline<
 
   constructor(id?: ID) {
     super(id);
+    this.#value_box.onfocus = () => {
+      this.selected = true;
+    };
+    this.#value_box.onblur = () => {
+      this.selected = false;
+    };
     this.appendChild(this.warn_input);
     this.#resizer.appendChild(material_drag_handle_rounded());
     this.#resizer.onpointerdown = (e) => {

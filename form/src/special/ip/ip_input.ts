@@ -8,12 +8,12 @@ import {
   sleep,
 } from "@chocbite/ts-lib-common";
 import type { Option } from "@chocbite/ts-lib-result";
-import { FormValueWrite, type FormValueOptions } from "../../base";
+import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./ip_input.scss";
 
 export interface IpInputOptions<
   ID extends string | undefined,
-> extends FormValueOptions<IPAddress, ID> {
+> extends FormValueWriteOptions<IPAddress, ID> {
   /**Ip address type, this is overwritten if supplied with an ipaddress with a different type*/
   type: IPVersion;
 }
@@ -125,6 +125,13 @@ export class FormIpInput<ID extends string | undefined> extends FormValueWrite<
     this.type = type;
     this.#type = type;
     this.appendChild(this.warn_input);
+    this.addEventListener("focusin", () => {
+      this.selected = true;
+    });
+    this.addEventListener("focusout", () => {
+      this.selected = false;
+    });
+
     this.onpointerdown = (e) => {
       if (!this.#parts.includes(e.target as HTMLDivElement)) {
         e.preventDefault();

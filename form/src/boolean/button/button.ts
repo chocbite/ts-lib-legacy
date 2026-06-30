@@ -1,18 +1,13 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import type { Option } from "@chocbite/ts-lib-result";
 import type { SVGFunc } from "@chocbite/ts-lib-svg";
-import {
-  FormColors,
-  FormValue,
-  FormValueWrite,
-  type FormValueOptions,
-} from "../../base";
+import { FormColors, FormValueWrite, FormValueWriteOptions } from "../../base";
 import "../../shared";
 import "./button.scss";
 
 interface FormButtonOptions<
   ID extends string | undefined,
-> extends FormValueOptions<boolean, ID> {
+> extends FormValueWriteOptions<boolean, ID> {
   /**Buttons text */
   text?: string;
   /**Icon for button */
@@ -185,7 +180,7 @@ export function form_button<ID extends string | undefined>(
     if (options.toggle) butt.toggle = options.toggle;
     if (options.color) butt.color = options.color;
     if (options.center) butt.center = options.center;
-    FormValue.apply_options(butt, options);
+    FormValueWrite.apply_options(butt, options);
   }
   return butt;
 }

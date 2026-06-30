@@ -1,4 +1,9 @@
-import { FormColors, FormOptions, FormValueOptions } from "./base";
+import {
+  FormColors,
+  FormOptions,
+  FormValueOptions,
+  FormValueWriteOptions,
+} from "./base";
 import { form_button, FormButton } from "./boolean/button/button";
 import { form_lamp, FormLamp } from "./boolean/lamp/lamp";
 import { form_switch, FormSwitch } from "./boolean/switch/switch";
@@ -104,6 +109,7 @@ export type {
   FormTextMultiline,
   FormToggleButton,
   FormValueOptions,
+  FormValueWriteOptions,
   ListFormField,
 };
 

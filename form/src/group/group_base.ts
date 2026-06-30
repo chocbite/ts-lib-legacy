@@ -1,6 +1,6 @@
 import { AccessTypes } from "@chocbite/ts-lib-base";
 import { err, ok, Option, Result } from "@chocbite/ts-lib-result";
-import { FormValue } from "../base";
+import { FormValue, FormValueWrite } from "../base";
 import "./group_base.scss";
 
 /**Different border styles for the component group*/
@@ -31,7 +31,7 @@ export type GroupToKeyVal<Arr extends FormValue<any, any>[]> = {
 export abstract class FormGroupBase<
   RT extends object,
   ID extends string | undefined,
-> extends FormValue<RT, ID> {
+> extends FormValueWrite<RT, ID> {
   static element_name() {
     return "@abstract@";
   }
@@ -39,7 +39,7 @@ export abstract class FormGroupBase<
     return "form";
   }
 
-  protected value_elements: Map<string, FormValue<any, any>> = new Map();
+  protected value_elements: Map<string, FormValueWrite<any, any>> = new Map();
 
   /**This places the group at an absolute position in one of the corners of the container*/
   set border(border: FormGroupBorderStyle | undefined) {
@@ -73,6 +73,18 @@ export abstract class FormGroupBase<
     for (const [key, comp] of this.value_elements) {
       const val = comp.value;
       if (val.err) return err("Component with id " + key + " has no value");
+      result[key as keyof RT] = val.value as RT[keyof RT];
+    }
+    return ok(result);
+  }
+
+  /**Returns partial value of the component, only containing components with values*/
+  get value_partial(): Result<Partial<RT>, string> {
+    if (this._state) return err("State based component");
+    const result: Partial<RT> = {};
+    for (const [key, comp] of this.value_elements) {
+      const val = comp.value;
+      if (val.err) continue;
       result[key as keyof RT] = val.value as RT[keyof RT];
     }
     return ok(result);
