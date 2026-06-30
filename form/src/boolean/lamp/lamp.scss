@@ -57,6 +57,7 @@ form-lamp {
     color: base.$color_text;
     display: flex;
     justify-content: center;
+    font-size: 0.9rem;
     padding-inline: 0.4rem;
 
     .touch & {
