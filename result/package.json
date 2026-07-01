@@ -8,6 +8,10 @@
   "private": false,
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
+  "repository": {
+    "url": "git+https://forgejo.nsns.dk/chocbite/ts-lib-result.git",
+    "type": "git"
+  },
   "publishConfig": {
     "access": "public"
   },
