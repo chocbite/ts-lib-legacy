@@ -48,8 +48,6 @@ export interface FormValueOptions<
   value_by_state?: State<RT, Option<{}>, RT>;
   /**Longer description what form element does */
   description?: string;
-  /**Change listener function*/
-  change?: (val: RT) => void;
 }
 
 /**Shared class for all components with values*/
