@@ -164,8 +164,6 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
   set unit(unit: string | undefined) {
     this.#unit = unit || "";
     this.#unit_box.textContent = this.#unit;
-    this.#update_min_legend();
-    this.#update_max_lengend();
   }
 
   set decimals(dec: number | undefined) {
