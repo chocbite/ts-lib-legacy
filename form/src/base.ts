@@ -274,12 +274,6 @@ export abstract class FormValueWrite<
 
   #set_value(val: RT) {
     if (this._buffer === val) this.new_value(val);
-    if (this.#change)
-      try {
-        this.#change(val);
-      } catch (e) {
-        console.error("Failed while updating change listener", e);
-      }
     if (this._state) {
       const buff = this._buffer;
       this._state.write!(val).then((err) => {
@@ -293,5 +287,11 @@ export abstract class FormValueWrite<
       this._buffer = val;
       this.#changed = true;
     }
+    if (this.#change)
+      try {
+        this.#change(val);
+      } catch (e) {
+        console.error("Failed while updating change listener", e);
+      }
   }
 }
