@@ -20,3 +20,25 @@ export const string_byte_limit = (string: string, limit: number) => {
   if (string.at(-1)?.charCodeAt(0) === 65533) return string.slice(0, -1);
   return string;
 };
+
+/**Converts a Date object to a string with an optional timezone offset and toggle for milliseconds */
+export function time_and_timezone_to_string(
+  time: Date,
+  tz_minutes: number = 0,
+  milliseconds: boolean = false,
+): string {
+  if (tz_minutes === 0)
+    return (
+      (milliseconds
+        ? time.toISOString().slice(0, -1)
+        : time.toISOString().slice(0, -5)) + "Z"
+    );
+  const iso = milliseconds
+    ? time.toISOString().slice(0, -1)
+    : time.toISOString().slice(0, -5);
+  const sign = tz_minutes >= 0 ? "+" : "-";
+  const abs = Math.abs(tz_minutes);
+  const hours = String(Math.floor(abs / 60)).padStart(2, "0");
+  const minutes = String(abs % 60).padStart(2, "0");
+  return iso + sign + hours + ":" + minutes;
+}
