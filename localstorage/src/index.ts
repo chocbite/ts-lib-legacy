@@ -120,9 +120,9 @@ export class StorageGroup {
       throw new Error("Storage already registered " + this.path_id + "/" + id);
     this.settings[id] = new Storage(state);
     st.v.viewer(state, () => {
-      localStorage[this.path_id + "/" + id] = JSON.stringify(
-        transform ? transform(state) : state.to_json(),
-      );
+      localStorage[this.path_id + "/" + id] = transform
+        ? transform(state)
+        : state.to_json();
     });
   }
 }
