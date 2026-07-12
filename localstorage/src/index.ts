@@ -111,18 +111,18 @@ export class StorageGroup {
   /**Registers a state to storage
    * @param id unique identifier for this storage in the parent group
    * @param state state object representing the storage's value */
-  register<READ, TYPE = READ>(
+  register<READ>(
     id: string,
     state: StateROAW<READ>,
-    transform?: (state: StateROAW<READ>) => TYPE,
+    transform?: (state: StateROAW<READ>) => PromiseLike<string>,
   ) {
     if (id in this.settings)
       throw new Error("Storage already registered " + this.path_id + "/" + id);
     this.settings[id] = new Storage(state);
-    st.v.viewer(state, () => {
-      localStorage[this.path_id + "/" + id] = transform
+    st.v.viewer(state, async () => {
+      localStorage[this.path_id + "/" + id] = await (transform
         ? transform(state)
-        : state.to_json();
+        : state.to_json());
     });
   }
 }
