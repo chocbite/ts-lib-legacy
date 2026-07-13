@@ -28,7 +28,7 @@ export const storage_init = (package_name: string, package_version: string) => {
     changed = package_versions[package_name];
     package_versions[package_name] = package_version;
     if (store_package_versions_timeout)
-      clearTimeout(store_package_versions_timeout);
+      window.clearTimeout(store_package_versions_timeout);
     store_package_versions_timeout = window.setTimeout(() => {
       localStorage["storage/packageVersions"] =
         JSON.stringify(package_versions);
