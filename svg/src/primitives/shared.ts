@@ -16,7 +16,5 @@ type SVGElements = {
 export function create_svg_element<K extends keyof SVGElements>(
   name: K,
 ): SVGAttributes<SVGElements[K]> {
-  return new SVGAttributes(
-    document.createElementNS(NAME_SPACE, name) as SVGElements[K],
-  );
+  return new SVGAttributes(document.createElementNS(NAME_SPACE, name));
 }
