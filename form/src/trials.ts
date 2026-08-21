@@ -148,6 +148,7 @@ form_cont.appendChild(
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 const date_time_input = form_cont.appendChild(
   form.date_time({
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     value: 5000 as number,
   }),
 );
@@ -413,7 +414,7 @@ form_cont.appendChild(form.switch({})).value_by_state = bool;
 form_cont.appendChild(
   form.lamp({
     text: "Status Lamp",
-    colors: [FormColors.Red, FormColors.Green],
+    colors: [FormColors.Black, FormColors.Green],
     icon: material_add_to_queue_rounded,
   }),
 ).value_by_state = bool;

@@ -279,6 +279,15 @@ const colors_basic = colors.make_sub_group(
   "Basic colors used in all form elements",
 );
 colors_basic.make_variable(
+  "black",
+  "Basic Black Color",
+  "Commonly used black color in form elements",
+  GREY["900"],
+  GREY["900"],
+  "Color",
+  undefined,
+);
+colors_basic.make_variable(
   "green",
   "Basic Green Color",
   "Commonly used green color in form elements",
