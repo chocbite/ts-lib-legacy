@@ -428,6 +428,21 @@ form_cont.appendChild(
   }),
 ).value_by_state = bool;
 
+console.warn(
+  form
+    .lamp({
+      colors: [FormColors.Black, FormColors.Green],
+    })
+    .opts({
+      value: true,
+    }),
+);
+console.warn(
+  form.switch({}).opts({
+    value: true,
+  }),
+);
+
 //      _____  _____   ____  _____  _____   ______          ___   _
 //     |  __ \|  __ \ / __ \|  __ \|  __ \ / __ \ \        / / \ | |
 //     | |  | | |__) | |  | | |__) | |  | | |  | \ \  /\  / /|  \| |

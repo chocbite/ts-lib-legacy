@@ -116,7 +116,7 @@ export abstract class FormValue<
   }
 
   /**Returns value of the component*/
-  get value(): Result<RT, string> {
+  get get_value(): Result<RT, string> {
     return this._state
       ? err("State based component")
       : typeof this._buffer === "undefined"
@@ -218,10 +218,6 @@ export abstract class FormValueWrite<
   set value(val: RT) {
     if (!this.selected) super.value = val;
     else this._buffer = val;
-  }
-
-  get value(): Result<RT, string> {
-    return super.value;
   }
 
   warn(message: string): void {

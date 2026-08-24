@@ -67,11 +67,11 @@ export abstract class FormGroupBase<
   }
 
   /**Returns value of the component*/
-  get value(): Result<RT, string> {
+  get get_value(): Result<RT, string> {
     if (this._state) return err("State based component");
     const result: RT = {} as RT;
     for (const [key, comp] of this.value_elements) {
-      const val = comp.value;
+      const val = comp.get_value;
       if (val.err) return err("Component with id " + key + " has no value");
       result[key as keyof RT] = val.value as RT[keyof RT];
     }
@@ -83,7 +83,7 @@ export abstract class FormGroupBase<
     if (this._state) return err("State based component");
     const result: Partial<RT> = {};
     for (const [key, comp] of this.value_elements) {
-      const val = comp.value;
+      const val = comp.get_value;
       if (val.err) continue;
       result[key as keyof RT] = val.value as RT[keyof RT];
     }
