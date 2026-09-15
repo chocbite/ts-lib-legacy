@@ -13,7 +13,7 @@ export interface FormGroupOptions<
   L extends FormElement[],
   ID extends string | undefined,
   T,
-> extends FormValueWriteOptions<T, ID> {
+> extends FormValueWriteOptions<Partial<T>, ID> {
   /**Elements to add to the group*/
   elements?: [...L];
   /**Border style for group*/
@@ -109,7 +109,7 @@ define_element(FormGroup);
 export function form_group<
   L extends FormElement[],
   ID extends string | undefined,
-  T extends object = Prettify<Partial<GroupToKeyVal<GroupExtractVals<L>>>>,
+  T extends object = Prettify<GroupToKeyVal<GroupExtractVals<L>>>,
 >(options?: FormGroupOptions<L, ID, T>): FormGroup<T, ID, L> {
   const group = new FormGroup<T, ID, L>(options?.id);
   if (options) {

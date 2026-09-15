@@ -320,7 +320,7 @@ const grouptest = form_cont.appendChild(
   }),
 );
 
-console.warn(grouptest.value_elements.test);
+console.warn(grouptest.get_value);
 grouptest.value = {
   test: true,
   slider_in_group: 50,

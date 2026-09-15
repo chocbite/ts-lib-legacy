@@ -29,10 +29,7 @@ export type GroupToKeyVal<Arr extends FormValue<any, any>[]> = {
 };
 
 export type GroupValueElements<Elements extends FormElement[]> = {
-  [Element in Elements[number] as Element extends FormValueWrite<
-    any,
-    infer ID
-  >
+  [Element in Elements[number] as Element extends FormValueWrite<any, infer ID>
     ? ID extends string
       ? ID
       : never
@@ -43,7 +40,7 @@ export abstract class FormGroupBase<
   RT extends object,
   ID extends string | undefined,
   Elements extends FormElement[] = FormElement[],
-> extends FormValueWrite<RT, ID> {
+> extends FormValueWrite<Partial<RT>, ID> {
   static element_name() {
     return "@abstract@";
   }
@@ -55,7 +52,9 @@ export abstract class FormGroupBase<
 
   /**Returns form elements indexed by their form IDs*/
   get value_elements(): GroupValueElements<Elements> {
-    return Object.fromEntries(this._value_elements) as unknown as GroupValueElements<Elements>;
+    return Object.fromEntries(
+      this._value_elements,
+    ) as unknown as GroupValueElements<Elements>;
   }
 
   /**This places the group at an absolute position in one of the corners of the container*/
@@ -79,7 +78,7 @@ export abstract class FormGroupBase<
     else this.classList.remove("embed");
   }
 
-  set value(val: RT) {
+  set value(val: Partial<RT>) {
     super.value = val;
   }
 
