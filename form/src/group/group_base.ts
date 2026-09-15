@@ -66,7 +66,7 @@ export abstract class FormGroupBase<
     super.value = val;
   }
 
-  /**Returns value of the component*/
+  /**Returns value of the group, returning err if any component has no value*/
   get get_value(): Result<RT, string> {
     if (this._state) return err("State based component");
     const result: RT = {} as RT;
@@ -78,7 +78,7 @@ export abstract class FormGroupBase<
     return ok(result);
   }
 
-  /**Returns partial value of the component, only containing components with values*/
+  /**Returns partial value of the group, containing all values of components that have values*/
   get value_partial(): Result<Partial<RT>, string> {
     if (this._state) return err("State based component");
     const result: Partial<RT> = {};
@@ -86,6 +86,18 @@ export abstract class FormGroupBase<
       const val = comp.get_value;
       if (val.err) continue;
       result[key as keyof RT] = val.value as RT[keyof RT];
+    }
+    return ok(result);
+  }
+
+  /**Returns partial value of the group, only containing values of components where value has changed*/
+  get value_changed(): Result<Partial<RT>, string> {
+    if (this._state) return err("State based component");
+    const result: Partial<RT> = {};
+    for (const [key, comp] of this.value_elements) {
+      const val = comp.get_value;
+      if (val.err) continue;
+      if (comp.changed) result[key as keyof RT] = val.value as RT[keyof RT];
     }
     return ok(result);
   }

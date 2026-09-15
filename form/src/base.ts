@@ -210,7 +210,7 @@ export abstract class FormValueWrite<
     return this.#change;
   }
 
-  /**Returns the value of the component if it has changed*/
+  /**Returns true if the value of the component has changed*/
   get changed(): boolean {
     return this.#changed;
   }
