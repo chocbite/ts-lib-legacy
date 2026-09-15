@@ -135,6 +135,13 @@ const date_time_state = state.ok_w(new Date());
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
   form.date_time({
+    type: FormDateTimeType.DATETIME,
+    value: 1000,
+  }),
+);
+form_cont.appendChild(form.text({ text: "Date Time Input" }));
+form_cont.appendChild(
+  form.date_time({
     type: FormDateTimeType.TIME,
     value_by_state: date_time_state,
   }),

@@ -13,6 +13,8 @@ export interface FormDateTimeOptions<
 > extends FormValueWriteOptions<RT, ID> {
   /**Type of date time*/
   type?: FormDateTimeType;
+  /**Force show milliseconds even when value is not precise to milliseconds */
+  milliseconds?: boolean;
 }
 
 export const FormDateTimeType = {
@@ -54,7 +56,7 @@ export class FormDateTime<
 
     this.warn_input.type = "datetime-local";
     this.warn_input.lang = "da-DK";
-    this.warn_input.step = "0.1";
+    this.warn_input.step = "1";
     this.appendChild(this.warn_input);
     this.appendChild(material_calendar_month_rounded()).onclick = () =>
       this.warn_input.showPicker();
@@ -84,6 +86,19 @@ export class FormDateTime<
     if (type === FormDateTimeType.DATETIME)
       this.warn_input.type = "datetime-local";
     this.#type = type;
+  }
+
+  /**Returns true if the input is set to show milliseconds*/
+  get milliseconds() {
+    return (
+      this.warn_input.hasAttribute("step") && this.warn_input.step.includes(".")
+    );
+  }
+
+  /**Sets the input to show milliseconds*/
+  set milliseconds(value: boolean) {
+    if (value) this.warn_input.step = "0.001";
+    else this.warn_input.step = "1";
   }
 
   /**Returns the date time type*/
@@ -119,7 +134,8 @@ export class FormDateTime<
 }
 define_element(FormDateTime);
 
-/**Creates a date time input form element */
+/**Creates a date time input form element
+ * Milliseconds are shown if datetime value does not mod 1000 exactly*/
 export function form_date_time<
   RT extends Date | string | number,
   ID extends string | undefined,
@@ -127,6 +143,8 @@ export function form_date_time<
   const input = new FormDateTime<RT, ID>(options?.id);
   if (options) {
     if (options.type) input.type = options.type;
+    if (options.milliseconds !== undefined)
+      input.milliseconds = options.milliseconds;
     FormValueWrite.apply_options(input, options);
   }
   return input;
