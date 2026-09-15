@@ -1,6 +1,6 @@
 import { AccessTypes } from "@chocbite/ts-lib-base";
 import { err, ok, Option, Result } from "@chocbite/ts-lib-result";
-import { FormValue, FormValueWrite } from "../base";
+import { FormElement, FormValue, FormValueWrite } from "../base";
 import "./group_base.scss";
 
 /**Different border styles for the component group*/
@@ -28,9 +28,21 @@ export type GroupToKeyVal<Arr extends FormValue<any, any>[]> = {
     : never;
 };
 
+export type GroupValueElements<Elements extends FormElement[]> = {
+  [Element in Elements[number] as Element extends FormValueWrite<
+    any,
+    infer ID
+  >
+    ? ID extends string
+      ? ID
+      : never
+    : never]: Element;
+};
+
 export abstract class FormGroupBase<
   RT extends object,
   ID extends string | undefined,
+  Elements extends FormElement[] = FormElement[],
 > extends FormValueWrite<RT, ID> {
   static element_name() {
     return "@abstract@";
@@ -39,7 +51,12 @@ export abstract class FormGroupBase<
     return "form";
   }
 
-  protected value_elements: Map<string, FormValueWrite<any, any>> = new Map();
+  protected _value_elements: Map<string, FormValueWrite<any, any>> = new Map();
+
+  /**Returns form elements indexed by their form IDs*/
+  get value_elements(): GroupValueElements<Elements> {
+    return Object.fromEntries(this._value_elements) as unknown as GroupValueElements<Elements>;
+  }
 
   /**This places the group at an absolute position in one of the corners of the container*/
   set border(border: FormGroupBorderStyle | undefined) {
@@ -70,7 +87,7 @@ export abstract class FormGroupBase<
   get get_value(): Result<RT, string> {
     if (this._state) return err("State based component");
     const result: RT = {} as RT;
-    for (const [key, comp] of this.value_elements) {
+    for (const [key, comp] of this._value_elements) {
       const val = comp.get_value;
       if (val.err) return err("Component with id " + key + " has no value");
       result[key as keyof RT] = val.value as RT[keyof RT];
@@ -82,7 +99,7 @@ export abstract class FormGroupBase<
   get value_partial(): Result<Partial<RT>, string> {
     if (this._state) return err("State based component");
     const result: Partial<RT> = {};
-    for (const [key, comp] of this.value_elements) {
+    for (const [key, comp] of this._value_elements) {
       const val = comp.get_value;
       if (val.err) continue;
       result[key as keyof RT] = val.value as RT[keyof RT];
@@ -94,7 +111,7 @@ export abstract class FormGroupBase<
   get value_changed(): Result<Partial<RT>, string> {
     if (this._state) return err("State based component");
     const result: Partial<RT> = {};
-    for (const [key, comp] of this.value_elements) {
+    for (const [key, comp] of this._value_elements) {
       const val = comp.get_value;
       if (val.err) continue;
       if (comp.changed) result[key as keyof RT] = val.value as RT[keyof RT];
@@ -104,12 +121,12 @@ export abstract class FormGroupBase<
 
   protected new_value(val: RT): void {
     for (const key in val)
-      if (this.value_elements.has(key))
-        this.value_elements.get(key)!.value = val[key as keyof RT];
+      if (this._value_elements.has(key))
+        this._value_elements.get(key)!.value = val[key as keyof RT];
   }
 
   protected clear_value(): void {
-    for (const comp of this.value_elements.values()) comp.clear();
+    for (const comp of this._value_elements.values()) comp.clear();
   }
 
   protected new_error(err: string): void {

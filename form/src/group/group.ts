@@ -32,7 +32,8 @@ export interface FormGroupOptions<
 export class FormGroup<
   RT extends object,
   ID extends string | undefined,
-> extends FormGroupBase<RT, ID> {
+  Elements extends FormElement[] = FormValueWrite<any, string>[],
+> extends FormGroupBase<RT, ID, Elements> {
   static element_name() {
     return "group";
   }
@@ -84,7 +85,7 @@ export class FormGroup<
     for (let i = 0, n = elements.length; i < n; i++) {
       const comp = elements[i];
       if (comp instanceof FormValueWrite && comp.form_id) {
-        if (this.value_elements.has(comp.form_id as string)) {
+        if (this._value_elements.has(comp.form_id as string)) {
           console.error(
             "Form element with form id " +
               comp.form_id +
@@ -92,14 +93,14 @@ export class FormGroup<
           );
           continue;
         }
-        this.value_elements.set(comp.form_id as string, comp);
+        this._value_elements.set(comp.form_id as string, comp);
       }
       this.appendChild(comp);
     }
   }
 
   get elements(): FormElement[] {
-    return [...this.value_elements.values()];
+    return [...this._value_elements.values()];
   }
 }
 define_element(FormGroup);
@@ -109,16 +110,16 @@ export function form_group<
   L extends FormElement[],
   ID extends string | undefined,
   T extends object = Prettify<Partial<GroupToKeyVal<GroupExtractVals<L>>>>,
->(options?: FormGroupOptions<L, ID, T>): FormGroup<T, ID> {
-  const slide = new FormGroup<T, ID>(options?.id);
+>(options?: FormGroupOptions<L, ID, T>): FormGroup<T, ID, L> {
+  const group = new FormGroup<T, ID, L>(options?.id);
   if (options) {
-    if (options.border) slide.border = options.border;
-    if (options.elements) slide.elements = options.elements;
-    if (options.max_height) slide.max_height = options.max_height;
-    if (options.embed) slide.embed = options.embed;
-    if (options.column) slide.column = options.column;
-    else if (options.row) slide.row = options.row;
-    FormValueWrite.apply_options(slide, options);
+    if (options.border) group.border = options.border;
+    if (options.elements) group.elements = options.elements;
+    if (options.max_height) group.max_height = options.max_height;
+    if (options.embed) group.embed = options.embed;
+    if (options.column) group.column = options.column;
+    else if (options.row) group.row = options.row;
+    FormValueWrite.apply_options(group, options);
   }
-  return slide;
+  return group;
 }
