@@ -137,8 +137,10 @@ form_cont.appendChild(
   form.date_time({
     type: FormDateTimeType.DATETIME,
     value: 1000,
+    change: console.warn,
   }),
 );
+
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
   form.date_time({

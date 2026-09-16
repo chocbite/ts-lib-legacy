@@ -43,7 +43,7 @@ export class FormDateTime<
   }
 
   #type: FormDateTimeType = FormDateTimeType.DATETIME;
-  #mode: string = DateTimeMode.DATE;
+  #mode: string = "";
 
   constructor(id?: ID) {
     super(id);
