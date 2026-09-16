@@ -32,15 +32,15 @@ form_cont.appendChild(
       embed: false,
       elements: [
         form.text({ text: "Theme" }),
-        form.toggle_button({ value_by_state: THEME }),
+        form.toggle_button().bind({ value: THEME }),
         form.text({ text: "Input Mode" }),
-        form.toggle_button({ value_by_state: INPUT_MODE }),
+        form.toggle_button().bind({ value: INPUT_MODE }),
         form.text({ text: "Animation Level" }),
-        form.toggle_button({ value_by_state: ANIMATION_LEVEL }),
+        form.toggle_button().bind({ value: ANIMATION_LEVEL }),
         form.text({ text: "UI Scale" }),
-        form.stepper({ value_by_state: SCALE }),
+        form.stepper().bind({ value: SCALE }),
         form.text({ text: "Animation Speed" }),
-        form.stepper({ value_by_state: ANIMATION_SPEED }),
+        form.stepper().bind({ value: ANIMATION_SPEED }),
       ],
     }),
     { collapsed: true, closed_text: "Theme Options" },
@@ -57,10 +57,7 @@ const password_state = state.ok_w("");
 password_state.sub(console.error);
 form_cont.appendChild(form.text({ text: "Password Input" }));
 form_cont.appendChild(
-  form.password({
-    value_by_state: password_state,
-    filter: /[0-9]/,
-  }),
+  form.password({ filter: /[0-9]/ }).bind({ value: password_state }),
 );
 const password_input = form_cont.appendChild(
   form.password({
@@ -83,17 +80,10 @@ setInterval(() => {
 const ip_state = state.ok_w(new IPAddress("192.168.1.1"));
 form_cont.appendChild(form.text({ text: "IP Input" }));
 form_cont.appendChild(
-  form.ip({
-    type: IPVersion.V4,
-    value_by_state: ip_state,
-  }),
+  form.ip({ type: IPVersion.V4 }).bind({ value: ip_state }),
 );
 form_cont.appendChild(form.text({ text: "IP Input" }));
-const ip_input = form_cont.appendChild(
-  form.ip({
-    type: IPVersion.V6,
-  }),
-);
+const ip_input = form_cont.appendChild(form.ip({ type: IPVersion.V6 }));
 setInterval(() => {
   ip_input.value = new IPAddress(
     Math.floor(Math.random() * 2 ** 32).toString(),
@@ -108,18 +98,9 @@ setInterval(() => {
 //      \_____\____/|______\____/|_|  \_\ |_____|_| \_|_|     \____/   |_|
 const color_state = state.ok_w("#00ff00");
 form_cont.appendChild(form.text({ text: "Color Input" }));
-form_cont.appendChild(
-  form.color({
-    value_by_state: color_state,
-  }),
-);
+form_cont.appendChild(form.color({}).bind({ value: color_state }));
 form_cont.appendChild(form.text({ text: "Color Input 2" }));
-form_cont.appendChild(
-  form.color({
-    live: true,
-    value_by_state: color_state,
-  }),
-);
+form_cont.appendChild(form.color({ live: true }).bind({ value: color_state }));
 const color_input = form_cont.appendChild(form.color({}));
 setInterval(() => {
   color_input.value = "#" + Math.floor(Math.random() * 16777215).toString(16);
@@ -144,18 +125,15 @@ form_cont.appendChild(
 const date_time_state = state.ok_w(new Date());
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
-  form.date_time({
-    type: FormDateTimeType.TIME,
-    mode: FormDateTimeMode.DATE,
-    value_by_state: date_time_state,
-  }),
+  form
+    .date_time({ type: FormDateTimeType.TIME, mode: FormDateTimeMode.DATE })
+    .bind({ value: date_time_state }),
 );
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
-  form.date_time({
-    mode: FormDateTimeMode.DATE,
-    value_by_state: date_time_state,
-  }),
+  form
+    .date_time({ mode: FormDateTimeMode.DATE })
+    .bind({ value: date_time_state }),
 );
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 const date_time_input = form_cont.appendChild(
@@ -178,22 +156,24 @@ setInterval(() => {
 const text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Text Input" }));
 form_cont.appendChild(
-  form.text_input({
-    placeholder: "Enter text here...",
-    max_length: 20,
-    max_bytes: 20,
-    value_by_state: text_state,
-    filter: /[a-zA-Z ]/,
-  }),
+  form
+    .text_input({
+      placeholder: "Enter text here...",
+      max_length: 20,
+      max_bytes: 20,
+      filter: /[a-zA-Z ]/,
+    })
+    .bind({ value: text_state }),
 );
 form_cont.appendChild(form.text({ text: "Text Input 2" }));
 form_cont.appendChild(
-  form.text_input({
-    placeholder: "Enter text here...",
-    max_length: 20,
-    max_bytes: 20,
-    value_by_state: text_state,
-  }),
+  form
+    .text_input({
+      placeholder: "Enter text here...",
+      max_length: 20,
+      max_bytes: 20,
+    })
+    .bind({ value: text_state }),
 );
 const text_input = form_cont.appendChild(
   form.text_input({
@@ -209,22 +189,24 @@ setInterval(() => {
 const multi_line_text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Multiline Text Input" }));
 form_cont.appendChild(
-  form.text_multiline({
-    placeholder: "Enter text here...",
-    max_length: 20,
-    max_bytes: 20,
-    value_by_state: multi_line_text_state,
-  }),
+  form
+    .text_multiline({
+      placeholder: "Enter text here...",
+      max_length: 20,
+      max_bytes: 20,
+    })
+    .bind({ value: multi_line_text_state }),
 );
 
 form_cont.appendChild(form.text({ text: "Multiline Text Input2" }));
 form_cont.appendChild(
-  form.text_multiline({
-    placeholder: "Enter text here...",
-    max_length: 20,
-    max_bytes: 20,
-    value_by_state: multi_line_text_state,
-  }),
+  form
+    .text_multiline({
+      placeholder: "Enter text here...",
+      max_length: 20,
+      max_bytes: 20,
+    })
+    .bind({ value: multi_line_text_state }),
 );
 const multi_line_text_input = form_cont.appendChild(
   form.text_multiline({
@@ -408,8 +390,9 @@ form_cont.appendChild(
       icon: material_add_to_queue_rounded,
       color: FormColors.Yellow,
     })
-    .opts({ access: "w" }),
-).value_by_state = bool;
+    .opts({ access: "w" })
+    .bind({ value: bool }),
+);
 form_cont.appendChild(
   form
     .button({
@@ -419,43 +402,40 @@ form_cont.appendChild(
       color: FormColors.Yellow,
       center: true,
     })
-    .opts({ access: "w" }),
-).value_by_state = bool;
+    .opts({ access: "w" })
+    .bind({ value: bool }),
+);
 
 form_cont.appendChild(form.text({ text: "Toggle Me" }));
-form_cont.appendChild(form.switch({})).value_by_state = bool;
+form_cont.appendChild(form.switch({}).bind({ value: bool }));
 
 form_cont.appendChild(
-  form.lamp({
-    text: "Status Lamp",
-    colors: [FormColors.Black, FormColors.Green],
-    icon: material_add_to_queue_rounded,
-  }),
-).value_by_state = bool;
+  form
+    .lamp({
+      text: "Status Lamp",
+      colors: [FormColors.Black, FormColors.Green],
+      icon: material_add_to_queue_rounded,
+    })
+    .bind({ value: bool }),
+);
 
 form_cont.appendChild(
-  form.lamp({
-    text: "Status Lamp",
-    colors: [FormColors.Red, FormColors.Green],
-    icon: material_add_to_queue_rounded,
-    center: true,
-  }),
-).value_by_state = bool;
+  form
+    .lamp({
+      text: "Status Lamp",
+      colors: [FormColors.Red, FormColors.Green],
+      icon: material_add_to_queue_rounded,
+      center: true,
+    })
+    .bind({ value: bool }),
+);
 
 console.warn(
   form
-    .lamp({
-      colors: [FormColors.Black, FormColors.Green],
-    })
-    .opts({
-      value: true,
-    }),
+    .lamp({ colors: [FormColors.Black, FormColors.Green] })
+    .opts({ value: true }),
 );
-console.warn(
-  form.switch({}).opts({
-    value: true,
-  }),
-);
+console.warn(form.switch({}).opts({ value: true }));
 
 //      _____  _____   ____  _____  _____   ______          ___   _
 //     |  __ \|  __ \ / __ \|  __ \|  __ \ / __ \ \        / / \ | |
@@ -466,42 +446,46 @@ console.warn(
 const num = state.ok_w(0);
 form_cont.appendChild(form.text({ text: "Dropdown" }));
 form_cont.appendChild(
-  form.dropdown({
-    selections: [
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-        value: 2,
-        icon: material_add_to_queue_rounded,
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-        value: 3,
-        icon: material_remove_from_queue_rounded,
-      },
-      {
-        text: "YPYP",
-        value: 6,
-        icon: material_remove_from_queue_rounded,
-      },
-    ],
-  }),
-).value_by_state = num;
+  form
+    .dropdown({
+      selections: [
+        {
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
+          value: 2,
+          icon: material_add_to_queue_rounded,
+        },
+        {
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
+          value: 3,
+          icon: material_remove_from_queue_rounded,
+        },
+        {
+          text: "YPYP",
+          value: 6,
+          icon: material_remove_from_queue_rounded,
+        },
+      ],
+    })
+    .bind({ value: num }),
+);
 
 form_cont.appendChild(form.text({ text: "Dropdown" }));
 form_cont.appendChild(
-  form.dropdown({
-    default:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-    default_icon: material_add_to_queue_rounded,
-    selections: array_from_range(0, 100, (i) => {
-      return {
-        value: i,
-        text: `Option ${i + 1}`,
-        icon: material_remove_from_queue_rounded,
-      };
-    }),
-  }),
-).value_by_state = num;
+  form
+    .dropdown({
+      default:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
+      default_icon: material_add_to_queue_rounded,
+      selections: array_from_range(0, 100, (i) => {
+        return {
+          value: i,
+          text: `Option ${i + 1}`,
+          icon: material_remove_from_queue_rounded,
+        };
+      }),
+    })
+    .bind({ value: num }),
+);
 
 form_cont.appendChild(form.text({ text: "Dropdown" }));
 const dropdown = form_cont.appendChild(
@@ -529,51 +513,57 @@ setInterval(() => {
 //        |_|  \____/ \_____|\_____|______|______| |____/ \____/   |_|     |_|  \____/|_| \_|_____/
 form_cont.appendChild(form.text({ text: "Toggle Buttons" }));
 form_cont.appendChild(
-  form.toggle_button({
-    selections: [
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-        value: 2,
-        icon: material_add_to_queue_rounded,
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
-        value: 3,
-        icon: material_remove_from_queue_rounded,
-      },
-      {
-        text: "YPYP",
-        value: 6,
-        icon: material_remove_from_queue_rounded,
-      },
-    ],
-  }),
-).value_by_state = num;
+  form
+    .toggle_button({
+      selections: [
+        {
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
+          value: 2,
+          icon: material_add_to_queue_rounded,
+        },
+        {
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel risus sem. Curabitur a morbi.",
+          value: 3,
+          icon: material_remove_from_queue_rounded,
+        },
+        {
+          text: "YPYP",
+          value: 6,
+          icon: material_remove_from_queue_rounded,
+        },
+      ],
+    })
+    .bind({ value: num }),
+);
 
 form_cont.appendChild(form.text({ text: "Toggle Buttons" }));
 form_cont.appendChild(
-  form.toggle_button({
-    selections: array_from_range(0, 5, (i) => {
-      return {
-        value: i,
-        text: `Option ${i + 1}`,
-        icon: material_remove_from_queue_rounded,
-      };
-    }),
-  }),
-).value_by_state = num;
+  form
+    .toggle_button({
+      selections: array_from_range(0, 5, (i) => {
+        return {
+          value: i,
+          text: `Option ${i + 1}`,
+          icon: material_remove_from_queue_rounded,
+        };
+      }),
+    })
+    .bind({ value: num }),
+);
 
 form_cont.appendChild(form.text({ text: "Toggle Buttons" }));
 form_cont.appendChild(
-  form.toggle_button({
-    selections: array_from_range(0, 20, (i) => {
-      return {
-        value: i,
-        text: `Option ${i + 1}`,
-      };
-    }),
-  }),
-).value_by_state = num;
+  form
+    .toggle_button({
+      selections: array_from_range(0, 20, (i) => {
+        return {
+          value: i,
+          text: `Option ${i + 1}`,
+        };
+      }),
+    })
+    .bind({ value: num }),
+);
 
 //       _____ _      _____ _____  ______ _____
 //      / ____| |    |_   _|  __ \|  ____|  __ \
@@ -584,48 +574,56 @@ form_cont.appendChild(
 const slider_num = state.ok_w(0);
 form_cont.appendChild(form.text({ text: "Slider" }));
 form_cont.appendChild(
-  form.slider({
-    unit: "mA",
-    max: 50,
-    step: 0.5,
-    start: 0.1,
-    decimals: 1,
-  }),
-).value_by_state = slider_num;
+  form
+    .slider({
+      unit: "mA",
+      max: 50,
+      step: 0.5,
+      start: 0.1,
+      decimals: 1,
+    })
+    .bind({ value: slider_num }),
+);
 form_cont.appendChild(form.text({ text: "Slider" }));
 form_cont.appendChild(
-  form.slider({
-    unit: "mA",
-    live: true,
-    max: 50,
-    step: 0.5,
-    start: 0.1,
-    decimals: 1,
-  }),
-).value_by_state = slider_num;
+  form
+    .slider({
+      unit: "mA",
+      live: true,
+      max: 50,
+      step: 0.5,
+      start: 0.1,
+      decimals: 1,
+    })
+    .bind({ value: slider_num }),
+);
 form_cont.appendChild(form.text({ text: "Slider" }));
 form_cont.appendChild(
-  form.slider({
-    unit: "mA",
-    min: -50,
-    max: 50,
-    step: 0.5,
-    start: 0.1,
-    decimals: 1,
-  }),
-).value_by_state = slider_num;
+  form
+    .slider({
+      unit: "mA",
+      min: -50,
+      max: 50,
+      step: 0.5,
+      start: 0.1,
+      decimals: 1,
+    })
+    .bind({ value: slider_num }),
+);
 form_cont.appendChild(form.text({ text: "Slider" }));
 form_cont.appendChild(
-  form.slider({
-    unit: "mA",
-    min: -50,
-    max: 50,
-    step: 0.5,
-    start: 0.1,
-    decimals: 1,
-    live: true,
-  }),
-).value_by_state = slider_num;
+  form
+    .slider({
+      unit: "mA",
+      min: -50,
+      max: 50,
+      step: 0.5,
+      start: 0.1,
+      decimals: 1,
+      live: true,
+    })
+    .bind({ value: slider_num }),
+);
 
 form_cont.appendChild(form.text({ text: "Slider" }));
 const slider = form_cont.appendChild(
@@ -652,35 +650,41 @@ setInterval(() => {
 const stepper_num = state.ok_w(0);
 form_cont.appendChild(form.text({ text: "Stepper" }));
 form_cont.appendChild(
-  form.stepper({
-    unit: "mA",
-    step: 0.5,
-    start: 0.1,
-    decimals: 1,
-  }),
-).value_by_state = stepper_num;
+  form
+    .stepper({
+      unit: "mA",
+      step: 0.5,
+      start: 0.1,
+      decimals: 1,
+    })
+    .bind({ value: stepper_num }),
+);
 form_cont.appendChild(form.text({ text: "Stepper" }));
 form_cont.appendChild(
-  form.stepper({
-    unit: "mA",
-    live: true,
-    max: 50,
-    step: 0.5,
-    start: 0.1,
-    decimals: 1,
-  }),
-).value_by_state = stepper_num;
+  form
+    .stepper({
+      unit: "mA",
+      live: true,
+      max: 50,
+      step: 0.5,
+      start: 0.1,
+      decimals: 1,
+    })
+    .bind({ value: stepper_num }),
+);
 form_cont.appendChild(form.text({ text: "Stepper" }));
 form_cont.appendChild(
-  form.stepper({
-    unit: "mA",
-    min: -50,
-    max: 50,
-    step: 0.5,
-    start: 0.1,
-    decimals: 1,
-  }),
-).value_by_state = stepper_num;
+  form
+    .stepper({
+      unit: "mA",
+      min: -50,
+      max: 50,
+      step: 0.5,
+      start: 0.1,
+      decimals: 1,
+    })
+    .bind({ value: stepper_num }),
+);
 form_cont.appendChild(form.text({ text: "Stepper" }));
 const stepper = form_cont.appendChild(
   form.stepper({
@@ -703,4 +707,4 @@ setInterval(() => {
 //     | |    | | \ \| |__| | |__| | | \ \| |____ ____) |___) |
 //     |_|    |_|  \_\\____/ \_____|_|  \_\______|_____/_____/
 form_cont.appendChild(form.text({ text: "Progress" }));
-form_cont.appendChild(form.progress({ unit: "mA" })).value_by_state = num;
+form_cont.appendChild(form.progress({ unit: "mA" }).bind({ value: num }));

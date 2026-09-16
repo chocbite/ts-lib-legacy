@@ -1,7 +1,7 @@
 import { Base } from "@chocbite/ts-lib-base";
 import { sync_resolve } from "@chocbite/ts-lib-common";
 import { err, ok, type Option, type Result } from "@chocbite/ts-lib-result";
-import type { State, StateSub } from "@chocbite/ts-lib-state";
+import type { State, StateREAW, StateSub } from "@chocbite/ts-lib-state";
 import "./shared";
 
 export interface FormOptions {}
@@ -45,7 +45,6 @@ export interface FormValueOptions<
   id?: ID;
   /**Value for form element */
   value?: RT;
-  value_by_state?: State<RT, Option<{}>, RT>;
   /**Longer description what form element does */
   description?: string;
 }
@@ -64,7 +63,6 @@ export abstract class FormValue<
     options: FormValueOptions<RT, ID>,
   ) {
     if (options.description) element.description = options.description;
-    if (options.value_by_state) element.value_by_state = options.value_by_state;
     else if (options.value !== undefined) element.value = options.value;
     super.apply_options(element, options);
   }
@@ -92,20 +90,22 @@ export abstract class FormValue<
 
   protected _state?: State<RT, Option<{}>, RT>;
   #func?: StateSub<Result<RT, string>>;
-  /**This sets the value of the component*/
-  set value_by_state(state: State<RT, Option<{}>, RT> | undefined) {
+
+  bind(opts: { value: StateREAW<RT, Option<{}>, RT> }): this {
     if (this.#func) this.detach_state(this.#func);
-    if (state) {
-      this.attach_state(state, (val) => {
+    if (opts.value) {
+      this.attach_state(opts.value, (val) => {
         if (val.ok) {
           this.value = val.value;
           if (this.#error) this.error = undefined;
         } else this.error = val.error;
       });
-      const related = state.related();
+      const related = opts.value.related();
       if (related.some) this.state_related(related.value);
     } else this.state_related({});
-    this._state = state;
+    this._state = opts.value;
+
+    return this;
   }
 
   /**This sets the value of the component*/

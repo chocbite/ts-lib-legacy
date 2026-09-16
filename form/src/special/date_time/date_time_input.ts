@@ -79,7 +79,10 @@ export class FormDateTime<
       if (this.warn_input.value) {
         if (this.#mode === FormDateTimeMode.DATE)
           this.set_value_check(
-            new Date(this.warn_input.valueAsNumber) as FormDateTimeResult<MODE>,
+            new Date(
+              this.warn_input.valueAsNumber +
+                new Date().getTimezoneOffset() * 60000,
+            ) as FormDateTimeResult<MODE>,
           );
         else if (this.#mode === FormDateTimeMode.STRING)
           this.set_value_check(
