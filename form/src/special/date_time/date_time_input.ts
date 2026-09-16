@@ -8,11 +8,13 @@ import { FormValueWrite, FormValueWriteOptions } from "../../base";
 import "./date_time_input.scss";
 
 export interface FormDateTimeOptions<
-  RT,
+  MODE extends FormDateTimeMode,
   ID extends string | undefined,
-> extends FormValueWriteOptions<RT, ID> {
+> extends FormValueWriteOptions<FormDateTimeResult<MODE>, ID> {
   /**Type of date time*/
   type?: FormDateTimeType;
+  /**Value representation used by the input*/
+  mode: MODE;
   /**Force show milliseconds even when value is not precise to milliseconds */
   milliseconds?: boolean;
 }
@@ -25,16 +27,25 @@ export const FormDateTimeType = {
 export type FormDateTimeType =
   (typeof FormDateTimeType)[keyof typeof FormDateTimeType];
 
-const DateTimeMode = {
+export const FormDateTimeMode = {
   DATE: "date",
   STRING: "string",
   NUMBER: "number",
 } as const;
+export type FormDateTimeMode =
+  (typeof FormDateTimeMode)[keyof typeof FormDateTimeMode];
+
+type FormDateTimeResult<MODE extends FormDateTimeMode> =
+  MODE extends typeof FormDateTimeMode.DATE
+    ? Date
+    : MODE extends typeof FormDateTimeMode.STRING
+      ? string
+      : number;
 
 export class FormDateTime<
-  RT extends Date | string | number,
+  MODE extends FormDateTimeMode,
   ID extends string | undefined,
-> extends FormValueWrite<RT, ID> {
+> extends FormValueWrite<FormDateTimeResult<MODE>, ID> {
   static element_name() {
     return "datetimeinput";
   }
@@ -43,10 +54,12 @@ export class FormDateTime<
   }
 
   #type: FormDateTimeType = FormDateTimeType.DATETIME;
-  #mode: string = "";
+  #mode: MODE;
+  #milliseconds: boolean = false;
 
-  constructor(id?: ID) {
+  constructor(mode: MODE, id?: ID) {
     super(id);
+    this.#mode = mode;
     this.warn_input.onfocus = () => {
       this.selected = true;
     };
@@ -64,12 +77,18 @@ export class FormDateTime<
       this.warn_input.showPicker();
     this.warn_input.onchange = () => {
       if (this.warn_input.value) {
-        if (this.#mode === DateTimeMode.DATE)
-          this.set_value_check(new Date(this.warn_input.valueAsNumber) as RT);
-        else if (this.#mode === DateTimeMode.STRING)
-          this.set_value_check(this.warn_input.value as RT);
-        else if (this.#mode === DateTimeMode.NUMBER)
-          this.set_value_check(this.warn_input.valueAsNumber as RT);
+        if (this.#mode === FormDateTimeMode.DATE)
+          this.set_value_check(
+            new Date(this.warn_input.valueAsNumber) as FormDateTimeResult<MODE>,
+          );
+        else if (this.#mode === FormDateTimeMode.STRING)
+          this.set_value_check(
+            this.warn_input.value as FormDateTimeResult<MODE>,
+          );
+        else
+          this.set_value_check(
+            this.warn_input.valueAsNumber as FormDateTimeResult<MODE>,
+          );
       }
     };
   }
@@ -90,13 +109,12 @@ export class FormDateTime<
 
   /**Returns true if the input is set to show milliseconds*/
   get milliseconds() {
-    return (
-      this.warn_input.hasAttribute("step") && this.warn_input.step.includes(".")
-    );
+    return this.#milliseconds;
   }
 
   /**Sets the input to show milliseconds*/
   set milliseconds(value: boolean) {
+    this.#milliseconds = value;
     if (value) this.warn_input.step = "0.001";
     else this.warn_input.step = "1";
   }
@@ -110,17 +128,16 @@ export class FormDateTime<
     this.warn_input.step = String(step);
   }
 
-  protected new_value(value: RT): void {
-    if (!this.#mode) {
-      if (typeof value === "number") this.#mode = DateTimeMode.NUMBER;
-      else if (typeof value === "string") this.#mode = DateTimeMode.STRING;
-      else this.#mode = DateTimeMode.DATE;
-    }
+  protected new_value(value: FormDateTimeResult<MODE>): void {
     let time: number;
     if (typeof value === "number") time = value;
-    else if (typeof value === "string") time = new Date(value).getTime();
-    else time = value.getTime();
-    this.warn_input.valueAsNumber = time;
+    else if (typeof value === "string") {
+      const date = new Date(value);
+      time = date.getTime() - date.getTimezoneOffset() * 60000;
+    } else time = value.getTime() - value.getTimezoneOffset() * 60000;
+    this.warn_input.valueAsNumber = this.#milliseconds
+      ? time
+      : time - (time % 1000);
   }
   protected clear_value(): void {
     this.warn_input.value = "";
@@ -135,17 +152,15 @@ export class FormDateTime<
 define_element(FormDateTime);
 
 /**Creates a date time input form element
- * Milliseconds are shown if datetime value does not mod 1000 exactly*/
+ * Number type is always UTC, Date and String is always local*/
 export function form_date_time<
-  RT extends Date | string | number,
+  MODE extends FormDateTimeMode,
   ID extends string | undefined,
->(options?: FormDateTimeOptions<RT, ID>): FormDateTime<RT, ID> {
-  const input = new FormDateTime<RT, ID>(options?.id);
-  if (options) {
-    if (options.type) input.type = options.type;
-    if (options.milliseconds !== undefined)
-      input.milliseconds = options.milliseconds;
-    FormValueWrite.apply_options(input, options);
-  }
+>(options: FormDateTimeOptions<MODE, ID>): FormDateTime<MODE, ID> {
+  const input = new FormDateTime<MODE, ID>(options.mode, options.id);
+  if (options.type) input.type = options.type;
+  if (options.milliseconds !== undefined)
+    input.milliseconds = options.milliseconds;
+  FormValueWrite.apply_options(input, options);
   return input;
 }

@@ -15,7 +15,7 @@ import {
   SCALE,
   THEME,
 } from "@chocbite/ts-lib-theme";
-import form, { FormColors, FormDateTimeType } from ".";
+import form, { FormColors, FormDateTimeMode, FormDateTimeType } from ".";
 
 const form_cont = document.createElement("div");
 document.body.appendChild(form_cont);
@@ -131,32 +131,36 @@ setInterval(() => {
 //     | |  | |/ /\ \ | |  |  __|    | |    | | | |\/| |  __|
 //     | |__| / ____ \| |  | |____   | |   _| |_| |  | | |____
 //     |_____/_/    \_\_|  |______|  |_|  |_____|_|  |_|______|
-const date_time_state = state.ok_w(new Date());
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
   form.date_time({
     type: FormDateTimeType.DATETIME,
-    value: 1000,
+    mode: FormDateTimeMode.STRING,
+    value: "2026-12-12T10:10:10+01:00",
     change: console.warn,
   }),
 );
 
+const date_time_state = state.ok_w(new Date());
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
   form.date_time({
     type: FormDateTimeType.TIME,
+    mode: FormDateTimeMode.DATE,
     value_by_state: date_time_state,
   }),
 );
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 form_cont.appendChild(
   form.date_time({
+    mode: FormDateTimeMode.DATE,
     value_by_state: date_time_state,
   }),
 );
 form_cont.appendChild(form.text({ text: "Date Time Input" }));
 const date_time_input = form_cont.appendChild(
   form.date_time({
+    mode: FormDateTimeMode.NUMBER,
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     value: 5000 as number,
   }),

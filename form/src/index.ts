@@ -57,6 +57,7 @@ import {
 import {
   form_date_time,
   FormDateTime,
+  FormDateTimeMode,
   FormDateTimeType,
   type FormDateTimeOptions,
 } from "./special/date_time/date_time_input";
@@ -94,6 +95,7 @@ export const form = {
   //Special
   color: form_color,
   date_time: form_date_time,
+  FormDateTimeMode,
   FormDateTimeType,
   ip: form_ip,
   password: form_password,
@@ -166,4 +168,7 @@ export type {
 };
 
 export { FormColors, FormElement, FormValue, FormValueWrite } from "./base";
-export { FormDateTimeType } from "./special/date_time/date_time_input";
+export {
+  FormDateTimeMode,
+  FormDateTimeType,
+} from "./special/date_time/date_time_input";
