@@ -304,6 +304,11 @@ const grouptest = form_cont.appendChild(
         min: -100,
         max: 100,
       }),
+      form.slider({
+        unit: "mA",
+        min: -100,
+        max: 100,
+      }),
     ],
   }),
 );

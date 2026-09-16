@@ -23,14 +23,16 @@ export type GroupExtractVals<Arr extends any[]> = Arr extends [
   : [];
 
 export type GroupToKeyVal<Arr extends FormValue<any, any>[]> = {
-  [K in Arr[number] as K["form_id"]]: K extends FormValue<infer T, any>
-    ? T
-    : never;
+  [K in Arr[number] as K extends FormValue<any, infer ID>
+    ? [ID] extends [string]
+      ? ID
+      : never
+    : never]: K extends FormValue<infer T, any> ? T : never;
 };
 
 export type GroupValueElements<Elements extends FormElement[]> = {
   [Element in Elements[number] as Element extends FormValueWrite<any, infer ID>
-    ? ID extends string
+    ? [ID] extends [string]
       ? ID
       : never
     : never]: Element;
