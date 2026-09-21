@@ -288,6 +288,15 @@ colors_basic.make_variable(
   undefined,
 );
 colors_basic.make_variable(
+  "white",
+  "Basic White Color",
+  "Commonly used white color in form elements",
+  GREY["100"],
+  GREY["100"],
+  "Color",
+  undefined,
+);
+colors_basic.make_variable(
   "green",
   "Basic Green Color",
   "Commonly used green color in form elements",

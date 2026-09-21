@@ -28,6 +28,7 @@ $color_border_unselected: var(--form-colors-border-unselected);
 $color_focus: var(--form-colors-focus-normal);
 ///Basic Colors
 $color_basic_black: var(--form-colors-basic-black);
+$color_basic_white: var(--form-colors-basic-white);
 $color_basic_green: var(--form-colors-basic-green);
 $color_basic_red: var(--form-colors-basic-red);
 $color_basic_blue: var(--form-colors-basic-blue);
@@ -173,6 +174,10 @@ $touch_unit_width: $touch_unit_font_size * 5.6;
 @mixin form-colors($attr, $var) {
   &[#{$attr}="black"] {
     #{$var}: $color_basic_black;
+  }
+
+  &[#{$attr}="white"] {
+    #{$var}: $color_basic_white;
   }
 
   &[#{$attr}="green"] {

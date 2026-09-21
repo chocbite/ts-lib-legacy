@@ -16,6 +16,8 @@ import {
   THEME,
 } from "@chocbite/ts-lib-theme";
 import form, { FormColors, FormDateTimeMode, FormDateTimeType } from ".";
+import { keyboard_open } from "./keyboard";
+import { VIRTUAL_KEYBOARD } from "./keyboard/settings";
 
 const form_cont = document.createElement("div");
 document.body.appendChild(form_cont);
@@ -23,6 +25,7 @@ form_cont.style.display = "flex";
 form_cont.style.flexDirection = "column";
 form_cont.style.flexGrow = "1";
 form_cont.style.overflow = "auto";
+form_cont.style.backgroundColor = "var(--form-colors-background-normal)";
 
 form_cont.appendChild(
   form.group_collapser(
@@ -41,6 +44,8 @@ form_cont.appendChild(
         form.stepper().bind({ value: SCALE }),
         form.text({ text: "Animation Speed" }),
         form.stepper().bind({ value: ANIMATION_SPEED }),
+        form.text({ text: "Virtual Keyboard" }),
+        form.switch().bind({ value: VIRTUAL_KEYBOARD }),
       ],
     }),
     { collapsed: true, closed_text: "Theme Options" },
@@ -153,9 +158,10 @@ setInterval(() => {
 //        | |  |  __|   > <    | |      | | | . ` |  ___/| |  | |  | |
 //        | |  | |____ / . \   | |     _| |_| |\  | |    | |__| |  | |
 //        |_|  |______/_/ \_\  |_|    |_____|_| \_|_|     \____/   |_|
+
 const text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Text Input" }));
-form_cont.appendChild(
+const asdfzxcv = form_cont.appendChild(
   form
     .text_input({
       placeholder: "Enter text here...",
@@ -165,6 +171,7 @@ form_cont.appendChild(
     })
     .bind({ value: text_state }),
 );
+keyboard_open(asdfzxcv, "text");
 form_cont.appendChild(form.text({ text: "Text Input 2" }));
 form_cont.appendChild(
   form

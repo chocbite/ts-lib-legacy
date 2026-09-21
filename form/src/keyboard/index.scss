@@ -1,0 +1,35 @@
+html {
+  > #keyboard-container {
+    z-index: 4294967296;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f0f0f0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 0.6rem 0.6rem 0rem 0rem;
+    user-select: none;
+    pointer-events: all;
+
+    > div.keyboard {
+      display: flex;
+      justify-content: center;
+      padding: 0.4rem;
+
+      > onscreen-keyboard-layer {
+        flex-grow: 1;
+        display: grid;
+        gap: 0.3rem;
+
+        > onscreen-keyboard-key {
+          border: 1px solid #ccc;
+          font-size: min(1.6rem, 3vw);
+          border-radius: 0.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+  }
+}
