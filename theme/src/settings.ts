@@ -13,7 +13,7 @@ const SETTINGS = settings_init(
   name,
   version,
   "Theme/UI",
-  "Settings for UI elements and and color themes",
+  "Settings for UI elements and color themes",
 );
 
 //      _______ _    _ ______ __  __ ______
