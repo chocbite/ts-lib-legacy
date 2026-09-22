@@ -1,9 +1,20 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { KeyboardBase } from "./base";
+import "./keyboard_datetime.scss";
 
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const DATE_TYPES = ["date", "datetime-local", "month", "time", "week"];
@@ -15,16 +26,24 @@ function date_value(date: Date): string {
 function date_from_value(value: string): Date | undefined {
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
   if (!match) return undefined;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+  );
   return date_value(date) === match[0] ? date : undefined;
 }
 
 function week_value(date: Date): string {
-  const utc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const utc = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
   utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
   const year = utc.getUTCFullYear();
   const start = new Date(Date.UTC(year, 0, 1));
-  const week = Math.ceil(((utc.getTime() - start.getTime()) / 86400000 + 1) / 7);
+  const week = Math.ceil(
+    ((utc.getTime() - start.getTime()) / 86400000 + 1) / 7,
+  );
   return `${year}-W${week.toString().padStart(2, "0")}`;
 }
 
@@ -36,9 +55,14 @@ export class Keyboard_DateTime extends KeyboardBase {
   #minute_group = 0;
   #hour = 0;
   #minute = 0;
+  #selected_datetime_date?: Date;
 
-  static element_name(): string { return "keyboard-datetime"; }
-  static element_name_space(): string { return "onscreen-keyboard"; }
+  static element_name(): string {
+    return "keyboard-datetime";
+  }
+  static element_name_space(): string {
+    return "onscreen-keyboard";
+  }
 
   constructor() {
     super();
@@ -47,10 +71,18 @@ export class Keyboard_DateTime extends KeyboardBase {
   }
 
   open(element: HTMLElement): void {
-    if (!(element instanceof HTMLInputElement) || !DATE_TYPES.includes(element.type)) return;
+    if (
+      !(element instanceof HTMLInputElement) ||
+      !DATE_TYPES.includes(element.type)
+    )
+      return;
     this.#input = element;
     this.#view = date_from_value(element.value) ?? new Date();
     this.#view.setDate(1);
+    this.#selected_datetime_date =
+      element.type === "datetime-local"
+        ? date_from_value(element.value)
+        : undefined;
     const time = element.value.match(/T?(\d{2}):(\d{2})/) ?? [];
     this.#hour = Number(time[1] ?? 0);
     this.#minute = Number(time[2] ?? 0);
@@ -62,8 +94,10 @@ export class Keyboard_DateTime extends KeyboardBase {
   }
 
   close(): void {
-    if (this.elem && this.#changed) this.elem.dispatchEvent(new Event("change", { bubbles: true }));
+    if (this.elem && this.#changed)
+      this.elem.dispatchEvent(new Event("change", { bubbles: true }));
     this.#input = undefined;
+    this.#selected_datetime_date = undefined;
     this.#changed = false;
     super.close();
   }
@@ -76,7 +110,9 @@ export class Keyboard_DateTime extends KeyboardBase {
     if (type === "month") container.appendChild(this.#month_picker());
     else if (type === "time") container.appendChild(this.#time_picker());
     else {
-      container.appendChild(type === "week" ? this.#week_picker() : this.#calendar());
+      container.appendChild(
+        type === "week" ? this.#week_picker() : this.#calendar(),
+      );
       if (type === "datetime-local") container.appendChild(this.#time_picker());
     }
     this.replaceChildren(container);
@@ -88,28 +124,39 @@ export class Keyboard_DateTime extends KeyboardBase {
     header.className = "keyboard-datetime-header";
     header.append(
       this.#button("‹", () => this.#move_month(-1)),
-      Object.assign(document.createElement("strong"), { textContent: `${MONTHS[this.#view.getMonth()]} ${this.#view.getFullYear()}` }),
+      Object.assign(document.createElement("strong"), {
+        textContent: `${MONTHS[this.#view.getMonth()]} ${this.#view.getFullYear()}`,
+      }),
       this.#button("›", () => this.#move_month(1)),
       this.#button("🗙", () => this.close()),
     );
     const calendar = document.createElement("div");
     calendar.className = "keyboard-datetime-calendar";
-    WEEKDAYS.forEach((day) => calendar.append(Object.assign(document.createElement("span"), { textContent: day })));
+    WEEKDAYS.forEach((day) =>
+      calendar.append(
+        Object.assign(document.createElement("span"), { textContent: day }),
+      ),
+    );
     const first = new Date(this.#view.getFullYear(), this.#view.getMonth(), 1);
     const start = new Date(first);
     start.setDate(1 - first.getDay());
     for (let index = 0; index < 42; index += 1) {
       const date = new Date(start);
       date.setDate(start.getDate() + index);
-      const value = this.#input?.type === "week"
-        ? week_value(date)
-        : this.#input?.type === "datetime-local"
-          ? `${date_value(date)}T${this.#time_value()}`
-          : date_value(date);
-      const button = this.#button(date.getDate().toString(), () => this.#select_date(date));
+      const value =
+        this.#input?.type === "week"
+          ? week_value(date)
+          : this.#input?.type === "datetime-local"
+            ? `${date_value(date)}T${this.#time_value()}`
+            : date_value(date);
+      const button = this.#button(date.getDate().toString(), () =>
+        this.#select_date(date),
+      );
       button.disabled = !this.#value_allowed(value);
-      if (date.getMonth() !== this.#view.getMonth()) button.classList.add("outside");
-      if (value === this.#input?.value) button.classList.add("selected");
+      if (date.getMonth() !== this.#view.getMonth())
+        button.classList.add("outside");
+      if (date_value(date) === this.#selected_date_value())
+        button.classList.add("selected");
       calendar.append(button);
     }
     picker.append(header, calendar);
@@ -132,7 +179,10 @@ export class Keyboard_DateTime extends KeyboardBase {
     months.className = "keyboard-datetime-months";
     MONTHS.forEach((month, index) => {
       const value = `${this.#view.getFullYear()}-${(index + 1).toString().padStart(2, "0")}`;
-      const button = this.#button(month.slice(0, 3), () => { this.#set_value(value); this.close(); });
+      const button = this.#button(month.slice(0, 3), () => {
+        this.#set_value(value);
+        this.close();
+      });
       button.disabled = !this.#value_allowed(value);
       if (value === this.#input?.value) button.classList.add("selected");
       months.append(button);
@@ -147,7 +197,9 @@ export class Keyboard_DateTime extends KeyboardBase {
     header.className = "keyboard-datetime-header";
     header.append(
       this.#button("‹", () => this.#move_month(-1)),
-      Object.assign(document.createElement("strong"), { textContent: `${MONTHS[this.#view.getMonth()]} ${this.#view.getFullYear()}` }),
+      Object.assign(document.createElement("strong"), {
+        textContent: `${MONTHS[this.#view.getMonth()]} ${this.#view.getFullYear()}`,
+      }),
       this.#button("›", () => this.#move_month(1)),
       this.#button("🗙", () => this.close()),
     );
@@ -175,7 +227,8 @@ export class Keyboard_DateTime extends KeyboardBase {
         date.setDate(monday.getDate() + day);
         const label = document.createElement("span");
         label.textContent = date.getDate().toString();
-        if (date.getMonth() !== this.#view.getMonth()) label.classList.add("outside");
+        if (date.getMonth() !== this.#view.getMonth())
+          label.classList.add("outside");
         dates.append(label);
       }
       row.append(button, dates);
@@ -191,29 +244,70 @@ export class Keyboard_DateTime extends KeyboardBase {
     const hour_start = this.#hour_group * 4;
     const minute_start = this.#minute_group * 10;
     controls.append(
-      this.#time_navigation(() => this.#move_time_group("hour", -1), `${hour_start.toString().padStart(2, "0")}-${(hour_start + 3).toString().padStart(2, "0")}`, () => this.#move_time_group("hour", 1)),
-      this.#time_choices(hour_start, 4, this.#hour, (hour) => { this.#hour = hour; this.#render(); }),
-      this.#time_navigation(() => this.#move_time_group("minute", -1), `${minute_start.toString().padStart(2, "0")}-${Math.min(minute_start + 9, 59).toString().padStart(2, "0")}`, () => this.#move_time_group("minute", 1)),
-      this.#time_choices(minute_start, 10, this.#minute, (minute) => { this.#minute = minute; this.#render(); }, "minutes"),
+      this.#time_navigation(
+        () => this.#move_time_group("hour", -1),
+        `${hour_start.toString().padStart(2, "0")}-${(hour_start + 3).toString().padStart(2, "0")}`,
+        () => this.#move_time_group("hour", 1),
+      ),
+      this.#time_choices(hour_start, 4, this.#hour, (hour) => {
+        this.#hour = hour;
+        this.#render();
+      }),
+      this.#time_navigation(
+        () => this.#move_time_group("minute", -1),
+        `${minute_start.toString().padStart(2, "0")}-${Math.min(
+          minute_start + 9,
+          59,
+        )
+          .toString()
+          .padStart(2, "0")}`,
+        () => this.#move_time_group("minute", 1),
+      ),
+      this.#time_choices(
+        minute_start,
+        10,
+        this.#minute,
+        (minute) => {
+          this.#minute = minute;
+          this.#render();
+        },
+        "minutes",
+      ),
       this.#time_footer(),
     );
     return controls;
   }
 
-  #time_navigation(previous: () => void, label: string, next: () => void): HTMLElement {
+  #time_navigation(
+    previous: () => void,
+    label: string,
+    next: () => void,
+  ): HTMLElement {
     const navigation = document.createElement("div");
     navigation.className = "keyboard-datetime-time-navigation";
-    navigation.append(this.#button("‹", previous), Object.assign(document.createElement("strong"), { textContent: label }), this.#button("›", next));
+    navigation.append(
+      this.#button("‹", previous),
+      Object.assign(document.createElement("strong"), { textContent: label }),
+      this.#button("›", next),
+    );
     return navigation;
   }
 
-  #time_choices(start: number, count: number, selected: number, select: (value: number) => void, class_name?: string): HTMLElement {
+  #time_choices(
+    start: number,
+    count: number,
+    selected: number,
+    select: (value: number) => void,
+    class_name?: string,
+  ): HTMLElement {
     const choices = document.createElement("div");
     choices.className = "keyboard-datetime-time-choices";
     if (class_name) choices.classList.add(class_name);
     for (let offset = 0; offset < count; offset += 1) {
       const value = start + offset;
-      const button = this.#button(value.toString().padStart(2, "0"), () => select(value));
+      const button = this.#button(value.toString().padStart(2, "0"), () =>
+        select(value),
+      );
       if (value === selected) button.classList.add("selected");
       choices.append(button);
     }
@@ -223,13 +317,25 @@ export class Keyboard_DateTime extends KeyboardBase {
   #time_footer(): HTMLElement {
     const footer = document.createElement("div");
     footer.className = "keyboard-datetime-time-footer";
-    footer.append(this.#button("Submit", () => { this.#set_time(); this.close(); }), this.#button("🗙", () => this.close()));
+    footer.append(
+      this.#button("Submit", () => {
+        this.#set_time();
+        this.close();
+      }),
+      this.#button("🗙", () => this.close()),
+    );
     return footer;
   }
 
   #move_time_group(part: "hour" | "minute", offset: number): void {
     const maximum = part === "hour" ? 5 : 5;
-    const next = Math.max(0, Math.min(maximum, (part === "hour" ? this.#hour_group : this.#minute_group) + offset));
+    const next = Math.max(
+      0,
+      Math.min(
+        maximum,
+        (part === "hour" ? this.#hour_group : this.#minute_group) + offset,
+      ),
+    );
     if (part === "hour") this.#hour_group = next;
     else this.#minute_group = next;
     this.#render();
@@ -246,7 +352,18 @@ export class Keyboard_DateTime extends KeyboardBase {
   }
 
   #selected_date(): Date {
-    return date_from_value(this.#input?.value ?? "") ?? new Date(this.#view);
+    return (
+      this.#selected_datetime_date ??
+      date_from_value(this.#input?.value ?? "") ??
+      new Date(this.#view)
+    );
+  }
+
+  #selected_date_value(): string | undefined {
+    return this.#input?.type === "datetime-local"
+      ? this.#selected_datetime_date && date_value(this.#selected_datetime_date)
+      : date_from_value(this.#input?.value ?? "") &&
+          this.#input?.value.slice(0, 10);
   }
 
   #button(text: string, click: () => void): HTMLButtonElement {
@@ -273,9 +390,15 @@ export class Keyboard_DateTime extends KeyboardBase {
       this.#set_value(week_value(date));
       return this.close();
     }
-    const value = type === "datetime-local"
-      ? `${date_value(date)}T${this.#input?.value.match(/T(\d{2}:\d{2})/)?.[1] ?? "00:00"}`
-      : date_value(date);
+    const value =
+      type === "datetime-local"
+        ? `${date_value(date)}T${this.#input?.value.match(/T(\d{2}:\d{2})/)?.[1] ?? "00:00"}`
+        : date_value(date);
+    if (type === "datetime-local") {
+      this.#selected_datetime_date = date;
+      this.#render();
+      return;
+    }
     this.#set_value(value);
     if (type === "date") this.close();
   }

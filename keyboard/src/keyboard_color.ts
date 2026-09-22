@@ -1,5 +1,6 @@
 import { define_element } from "@chocbite/ts-lib-base";
 import { KeyboardBase } from "./base";
+import "./keyboard_color.scss";
 
 type HSV = { hue: number; saturation: number; value: number };
 type RGB = { red: number; green: number; blue: number };

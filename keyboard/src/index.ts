@@ -1,6 +1,5 @@
 import { KeyboardBase } from "./base";
 import { keyboard_type } from "./helpers";
-import "./index.scss";
 import { Keyboard_Color } from "./keyboard_color";
 import { DATETIME_KEYBOARD } from "./keyboard_datetime";
 import { Keyboard_Keys } from "./keyboard_keys";
