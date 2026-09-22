@@ -333,9 +333,11 @@ export class Keyboard extends Base {
     } else if (
       keydown &&
       key === KeyboardSpecialKeys.Enter &&
+      this.#e.tagName !== "INPUT" &&
       this.#dis_beforeinput({ data: "\n", inputType: "insertLineBreak" })
     ) {
-      this.#dis_input({ data: "\n", inputType: "insertLineBreak" });
+      if (this.#edit_value("\n"))
+        this.#dis_input({ data: "\n", inputType: "insertLineBreak" });
     } else if (keydown && key === KeyboardSpecialKeys.Left) {
       set_cursor_position(this.#e, get_cursor_position(this.#e) - 1);
     } else if (keydown && key === KeyboardSpecialKeys.Right) {
