@@ -54,6 +54,33 @@ export const NUMBER_WHOLE_KEYBOARD = new Keyboard_Keys({
   },
 });
 
+export const NUMBER_HEX_KEYBOARD = new Keyboard_Keys({
+  default: {
+    max_width: 24,
+    keys: [
+      [
+        ..."789A".split("").map((n) => ({ text: n })),
+        { text: "⌫", key: KeyboardSpecialKeys.Backspace },
+      ],
+      [
+        ..."456B".split("").map((n) => ({ text: n })),
+        { text: "Esc", key: KeyboardSpecialKeys.Escape },
+      ],
+      [
+        ..."123C".split("").map((n) => ({ text: n })),
+        { text: "⏎", key: KeyboardSpecialKeys.Enter },
+      ],
+      [
+        { text: "0", cols: 2 },
+        { text: "D" },
+        { text: "E" },
+        { text: "F" },
+        { text: "🗙", key: KeyboardSpecialKeys.Close },
+      ],
+    ],
+  },
+});
+
 export const NUMBER_INTEGER_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 24,

@@ -13,7 +13,16 @@ export abstract class KeyboardBase extends Base {
 
   constructor() {
     super();
-    this.addEventListener("mousedown", (e) => e.preventDefault());
+    this.addEventListener("mousedown", (event) => {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement ||
+        event.target instanceof HTMLSelectElement ||
+        event.target instanceof HTMLButtonElement
+      )
+        return;
+      event.preventDefault();
+    });
   }
 
   #listener = (e: PointerEvent) => {

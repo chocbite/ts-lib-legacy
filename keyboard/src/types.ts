@@ -35,6 +35,8 @@ export const KeyboardType = {
   Week: "week",
   /**Whole number input type, eg. 0, 1, 2 ...*/
   NumberWhole: "number_whole",
+  /**Hexadecimal number input type, eg. 0A, FF, 1C3 */
+  NumberHex: "number_hex",
   /**Integer number input type, eg. -2, -1, 0, 1, 2 ... */
   NumberInteger: "number_integer",
   /**Positive rational number input type, eg. 0.5, 1.2 ... */

@@ -28,7 +28,12 @@ export function input_keyboard_type(input: HTMLInputElement): KeyboardType {
 export function keyboard_type(element: HTMLElement): KeyboardType | undefined {
   if (element instanceof HTMLTextAreaElement) return KeyboardType.Text;
   if (element instanceof HTMLInputElement) {
-    if (element.disabled || element.readOnly || element.type === "hidden")
+    if (
+      element.disabled ||
+      element.readOnly ||
+      element.type === "hidden" ||
+      element.dataset.keyboardManual === "true"
+    )
       return undefined;
     if (
       [

@@ -5,6 +5,7 @@ import "./index.scss";
 import { Keyboard_Keys } from "./keyboard_keys";
 import {
   NUMBER_INTEGER_KEYBOARD,
+  NUMBER_HEX_KEYBOARD,
   NUMBER_RATIONAL_KEYBOARD,
   NUMBER_RATIONAL_POSITIVE_KEYBOARD,
   NUMBER_WHOLE_KEYBOARD,
@@ -34,6 +35,7 @@ const KEYBOARDS: Record<KeyboardType, KeyboardBase> = {
   [KeyboardType.Time]: TIME_KEYBOARD,
   [KeyboardType.Week]: WEEK_KEYBOARD,
   [KeyboardType.NumberWhole]: NUMBER_WHOLE_KEYBOARD,
+  [KeyboardType.NumberHex]: NUMBER_HEX_KEYBOARD,
   [KeyboardType.NumberInteger]: NUMBER_INTEGER_KEYBOARD,
   [KeyboardType.NumberRationalPositive]: NUMBER_RATIONAL_POSITIVE_KEYBOARD,
   [KeyboardType.NumberRational]: NUMBER_RATIONAL_KEYBOARD,
