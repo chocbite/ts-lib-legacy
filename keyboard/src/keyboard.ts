@@ -56,7 +56,7 @@ class KeyboardLayer extends Base {
     return "onscreen-keyboard";
   }
 
-  constructor(keyboard: Keyboard, name: string, config: KeyboardLayerConfig) {
+  constructor(keyboard: Keyboard, config: KeyboardLayerConfig) {
     super();
     if (config.max_width) this.style.maxWidth = config.max_width + "rem";
     this.addEventListener("mousedown", (e) => e.preventDefault());
@@ -148,7 +148,7 @@ export class Keyboard extends Base {
       ...(config.layers ? Object.entries(config.layers) : []),
     ].forEach((l) => {
       const [layer_name, layer_config] = l;
-      const layer = new KeyboardLayer(this, layer_name, layer_config);
+      const layer = new KeyboardLayer(this, layer_config);
       layer_map[layer_name] = layer;
     });
 

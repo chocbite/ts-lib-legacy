@@ -1,5 +1,6 @@
 import "./index.scss";
 import { Keyboard } from "./keyboard";
+import { NUMBER_RATIONAL_KEYBOARD } from "./number";
 import { TEXT_KEYBOARD } from "./text";
 import { KeyboardConfig, KeyboardType } from "./types";
 
@@ -17,7 +18,9 @@ export function keyboard_open(
         ? new Keyboard(mode)
         : mode === KeyboardType.Text
           ? TEXT_KEYBOARD
-          : TEXT_KEYBOARD;
+          : mode === KeyboardType.NumberRational
+            ? NUMBER_RATIONAL_KEYBOARD
+            : TEXT_KEYBOARD;
 
   keyboard.open(element);
 

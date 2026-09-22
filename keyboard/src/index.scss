@@ -33,7 +33,7 @@ onscreen-keyboard-layer {
 
 onscreen-keyboard-key {
   border: 1px solid #ccc;
-  font-size: min(1.6rem, 3vw);
+  font-size: clamp(1rem, 3vw, 2rem);
   border-radius: 0.5rem;
   display: flex;
   justify-content: center;
