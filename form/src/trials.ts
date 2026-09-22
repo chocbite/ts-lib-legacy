@@ -7,6 +7,7 @@ import {
   material_add_to_queue_rounded,
   material_remove_from_queue_rounded,
 } from "@chocbite/ts-lib-icons";
+import { VIRTUAL_KEYBOARD } from "@chocbite/ts-lib-keyboard";
 import state from "@chocbite/ts-lib-state";
 import {
   ANIMATION_LEVEL,
@@ -16,9 +17,6 @@ import {
   THEME,
 } from "@chocbite/ts-lib-theme";
 import form, { FormColors, FormDateTimeMode, FormDateTimeType } from ".";
-import { keyboard_open } from "./keyboard";
-import { VIRTUAL_KEYBOARD } from "./keyboard/settings";
-import { KeyboardType } from "./keyboard/types";
 
 const form_cont = document.createElement("div");
 document.body.appendChild(form_cont);
@@ -27,36 +25,6 @@ form_cont.style.flexDirection = "column";
 form_cont.style.flexGrow = "1";
 form_cont.style.overflow = "auto";
 form_cont.style.backgroundColor = "var(--form-colors-background-normal)";
-
-const textarea = document.createElement("textarea");
-form_cont.appendChild(textarea);
-textarea.addEventListener("keydown", (e) => console.warn("keydown", e));
-textarea.addEventListener("keyup", (e) => console.warn("keyup", e));
-textarea.addEventListener("keypress", (e) => console.warn("keypress", e));
-textarea.addEventListener("beforeinput", (e) => console.warn("beforeinput", e));
-textarea.addEventListener("input", (e) => console.warn("input", e));
-textarea.onfocus = () => keyboard_open(textarea, KeyboardType.Text);
-
-const input = document.createElement("input");
-form_cont.appendChild(input);
-input.addEventListener("keydown", (e) => console.warn("keydown", e));
-input.addEventListener("keyup", (e) => console.warn("keyup", e));
-input.addEventListener("keypress", (e) => console.warn("keypress", e));
-input.addEventListener("beforeinput", (e) => console.warn("beforeinput", e));
-input.addEventListener("input", (e) => console.warn("input", e));
-input.onfocus = () => keyboard_open(input, KeyboardType.Text);
-
-const contentedit = document.createElement("div");
-contentedit.contentEditable = "true";
-form_cont.appendChild(contentedit);
-contentedit.addEventListener("keydown", (e) => console.warn("keydown", e));
-contentedit.addEventListener("keyup", (e) => console.warn("keyup", e));
-contentedit.addEventListener("keypress", (e) => console.warn("keypress", e));
-contentedit.addEventListener("beforeinput", (e) =>
-  console.warn("beforeinput", e),
-);
-contentedit.addEventListener("input", (e) => console.warn("input", e));
-contentedit.onfocus = () => keyboard_open(contentedit, KeyboardType.Text);
 
 form_cont.appendChild(
   form.group_collapser(
@@ -192,7 +160,7 @@ setInterval(() => {
 
 const text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Text Input" }));
-const asdfzxcv = form_cont.appendChild(
+form_cont.appendChild(
   form
     .text_input({
       placeholder: "Enter text here...",
@@ -202,7 +170,6 @@ const asdfzxcv = form_cont.appendChild(
     })
     .bind({ value: text_state }),
 );
-keyboard_open(asdfzxcv, "text");
 form_cont.appendChild(form.text({ text: "Text Input 2" }));
 form_cont.appendChild(
   form

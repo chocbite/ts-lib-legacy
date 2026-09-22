@@ -4,8 +4,6 @@ import { err, none, type Result } from "@chocbite/ts-lib-result";
 import type { StateStringRelated } from "@chocbite/ts-lib-state";
 import { string_byte_length, string_byte_limit } from "@chocbite/ts-lib-string";
 import { FormValueWrite, FormValueWriteOptions } from "../../base";
-import { keyboard_open } from "../../keyboard";
-import { KeyboardMode, KeyboardType } from "../../keyboard/types";
 import "./text_input.scss";
 
 export interface FormTextInputOptions<
@@ -35,18 +33,14 @@ export class FormTextInput<
   #filter?: RegExp;
   #max_length?: number;
   #max_bytes?: number;
-  #keyboard_mode: KeyboardMode = KeyboardType.Text;
 
   constructor(id?: ID) {
     super(id);
-    let keyboard_close: () => void;
     this.warn_input.onfocus = () => {
       this.selected = true;
-      keyboard_close = keyboard_open(this.warn_input, this.#keyboard_mode);
     };
     this.warn_input.onblur = () => {
       this.selected = false;
-      keyboard_close?.();
     };
     this.warn_input.type = "text";
     this.appendChild(this.warn_input);
@@ -94,13 +88,6 @@ export class FormTextInput<
       this.new_value(buff || "");
       set_cursor_end(this.warn_input);
     });
-  }
-
-  set keyboard_mode(val: KeyboardMode) {
-    this.#keyboard_mode = val;
-  }
-  get keyboard_mode(): KeyboardMode {
-    return this.#keyboard_mode;
   }
 
   set filter(val: RegExp | undefined) {
