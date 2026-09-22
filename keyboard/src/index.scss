@@ -38,9 +38,11 @@ onscreen-keyboard-key {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 
   &:active {
     background-color: #e0e0e0;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
   }
 
   &[active="true"] {

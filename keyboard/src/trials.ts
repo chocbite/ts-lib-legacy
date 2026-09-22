@@ -7,7 +7,7 @@ textarea.addEventListener("keyup", (e) => console.warn("keyup", e));
 textarea.addEventListener("keypress", (e) => console.warn("keypress", e));
 textarea.addEventListener("beforeinput", (e) => console.warn("beforeinput", e));
 textarea.addEventListener("input", (e) => console.warn("input", e));
-textarea.onfocus = () => keyboard_open(textarea, KeyboardType.NumberRational);
+textarea.onfocus = () => keyboard_open(textarea, KeyboardType.Phone);
 
 const input = document.createElement("input");
 document.body.appendChild(input);
