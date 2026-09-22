@@ -34,6 +34,8 @@ export class Keyboard_DateTime extends KeyboardBase {
   #changed = false;
   #hour_group = 0;
   #minute_group = 0;
+  #hour = 0;
+  #minute = 0;
 
   static element_name(): string { return "keyboard-datetime"; }
   static element_name_space(): string { return "onscreen-keyboard"; }
@@ -50,8 +52,10 @@ export class Keyboard_DateTime extends KeyboardBase {
     this.#view = date_from_value(element.value) ?? new Date();
     this.#view.setDate(1);
     const time = element.value.match(/T?(\d{2}):(\d{2})/) ?? [];
-    this.#hour_group = Math.floor(Number(time[1] ?? 0) / 4);
-    this.#minute_group = Math.floor(Number(time[2] ?? 0) / 10);
+    this.#hour = Number(time[1] ?? 0);
+    this.#minute = Number(time[2] ?? 0);
+    this.#hour_group = Math.floor(this.#hour / 4);
+    this.#minute_group = Math.floor(this.#minute / 4);
     this.#changed = false;
     this.#render();
     super.open(element);
@@ -180,56 +184,54 @@ export class Keyboard_DateTime extends KeyboardBase {
   #time_picker(): HTMLElement {
     const controls = document.createElement("div");
     controls.className = "keyboard-datetime-time";
-    const hours = document.createElement("div");
-    hours.className = "keyboard-datetime-time-column";
-    for (let group = 0; group < 6; group += 1) {
-      const start = group * 4;
-      const button = this.#button(`${start}-${start + 3}`, () => {
-        this.#hour_group = group;
-        this.#render();
-      });
-      if (group === this.#hour_group) button.classList.add("selected");
-      hours.append(button);
-    }
-
-    const hour_values = document.createElement("div");
-    hour_values.className = "keyboard-datetime-time-column";
-    for (let hour = this.#hour_group * 4; hour < this.#hour_group * 4 + 4; hour += 1) {
-      hour_values.append(this.#button(hour.toString().padStart(2, "0"), () => this.#set_time(hour, this.#time_parts()[1])));
-    }
-
-    const minute_groups = document.createElement("div");
-    minute_groups.className = "keyboard-datetime-time-column";
-    for (let group = 0; group < 6; group += 1) {
-      const start = group * 10;
-      const button = this.#button(`${start.toString().padStart(2, "0")}-${(start + 9).toString().padStart(2, "0")}`, () => {
-        this.#minute_group = group;
-        this.#render();
-      });
-      if (group === this.#minute_group) button.classList.add("selected");
-      minute_groups.append(button);
-    }
-
-    const minute_values_left = document.createElement("div");
-    minute_values_left.className = "keyboard-datetime-time-column";
-    const minute_values_right = document.createElement("div");
-    minute_values_right.className = "keyboard-datetime-time-column";
-    for (let offset = 0; offset < 10; offset += 1) {
-      const minute = this.#minute_group * 10 + offset;
-      const button = this.#button(minute.toString().padStart(2, "0"), () => this.#set_time(this.#time_parts()[0], minute));
-      (offset < 5 ? minute_values_left : minute_values_right).append(button);
-    }
-    controls.append(hours, hour_values, minute_groups, minute_values_left, minute_values_right);
+    const hour_start = this.#hour_group * 4;
+    const minute_start = this.#minute_group * 4;
+    controls.append(
+      this.#time_navigation(() => this.#move_time_group("hour", -1), `${hour_start.toString().padStart(2, "0")}-${(hour_start + 3).toString().padStart(2, "0")}`, () => this.#move_time_group("hour", 1)),
+      this.#time_choices(hour_start, 4, this.#hour, (hour) => { this.#hour = hour; this.#render(); }),
+      this.#time_navigation(() => this.#move_time_group("minute", -1), `${minute_start.toString().padStart(2, "0")}-${Math.min(minute_start + 3, 59).toString().padStart(2, "0")}`, () => this.#move_time_group("minute", 1)),
+      this.#time_choices(minute_start, Math.min(4, 60 - minute_start), this.#minute, (minute) => { this.#minute = minute; this.#render(); }),
+      this.#time_footer(),
+    );
     return controls;
   }
 
-  #time_parts(): [number, number] {
-    const time = this.#input?.value.match(/T?(\d{2}):(\d{2})/) ?? [];
-    return [Number(time[1] ?? 0), Number(time[2] ?? 0)];
+  #time_navigation(previous: () => void, label: string, next: () => void): HTMLElement {
+    const navigation = document.createElement("div");
+    navigation.className = "keyboard-datetime-time-navigation";
+    navigation.append(this.#button("‹", previous), Object.assign(document.createElement("strong"), { textContent: label }), this.#button("›", next));
+    return navigation;
   }
 
-  #set_time(hour: number, minute: number): void {
-    const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+  #time_choices(start: number, count: number, selected: number, select: (value: number) => void): HTMLElement {
+    const choices = document.createElement("div");
+    choices.className = "keyboard-datetime-time-choices";
+    for (let offset = 0; offset < count; offset += 1) {
+      const value = start + offset;
+      const button = this.#button(value.toString().padStart(2, "0"), () => select(value));
+      if (value === selected) button.classList.add("selected");
+      choices.append(button);
+    }
+    return choices;
+  }
+
+  #time_footer(): HTMLElement {
+    const footer = document.createElement("div");
+    footer.className = "keyboard-datetime-time-footer";
+    footer.append(this.#button("Submit", () => { this.#set_time(); this.close(); }), this.#button("🗙", () => this.close()));
+    return footer;
+  }
+
+  #move_time_group(part: "hour" | "minute", offset: number): void {
+    const maximum = part === "hour" ? 5 : 14;
+    const next = Math.max(0, Math.min(maximum, (part === "hour" ? this.#hour_group : this.#minute_group) + offset));
+    if (part === "hour") this.#hour_group = next;
+    else this.#minute_group = next;
+    this.#render();
+  }
+
+  #set_time(): void {
+    const time = `${this.#hour.toString().padStart(2, "0")}:${this.#minute.toString().padStart(2, "0")}`;
     if (this.#input?.type === "time") this.#set_value(time);
     else this.#set_value(`${date_value(this.#selected_date())}T${time}`);
   }

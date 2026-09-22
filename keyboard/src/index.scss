@@ -111,17 +111,32 @@ onscreen-keyboard-keyboard-datetime {
 
 .keyboard-datetime-time {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  width: min(37.5rem, 100%);
-  margin-right: auto;
-  margin-left: auto;
+  grid-template-columns: repeat(4, 1fr);
+  width: min(30rem, 100%);
+  margin: 0.8rem auto 0;
   gap: 0.4rem;
-  margin-top: 0.8rem;
 }
 
-.keyboard-datetime-time-column {
+.keyboard-datetime-time-navigation,
+.keyboard-datetime-time-choices,
+.keyboard-datetime-time-footer {
   display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.3rem;
+}
+
+.keyboard-datetime-time-navigation {
+  grid-template-columns: 3rem 1fr 3rem;
+}
+
+.keyboard-datetime-time-navigation strong {
+  color: var(--keyboard-colors-keytext);
+  text-align: center;
+}
+
+.keyboard-datetime-time-footer button {
+  grid-column: span 2;
 }
 
 .keyboard-datetime button {
