@@ -63,6 +63,30 @@ onscreen-keyboard-keyboard-datetime {
   text-align: center;
 }
 
+.keyboard-datetime-months {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.keyboard-datetime-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  color: var(--keyboard-colors-keytext);
+}
+
+.keyboard-datetime-time select {
+  border: 1px solid var(--keyboard-colors-border);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0.5rem;
+}
+
 .keyboard-datetime button {
   min-height: 2.6rem;
   border: 1px solid var(--keyboard-colors-border);
