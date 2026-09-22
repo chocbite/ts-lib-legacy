@@ -214,8 +214,8 @@ export class Keyboard_Keys extends KeyboardBase {
 
     if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
       const input = element as HTMLInputElement | HTMLTextAreaElement;
-      const start = input.selectionStart;
-      const end = input.selectionEnd;
+      const start = input.selectionStart ?? 0;
+      const end = input.selectionEnd ?? 0;
       if (start === null || end === null) return false;
 
       const replace_start =

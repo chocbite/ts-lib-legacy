@@ -87,9 +87,11 @@ fields.forEach((field) => {
   field.addEventListener("change", log);
 });
 
-enabled.addEventListener("change", () => {
-  void VIRTUAL_KEYBOARD.write(enabled.checked);
-});
+enabled.addEventListener(
+  "change",
+  () => void VIRTUAL_KEYBOARD.write(enabled.checked),
+);
+VIRTUAL_KEYBOARD.sub((v) => (enabled.checked = v.value), true);
 
 theme.addEventListener("change", () => {
   void THEME.write(theme.value as Themes);

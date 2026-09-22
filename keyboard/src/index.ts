@@ -67,7 +67,7 @@ const on_focus = (event: FocusEvent) => {
 };
 
 VIRTUAL_KEYBOARD.sub((v) => {
-  if (!v.value)
+  if (v.value)
     DOCUMENT_HANDLER.for_documents((doc) =>
       doc.addEventListener("focusin", on_focus),
     );

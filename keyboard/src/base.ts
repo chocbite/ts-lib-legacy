@@ -25,7 +25,7 @@ export abstract class KeyboardBase extends Base {
     });
   }
 
-  #listener = (e: PointerEvent) => {
+  #listener = (e: Event) => {
     if (e.target === this || this.contains(e.target as Node)) return;
     if (
       this.elem &&
@@ -40,6 +40,9 @@ export abstract class KeyboardBase extends Base {
     this.elem?.ownerDocument.addEventListener("pointerdown", this.#listener, {
       capture: true,
     });
+    this.elem?.ownerDocument.addEventListener("blur", this.#listener, {
+      capture: true,
+    });
   }
 
   protected disconnectedCallback(): void {
@@ -47,18 +50,28 @@ export abstract class KeyboardBase extends Base {
     this.elem?.ownerDocument.removeEventListener(
       "pointerdown",
       this.#listener,
-      {
-        capture: true,
-      },
+      { capture: true },
     );
+    this.elem?.ownerDocument.removeEventListener("blur", this.#listener, {
+      capture: true,
+    });
   }
 
   open(element: HTMLElement): void {
     this.elem = element;
     this.elem.ownerDocument.documentElement.appendChild(this);
+    const erect = element.getBoundingClientRect();
+    const krect = this.getBoundingClientRect();
+
+    if (erect.top + erect.height > krect.top) {
+      element.scrollIntoView({ behavior: "instant", block: "center" });
+      const erect = element.getBoundingClientRect();
+      element.ownerDocument.body.style.transform = `translateY(${krect.top - (erect.top + erect.height)}px)`;
+    }
   }
 
   close(): void {
     this.remove();
+    if (this.elem) this.elem.ownerDocument.body.style.transform = "";
   }
 }
