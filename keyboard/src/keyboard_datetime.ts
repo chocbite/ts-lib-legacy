@@ -101,7 +101,11 @@ export class Keyboard_DateTime extends KeyboardBase {
     for (let index = 0; index < 42; index += 1) {
       const date = new Date(start);
       date.setDate(start.getDate() + index);
-      const value = this.#input?.type === "week" ? week_value(date) : date_value(date);
+      const value = this.#input?.type === "week"
+        ? week_value(date)
+        : this.#input?.type === "datetime-local"
+          ? `${date_value(date)}T${this.#time_value()}`
+          : date_value(date);
       const button = this.#button(date.getDate().toString(), () => this.#select_date(date));
       button.disabled = !this.#value_allowed(value);
       if (date.getMonth() !== this.#view.getMonth()) button.classList.add("outside");
@@ -232,9 +236,13 @@ export class Keyboard_DateTime extends KeyboardBase {
   }
 
   #set_time(): void {
-    const time = `${this.#hour.toString().padStart(2, "0")}:${this.#minute.toString().padStart(2, "0")}`;
+    const time = this.#time_value();
     if (this.#input?.type === "time") this.#set_value(time);
     else this.#set_value(`${date_value(this.#selected_date())}T${time}`);
+  }
+
+  #time_value(): string {
+    return `${this.#hour.toString().padStart(2, "0")}:${this.#minute.toString().padStart(2, "0")}`;
   }
 
   #selected_date(): Date {
