@@ -9,8 +9,8 @@ onscreen-keyboard-keyboard-keys {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #f0f0f0;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+  background-color: var(--keyboard-colors-background);
+  box-shadow: 0 0px 10px var(--keyboard-colors-border);
   border-radius: 0.6rem 0.6rem 0rem 0rem;
   user-select: none;
   pointer-events: all;
@@ -32,20 +32,21 @@ onscreen-keyboard-layer {
 }
 
 onscreen-keyboard-key {
-  border: 1px solid #ccc;
+  border: 1px solid var(--keyboard-colors-border);
   font-size: clamp(1rem, 3vw, 2rem);
   border-radius: 0.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px var(--keyboard-colors-shadow);
+  color: var(--keyboard-colors-keytext);
 
   &:active {
-    background-color: #e0e0e0;
-    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
+    background-color: var(--keyboard-colors-active);
+    box-shadow: 0 0px 0px var(--keyboard-colors-shadow);
   }
 
   &[active="true"] {
-    background-color: #d0d0d0;
+    background-color: var(--keyboard-colors-active);
   }
 }

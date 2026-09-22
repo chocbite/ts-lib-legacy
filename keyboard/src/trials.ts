@@ -1,4 +1,5 @@
 import { keyboard_attach, VIRTUAL_KEYBOARD } from ".";
+import { THEME, Themes } from "@chocbite/ts-lib-theme";
 
 const style = document.createElement("style");
 style.textContent = `
@@ -11,8 +12,9 @@ style.textContent = `
   .trial-header { display: flex; justify-content: space-between; gap: 1rem; align-items: start; margin-bottom: 2rem; }
   h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.06em; }
   .trial-header p { max-width: 38rem; margin: .7rem 0 0; color: #52616f; line-height: 1.5; }
-  .switch { display: flex; align-items: center; gap: .65rem; padding: .65rem .85rem; border: 1px solid #c8d4dc; border-radius: 99rem; background: #f9fcfd; white-space: nowrap; }
+  .switch, .theme { display: flex; align-items: center; gap: .65rem; padding: .65rem .85rem; border: 1px solid #c8d4dc; border-radius: 99rem; background: #f9fcfd; white-space: nowrap; }
   .switch input { accent-color: #147d8b; inline-size: 1.1rem; block-size: 1.1rem; }
+  .theme select { border: 0; background: transparent; color: inherit; font: inherit; outline: none; }
   .trial-grid { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: 1.25rem; align-items: start; }
   .panel { padding: 1.25rem; border: 1px solid #c8d4dc; border-radius: 1.1rem; background: #f9fcfd; box-shadow: 0 .8rem 2.5rem #37506412; }
   .panel h2 { margin: 0 0 1rem; font-size: 1rem; letter-spacing: .06em; text-transform: uppercase; color: #52616f; }
@@ -55,7 +57,8 @@ app.innerHTML = `
   </div>
       <p class="hint">Date and time fields use compact numeric layouts with their required separators. Controls such as range, checkbox, and file inputs deliberately do not open the virtual keyboard.</p>
   </section>
-  <aside class="panel">
+    <aside class="panel">
+      <label class="theme">Theme <select aria-label="Theme"><option value="light">Light</option><option value="dark">Dark</option></select></label>
       <label class="switch"><input type="checkbox" checked> Virtual keyboard enabled</label>
       <h2>Event stream</h2>
       <pre class="event-log" aria-live="polite">Ready. Focus an editable field.</pre>
@@ -64,6 +67,7 @@ app.innerHTML = `
 `;
 
 const enabled = app.querySelector<HTMLInputElement>(".switch input")!;
+const theme = app.querySelector<HTMLSelectElement>(".theme select")!;
 const event_log = app.querySelector<HTMLPreElement>(".event-log")!;
 const fields = app.querySelectorAll<HTMLElement>(
   "input, textarea, [contenteditable='true']",
@@ -85,6 +89,15 @@ fields.forEach((field) => {
 enabled.addEventListener("change", () => {
   void VIRTUAL_KEYBOARD.write(enabled.checked);
 });
+
+theme.addEventListener("change", () => {
+  void THEME.write(theme.value as Themes);
+});
+
+THEME.sub((value) => {
+  const theme_name = value.value;
+  theme.value = theme_name;
+}, true);
 
 void VIRTUAL_KEYBOARD.write(true);
 keyboard_attach();

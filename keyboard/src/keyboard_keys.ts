@@ -6,6 +6,7 @@ import {
 import { some } from "@chocbite/ts-lib-result";
 import state from "@chocbite/ts-lib-state";
 import { KeyboardBase } from "./base";
+import "./shared";
 import {
   KeyboardConfig,
   KeyboardLayerConfig,
