@@ -25,3 +25,7 @@ export function keyboard_open(
     keyboard.close();
   };
 }
+
+export function keyboard_create(config: KeyboardConfig): Keyboard {
+  return new Keyboard(config);
+}
