@@ -55,7 +55,7 @@ export class Keyboard_DateTime extends KeyboardBase {
     this.#hour = Number(time[1] ?? 0);
     this.#minute = Number(time[2] ?? 0);
     this.#hour_group = Math.floor(this.#hour / 4);
-    this.#minute_group = Math.floor(this.#minute / 4);
+    this.#minute_group = Math.floor(this.#minute / 10);
     this.#changed = false;
     this.#render();
     super.open(element);
@@ -185,12 +185,12 @@ export class Keyboard_DateTime extends KeyboardBase {
     const controls = document.createElement("div");
     controls.className = "keyboard-datetime-time";
     const hour_start = this.#hour_group * 4;
-    const minute_start = this.#minute_group * 4;
+    const minute_start = this.#minute_group * 10;
     controls.append(
       this.#time_navigation(() => this.#move_time_group("hour", -1), `${hour_start.toString().padStart(2, "0")}-${(hour_start + 3).toString().padStart(2, "0")}`, () => this.#move_time_group("hour", 1)),
       this.#time_choices(hour_start, 4, this.#hour, (hour) => { this.#hour = hour; this.#render(); }),
-      this.#time_navigation(() => this.#move_time_group("minute", -1), `${minute_start.toString().padStart(2, "0")}-${Math.min(minute_start + 3, 59).toString().padStart(2, "0")}`, () => this.#move_time_group("minute", 1)),
-      this.#time_choices(minute_start, Math.min(4, 60 - minute_start), this.#minute, (minute) => { this.#minute = minute; this.#render(); }),
+      this.#time_navigation(() => this.#move_time_group("minute", -1), `${minute_start.toString().padStart(2, "0")}-${Math.min(minute_start + 9, 59).toString().padStart(2, "0")}`, () => this.#move_time_group("minute", 1)),
+      this.#time_choices(minute_start, 10, this.#minute, (minute) => { this.#minute = minute; this.#render(); }, "minutes"),
       this.#time_footer(),
     );
     return controls;
@@ -203,9 +203,10 @@ export class Keyboard_DateTime extends KeyboardBase {
     return navigation;
   }
 
-  #time_choices(start: number, count: number, selected: number, select: (value: number) => void): HTMLElement {
+  #time_choices(start: number, count: number, selected: number, select: (value: number) => void, class_name?: string): HTMLElement {
     const choices = document.createElement("div");
     choices.className = "keyboard-datetime-time-choices";
+    if (class_name) choices.classList.add(class_name);
     for (let offset = 0; offset < count; offset += 1) {
       const value = start + offset;
       const button = this.#button(value.toString().padStart(2, "0"), () => select(value));
@@ -223,7 +224,7 @@ export class Keyboard_DateTime extends KeyboardBase {
   }
 
   #move_time_group(part: "hour" | "minute", offset: number): void {
-    const maximum = part === "hour" ? 5 : 14;
+    const maximum = part === "hour" ? 5 : 5;
     const next = Math.max(0, Math.min(maximum, (part === "hour" ? this.#hour_group : this.#minute_group) + offset));
     if (part === "hour") this.#hour_group = next;
     else this.#minute_group = next;

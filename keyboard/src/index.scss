@@ -126,6 +126,10 @@ onscreen-keyboard-keyboard-datetime {
   gap: 0.3rem;
 }
 
+.keyboard-datetime-time-choices.minutes {
+  grid-template-columns: repeat(5, 1fr);
+}
+
 .keyboard-datetime-time-navigation {
   grid-template-columns: 3rem 1fr 3rem;
 }
