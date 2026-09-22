@@ -1,5 +1,10 @@
 export const KeyboardSpecialKeys = {
   Close: "close",
+  Enter: "enter",
+  Backspace: "backspace",
+  Escape: "escape",
+  Left: "left",
+  Right: "right",
 } as const;
 export type KeyboardSpecialKeys =
   (typeof KeyboardSpecialKeys)[keyof typeof KeyboardSpecialKeys];
@@ -11,7 +16,7 @@ export const KeyboardBaseLayers = {
 export type KeyboardBaseLayers =
   (typeof KeyboardBaseLayers)[keyof typeof KeyboardBaseLayers];
 
-export const KeyboardTypes = {
+export const KeyboardType = {
   /**Text input type */
   Text: "text",
   /**Whole number input type, eg. 0, 1, 2 ...*/
@@ -25,4 +30,30 @@ export const KeyboardTypes = {
   /**Phone number input type, eg. +1 234 567 890 */
   Phone: "phone",
 } as const;
-export type KeyboardTypes = (typeof KeyboardTypes)[keyof typeof KeyboardTypes];
+export type KeyboardType = (typeof KeyboardType)[keyof typeof KeyboardType];
+
+export interface KeyboardKeyConfig {
+  text: string;
+  key?: string;
+  rows?: number;
+  cols?: number;
+}
+
+export interface KeyboardLayerConfig {
+  /**Maximum width of the keyboard layer in rems */
+  max_width?: number;
+  /**Default number of rows a key occupies in this layer */
+  key_rows?: number;
+  /**Default number of columns a key occupies in this layer */
+  key_cols?: number;
+  keys: (KeyboardKeyConfig | number)[][];
+}
+
+export interface KeyboardLayers {
+  [layer: string]: KeyboardLayerConfig;
+}
+
+export interface KeyboardConfig {
+  default: KeyboardLayerConfig;
+  layers?: KeyboardLayers;
+}

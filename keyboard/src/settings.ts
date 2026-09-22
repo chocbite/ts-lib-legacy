@@ -1,6 +1,6 @@
 import { settings_init } from "@chocbite/ts-lib-settings";
 import { state as st } from "@chocbite/ts-lib-state";
-import { name, version } from "../package.json";
+import { name, version } from "../../package.json";
 
 const SETTINGS = settings_init(
   name,
