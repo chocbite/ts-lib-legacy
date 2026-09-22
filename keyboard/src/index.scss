@@ -35,8 +35,9 @@ onscreen-keyboard-keyboard-datetime {
   pointer-events: all;
 }
 
-.keyboard-datetime {
-  width: min(26rem, 100%);
+.keyboard-datetime > div {
+  width: min(30rem, 100%);
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 0.8rem;
 }
@@ -70,8 +71,6 @@ onscreen-keyboard-keyboard-datetime {
   box-shadow: 0 2px 5px var(--keyboard-colors-shadow);
   color: var(--keyboard-colors-keytext);
   font: inherit;
-  font: inherit;
-  color: var(--keyboard-colors-keytext);
 }
 
 .keyboard-datetime button:active,

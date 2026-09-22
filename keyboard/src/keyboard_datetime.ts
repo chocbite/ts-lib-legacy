@@ -104,7 +104,9 @@ export class Keyboard_DateTime extends KeyboardBase {
       calendar.appendChild(button);
     }
 
-    this.replaceChildren(header, calendar);
+    const container = document.createElement("div");
+    container.append(header, calendar);
+    this.replaceChildren(container);
   }
 
   #button(text: string, click: () => void): HTMLButtonElement {
