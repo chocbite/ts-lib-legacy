@@ -2,6 +2,7 @@ import { KeyboardBase } from "./base";
 import { keyboard_type } from "./helpers";
 import "./index.scss";
 import { Keyboard_Color } from "./keyboard_color";
+import { DATETIME_KEYBOARD } from "./keyboard_datetime";
 import { Keyboard_Keys } from "./keyboard_keys";
 import {
   NUMBER_HEX_KEYBOARD,
@@ -18,10 +19,11 @@ import { KeyboardConfig, KeyboardType } from "./types";
 export { VIRTUAL_KEYBOARD } from "./settings";
 export { KeyboardType } from "./types";
 
-const KEYBOARDS: Record<KeyboardType, KeyboardBase> = {
+const KEYBOARDS: Partial<Record<KeyboardType, KeyboardBase>> = {
   [KeyboardType.Text]: TEXT_KEYBOARD,
   [KeyboardType.Email]: EMAIL_KEYBOARD,
   [KeyboardType.Color]: new Keyboard_Color(),
+  [KeyboardType.Date]: DATETIME_KEYBOARD,
   [KeyboardType.NumberWhole]: NUMBER_WHOLE_KEYBOARD,
   [KeyboardType.NumberHex]: NUMBER_HEX_KEYBOARD,
   [KeyboardType.NumberInteger]: NUMBER_INTEGER_KEYBOARD,
@@ -45,6 +47,7 @@ export function keyboard_open(
         ? new Keyboard_Keys(mode)
         : KEYBOARDS[mode];
 
+  if (!keyboard) return () => {};
   keyboard.open(element);
 
   return () => {

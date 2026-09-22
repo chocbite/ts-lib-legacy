@@ -14,11 +14,75 @@ onscreen-keyboard-keyboard-keys {
   border-radius: 0.6rem 0.6rem 0rem 0rem;
   user-select: none;
   pointer-events: all;
-  > div {
-    display: flex;
-    justify-content: center;
-    padding: 0.4rem;
-  }
+}
+
+onscreen-keyboard-keyboard-keys > div {
+  display: flex;
+  justify-content: center;
+  padding: 0.4rem;
+}
+
+onscreen-keyboard-keyboard-datetime {
+  z-index: 4294967296;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--keyboard-colors-background);
+  box-shadow: 0 0px 10px var(--keyboard-colors-border);
+  border-radius: 0.6rem 0.6rem 0rem 0rem;
+  user-select: none;
+  pointer-events: all;
+}
+
+.keyboard-datetime {
+  width: min(26rem, 100%);
+  margin: 0 auto;
+  padding: 0.8rem;
+}
+
+.keyboard-datetime-header {
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.keyboard-datetime-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.keyboard-datetime-calendar > span {
+  padding: 0.2rem;
+  color: var(--keyboard-colors-keytext);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.keyboard-datetime button {
+  min-height: 2.6rem;
+  border: 1px solid var(--keyboard-colors-border);
+  border-radius: 0.5rem;
+  background: transparent;
+  box-shadow: 0 2px 5px var(--keyboard-colors-shadow);
+  color: var(--keyboard-colors-keytext);
+  font: inherit;
+  font: inherit;
+  color: var(--keyboard-colors-keytext);
+}
+
+.keyboard-datetime button:active,
+.keyboard-datetime button.selected {
+  background-color: var(--keyboard-colors-active);
+  box-shadow: 0 0 0 var(--keyboard-colors-shadow);
+}
+
+.keyboard-datetime button.outside,
+.keyboard-datetime button:disabled {
+  opacity: 0.4;
 }
 
 onscreen-keyboard-keyboard-color {
