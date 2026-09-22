@@ -38,7 +38,7 @@ app.innerHTML = `
   <h2>Supported editable fields</h2>
   <div class="fields">
   <div class="field"><label for="text">Text <code>Text</code></label><input id="text" type="text" placeholder="Text input"></div>
-  <div class="field"><label for="email">Email <code>Text</code></label><input id="email" type="email" placeholder="name@example.com"></div>
+        <div class="field"><label for="email">Email <code>Email</code></label><input id="email" type="email" placeholder="name@example.com"></div>
   <div class="field"><label for="password">Password <code>Text</code></label><input id="password" type="password" placeholder="Password"></div>
   <div class="field"><label for="tel">Telephone <code>Phone</code></label><input id="tel" type="tel" placeholder="+1 234 567 890"></div>
   <div class="field"><label for="integer">Integer <code>NumberInteger</code></label><input id="integer" type="number" placeholder="-42"></div>

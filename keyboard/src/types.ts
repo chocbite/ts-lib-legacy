@@ -19,6 +19,8 @@ export type KeyboardBaseLayers =
 export const KeyboardType = {
   /**Text input type */
   Text: "text",
+  /**Email input type */
+  Email: "email",
   /**Whole number input type, eg. 0, 1, 2 ...*/
   NumberWhole: "number_whole",
   /**Integer number input type, eg. -2, -1, 0, 1, 2 ... */

@@ -9,7 +9,7 @@ import {
   PHONE_KEYBOARD,
 } from "./number";
 import { VIRTUAL_KEYBOARD } from "./settings";
-import { TEXT_KEYBOARD } from "./text";
+import { EMAIL_KEYBOARD, TEXT_KEYBOARD } from "./text";
 import { KeyboardConfig, KeyboardType } from "./types";
 
 export { VIRTUAL_KEYBOARD } from "./settings";
@@ -17,6 +17,7 @@ export { KeyboardType } from "./types";
 
 const KEYBOARDS: Record<KeyboardType, Keyboard> = {
   [KeyboardType.Text]: TEXT_KEYBOARD,
+  [KeyboardType.Email]: EMAIL_KEYBOARD,
   [KeyboardType.NumberWhole]: NUMBER_WHOLE_KEYBOARD,
   [KeyboardType.NumberInteger]: NUMBER_INTEGER_KEYBOARD,
   [KeyboardType.NumberRationalPositive]: NUMBER_RATIONAL_POSITIVE_KEYBOARD,

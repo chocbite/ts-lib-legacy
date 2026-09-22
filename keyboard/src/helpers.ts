@@ -2,6 +2,7 @@ import { KeyboardType } from "./types";
 
 export function input_keyboard_type(input: HTMLInputElement): KeyboardType {
   if (input.type === "tel") return KeyboardType.Phone;
+  if (input.type === "email") return KeyboardType.Email;
   if (input.type !== "number") return KeyboardType.Text;
 
   const positive = input.min !== "" && Number(input.min) >= 0;
