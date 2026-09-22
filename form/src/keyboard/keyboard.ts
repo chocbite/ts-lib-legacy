@@ -1,4 +1,8 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
+import {
+  get_cursor_position,
+  set_cursor_position,
+} from "@chocbite/ts-lib-common";
 import { some } from "@chocbite/ts-lib-result";
 import state from "@chocbite/ts-lib-state";
 import {
@@ -238,14 +242,16 @@ export class Keyboard extends Base {
     if (!element.isContentEditable) return false;
     const selection = element.ownerDocument.getSelection();
     if (!selection?.rangeCount) return false;
-    const range = selection.getRangeAt(0);
+    let range = selection.getRangeAt(0);
     if (!element.contains(range.commonAncestorContainer)) return false;
 
     if (delete_backward && range.collapsed) {
       selection.modify("extend", "backward", "character");
+      if (!selection.rangeCount) return false;
+      range = selection.getRangeAt(0);
+      if (range.collapsed) return false;
     }
-    if (range.collapsed) return false;
-    range.deleteContents();
+    if (delete_backward || !range.collapsed) range.deleteContents();
     if (data) {
       const text = element.ownerDocument.createTextNode(data);
       range.insertNode(text);
@@ -331,9 +337,9 @@ export class Keyboard extends Base {
     ) {
       this.#dis_input({ data: "\n", inputType: "insertLineBreak" });
     } else if (keydown && key === KeyboardSpecialKeys.Left) {
-      this.#move_cursor(false);
+      set_cursor_position(this.#e, get_cursor_position(this.#e) - 1);
     } else if (keydown && key === KeyboardSpecialKeys.Right) {
-      this.#move_cursor(true);
+      set_cursor_position(this.#e, get_cursor_position(this.#e) + 1);
     }
     this.#dis_keyup(opts);
   }
