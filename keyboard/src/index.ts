@@ -1,11 +1,11 @@
 import { KeyboardBase } from "./base";
-import { Keyboard_Color } from "./color";
 import { keyboard_type } from "./helpers";
 import "./index.scss";
+import { Keyboard_Color } from "./keyboard_color";
 import { Keyboard_Keys } from "./keyboard_keys";
 import {
-  NUMBER_INTEGER_KEYBOARD,
   NUMBER_HEX_KEYBOARD,
+  NUMBER_INTEGER_KEYBOARD,
   NUMBER_RATIONAL_KEYBOARD,
   NUMBER_RATIONAL_POSITIVE_KEYBOARD,
   NUMBER_WHOLE_KEYBOARD,
