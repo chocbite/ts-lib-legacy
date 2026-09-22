@@ -82,7 +82,6 @@ export class Keyboard_Color extends KeyboardBase {
 
   constructor() {
     super();
-    this.classList.add("keyboard-color");
     const container = this.appendChild(document.createElement("div"));
     container.className = "keyboard-color-content";
     const picker = container.appendChild(document.createElement("div"));
