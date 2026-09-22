@@ -18,6 +18,7 @@ import {
 import form, { FormColors, FormDateTimeMode, FormDateTimeType } from ".";
 import { keyboard_open } from "./keyboard";
 import { VIRTUAL_KEYBOARD } from "./keyboard/settings";
+import { KeyboardType } from "./keyboard/types";
 
 const form_cont = document.createElement("div");
 document.body.appendChild(form_cont);
@@ -26,6 +27,24 @@ form_cont.style.flexDirection = "column";
 form_cont.style.flexGrow = "1";
 form_cont.style.overflow = "auto";
 form_cont.style.backgroundColor = "var(--form-colors-background-normal)";
+
+const textarea = document.createElement("textarea");
+form_cont.appendChild(textarea);
+textarea.addEventListener("keydown", (e) => console.warn("keydown", e));
+textarea.addEventListener("keyup", (e) => console.warn("keyup", e));
+textarea.addEventListener("keypress", (e) => console.warn("keypress", e));
+textarea.addEventListener("beforeinput", (e) => console.warn("beforeinput", e));
+textarea.addEventListener("input", (e) => console.warn("input", e));
+textarea.onfocus = () => keyboard_open(textarea, KeyboardType.Text);
+
+const input = document.createElement("input");
+form_cont.appendChild(input);
+input.addEventListener("keydown", (e) => console.warn("keydown", e));
+input.addEventListener("keyup", (e) => console.warn("keyup", e));
+input.addEventListener("keypress", (e) => console.warn("keypress", e));
+input.addEventListener("beforeinput", (e) => console.warn("beforeinput", e));
+input.addEventListener("input", (e) => console.warn("input", e));
+input.onfocus = () => keyboard_open(input, KeyboardType.Text);
 
 form_cont.appendChild(
   form.group_collapser(
