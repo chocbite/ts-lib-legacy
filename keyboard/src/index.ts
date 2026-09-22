@@ -12,13 +12,6 @@ import {
   PHONE_KEYBOARD,
 } from "./number";
 import { VIRTUAL_KEYBOARD } from "./settings";
-import {
-  DATE_KEYBOARD,
-  DATETIME_LOCAL_KEYBOARD,
-  MONTH_KEYBOARD,
-  TIME_KEYBOARD,
-  WEEK_KEYBOARD,
-} from "./temporal";
 import { EMAIL_KEYBOARD, TEXT_KEYBOARD } from "./text";
 import { KeyboardConfig, KeyboardType } from "./types";
 
@@ -29,11 +22,6 @@ const KEYBOARDS: Record<KeyboardType, KeyboardBase> = {
   [KeyboardType.Text]: TEXT_KEYBOARD,
   [KeyboardType.Email]: EMAIL_KEYBOARD,
   [KeyboardType.Color]: new Keyboard_Color(),
-  [KeyboardType.Date]: DATE_KEYBOARD,
-  [KeyboardType.DateTimeLocal]: DATETIME_LOCAL_KEYBOARD,
-  [KeyboardType.Month]: MONTH_KEYBOARD,
-  [KeyboardType.Time]: TIME_KEYBOARD,
-  [KeyboardType.Week]: WEEK_KEYBOARD,
   [KeyboardType.NumberWhole]: NUMBER_WHOLE_KEYBOARD,
   [KeyboardType.NumberHex]: NUMBER_HEX_KEYBOARD,
   [KeyboardType.NumberInteger]: NUMBER_INTEGER_KEYBOARD,
