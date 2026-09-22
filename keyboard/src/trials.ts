@@ -1,5 +1,5 @@
 import { THEME, Themes } from "@chocbite/ts-lib-theme";
-import { keyboard_attach, VIRTUAL_KEYBOARD } from ".";
+import { VIRTUAL_KEYBOARD } from ".";
 
 const style = document.createElement("style");
 style.textContent = `
@@ -99,6 +99,3 @@ THEME.sub((value) => {
   const theme_name = value.value;
   theme.value = theme_name;
 }, true);
-
-void VIRTUAL_KEYBOARD.write(true);
-keyboard_attach();

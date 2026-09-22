@@ -1,3 +1,4 @@
+import { DOCUMENT_HANDLER } from "@chocbite/ts-lib-document";
 import { KeyboardBase } from "./base";
 import { keyboard_type } from "./helpers";
 import { Keyboard_Color } from "./keyboard_color";
@@ -59,42 +60,26 @@ export function keyboard_open(
 }
 
 /** Attaches automatic virtual-keyboard handling to a document and returns a cleanup function. */
-export function keyboard_attach(
-  document: Document = window.document,
-): () => void {
-  let close: (() => void) | undefined;
+const on_focus = (event: FocusEvent) => {
+  const type = keyboard_type(event.target as HTMLElement);
+  if (event.target instanceof HTMLElement && type)
+    keyboard_open(event.target, type);
+};
 
-  const close_keyboard = () => {
-    close?.();
-    close = undefined;
-  };
-  const open_keyboard = (element: HTMLElement) => {
-    const type = keyboard_type(element);
-    if (!type || !VIRTUAL_KEYBOARD.ok()) return;
-    close_keyboard();
-    close = keyboard_open(element, type);
-  };
-  const on_focus = (event: FocusEvent) => {
-    if (event.target instanceof HTMLElement) open_keyboard(event.target);
-  };
-  const on_virtual_keyboard_change = (value: { value: boolean }) => {
-    if (!value.value) {
-      close_keyboard();
-      return;
-    }
-    const active = document.activeElement;
-    if (active instanceof HTMLElement) open_keyboard(active);
-  };
-
-  document.addEventListener("focusin", on_focus);
-  VIRTUAL_KEYBOARD.sub(on_virtual_keyboard_change, true);
-
-  return () => {
-    document.removeEventListener("focusin", on_focus);
-    VIRTUAL_KEYBOARD.unsub(on_virtual_keyboard_change);
-    close_keyboard();
-  };
-}
+VIRTUAL_KEYBOARD.sub((v) => {
+  if (!v.value)
+    DOCUMENT_HANDLER.for_documents((doc) =>
+      doc.addEventListener("focusin", on_focus),
+    );
+  else
+    DOCUMENT_HANDLER.for_documents((doc) =>
+      doc.removeEventListener("focusin", on_focus),
+    );
+}, true);
+DOCUMENT_HANDLER.events.on("added", (e) => {
+  if (VIRTUAL_KEYBOARD.ok()) e.data.addEventListener("focusin", on_focus);
+  else e.data.removeEventListener("focusin", on_focus);
+});
 
 /** Creates a new on-screen keyboard instance with the specified configuration */
 export function keyboard_create(config: KeyboardConfig): Keyboard_Keys {
