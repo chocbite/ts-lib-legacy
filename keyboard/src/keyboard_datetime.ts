@@ -86,6 +86,7 @@ export class Keyboard_DateTime extends KeyboardBase {
       this.#button("‹", () => this.#move_month(-1)),
       Object.assign(document.createElement("strong"), { textContent: `${MONTHS[this.#view.getMonth()]} ${this.#view.getFullYear()}` }),
       this.#button("›", () => this.#move_month(1)),
+      this.#button("🗙", () => this.close()),
     );
     const calendar = document.createElement("div");
     calendar.className = "keyboard-datetime-calendar";
@@ -117,6 +118,7 @@ export class Keyboard_DateTime extends KeyboardBase {
         textContent: this.#view.getFullYear().toString(),
       }),
       this.#button("›", () => this.#move_year(1)),
+      this.#button("🗙", () => this.close()),
     );
     const months = document.createElement("div");
     months.className = "keyboard-datetime-months";
@@ -139,6 +141,7 @@ export class Keyboard_DateTime extends KeyboardBase {
       this.#button("‹", () => this.#move_month(-1)),
       Object.assign(document.createElement("strong"), { textContent: `${MONTHS[this.#view.getMonth()]} ${this.#view.getFullYear()}` }),
       this.#button("›", () => this.#move_month(1)),
+      this.#button("🗙", () => this.close()),
     );
     const weeks = document.createElement("div");
     weeks.className = "keyboard-datetime-weeks";
