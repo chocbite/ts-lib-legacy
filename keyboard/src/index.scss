@@ -21,6 +21,45 @@ onscreen-keyboard-keyboard-keys {
   }
 }
 
+onscreen-keyboard-keyboard-color {
+  z-index: 4294967296;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--keyboard-colors-background);
+  box-shadow: 0 0px 10px var(--keyboard-colors-border);
+  border-radius: 0.6rem 0.6rem 0rem 0rem;
+  color: var(--keyboard-colors-keytext);
+  user-select: none;
+  pointer-events: all;
+}
+
+.keyboard-color-content {
+  width: min(24rem, 100%);
+  margin: 0 auto;
+  padding: 0.8rem;
+}
+
+.keyboard-color-swatches {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.keyboard-color-swatches button {
+  aspect-ratio: 1;
+  border: 2px solid var(--keyboard-colors-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px var(--keyboard-colors-shadow);
+}
+
+.keyboard-color-swatches button[active] {
+  outline: 3px solid var(--keyboard-colors-keytext);
+  outline-offset: 2px;
+}
+
 onscreen-keyboard-layer {
   flex-grow: 1;
   display: grid;

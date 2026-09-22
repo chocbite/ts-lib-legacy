@@ -21,6 +21,8 @@ export const KeyboardType = {
   Text: "text",
   /**Email input type */
   Email: "email",
+  /**Color input type */
+  Color: "color",
   /**Date input type, eg. 2026-09-22 */
   Date: "date",
   /**Local date and time input type, eg. 2026-09-22T14:30 */

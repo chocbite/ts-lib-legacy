@@ -3,6 +3,7 @@ import { KeyboardType } from "./types";
 export function input_keyboard_type(input: HTMLInputElement): KeyboardType {
   if (input.type === "tel") return KeyboardType.Phone;
   if (input.type === "email") return KeyboardType.Email;
+  if (input.type === "color") return KeyboardType.Color;
   if (input.type === "date") return KeyboardType.Date;
   if (input.type === "datetime-local") return KeyboardType.DateTimeLocal;
   if (input.type === "month") return KeyboardType.Month;
@@ -33,7 +34,6 @@ export function keyboard_type(element: HTMLElement): KeyboardType | undefined {
       [
         "button",
         "checkbox",
-        "color",
         "file",
         "image",
         "radio",

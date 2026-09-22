@@ -1,4 +1,5 @@
 import { KeyboardBase } from "./base";
+import { Keyboard_Color } from "./color";
 import { keyboard_type } from "./helpers";
 import "./index.scss";
 import { Keyboard_Keys } from "./keyboard_keys";
@@ -23,9 +24,10 @@ import { KeyboardConfig, KeyboardType } from "./types";
 export { VIRTUAL_KEYBOARD } from "./settings";
 export { KeyboardType } from "./types";
 
-const KEYBOARDS: Record<KeyboardType, Keyboard_Keys> = {
+const KEYBOARDS: Record<KeyboardType, KeyboardBase> = {
   [KeyboardType.Text]: TEXT_KEYBOARD,
   [KeyboardType.Email]: EMAIL_KEYBOARD,
+  [KeyboardType.Color]: new Keyboard_Color(),
   [KeyboardType.Date]: DATE_KEYBOARD,
   [KeyboardType.DateTimeLocal]: DATETIME_LOCAL_KEYBOARD,
   [KeyboardType.Month]: MONTH_KEYBOARD,

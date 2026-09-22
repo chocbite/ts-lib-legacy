@@ -1,5 +1,5 @@
-import { keyboard_attach, VIRTUAL_KEYBOARD } from ".";
 import { THEME, Themes } from "@chocbite/ts-lib-theme";
+import { keyboard_attach, VIRTUAL_KEYBOARD } from ".";
 
 const style = document.createElement("style");
 style.textContent = `
@@ -22,7 +22,7 @@ style.textContent = `
   .field { min-width: 0; }
   .field label { display: flex; justify-content: space-between; gap: .5rem; margin-bottom: .4rem; font-size: .9rem; font-weight: 700; }
   .field code { color: #147d8b; font-size: .75rem; font-weight: 600; }
-  .field input, .field textarea, .editable { width: 100%; padding: .7rem .8rem; border: 1px solid #b9c8d1; border-radius: .55rem; background: #fff; color: #18212b; outline: none; }
+  .field input, .field textarea, .editable { width: 100%; padding: .2rem .2rem; border: 1px solid #b9c8d1; border-radius: .55rem; background: #fff; color: #18212b; outline: none; }
   .field textarea, .editable { min-height: 5.5rem; resize: vertical; }
   .field input:focus, .field textarea:focus, .editable:focus { border-color: #147d8b; box-shadow: 0 0 0 .2rem #147d8b24; }
   .span-two { grid-column: 1 / -1; }
@@ -43,6 +43,7 @@ app.innerHTML = `
         <div class="field"><label for="email">Email <code>Email</code></label><input id="email" type="email" placeholder="name@example.com"></div>
   <div class="field"><label for="password">Password <code>Text</code></label><input id="password" type="password" placeholder="Password"></div>
   <div class="field"><label for="tel">Telephone <code>Phone</code></label><input id="tel" type="tel" placeholder="+1 234 567 890"></div>
+  <div class="field"><label for="color">Color <code>Color</code></label><input id="color" type="color" value="#3b82f6" ></div>
   <div class="field"><label for="integer">Integer <code>NumberInteger</code></label><input id="integer" type="number" placeholder="-42"></div>
   <div class="field"><label for="whole">Whole number <code>NumberWhole</code></label><input id="whole" type="number" min="0" step="1" placeholder="42"></div>
   <div class="field"><label for="rational">Rational <code>NumberRational</code></label><input id="rational" type="number" step="0.1" placeholder="-3.14"></div>
