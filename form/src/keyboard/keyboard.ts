@@ -218,39 +218,124 @@ export class Keyboard extends Base {
     );
   }
 
+  #edit_value(data: string, delete_backward = false): boolean {
+    const element = this.#e;
+    if (!element) return false;
+
+    if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+      const input = element as HTMLInputElement | HTMLTextAreaElement;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      if (start === null || end === null) return false;
+
+      const replace_start =
+        delete_backward && start === end ? start - 1 : start;
+      if (replace_start < 0) return false;
+      input.setRangeText(data, replace_start, end, "end");
+      return true;
+    }
+
+    if (!element.isContentEditable) return false;
+    const selection = element.ownerDocument.getSelection();
+    if (!selection?.rangeCount) return false;
+    const range = selection.getRangeAt(0);
+    if (!element.contains(range.commonAncestorContainer)) return false;
+
+    if (delete_backward && range.collapsed) {
+      selection.modify("extend", "backward", "character");
+    }
+    if (range.collapsed) return false;
+    range.deleteContents();
+    if (data) {
+      const text = element.ownerDocument.createTextNode(data);
+      range.insertNode(text);
+      range.setStartAfter(text);
+    }
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    return true;
+  }
+  #move_cursor(forward: boolean): boolean {
+    const element = this.#e;
+    if (!element) return false;
+
+    if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+      const input = element as HTMLInputElement | HTMLTextAreaElement;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      if (start === null || end === null) return false;
+
+      const position = forward ? end : start;
+      input.setSelectionRange(position, position);
+      return true;
+    }
+
+    if (!element.isContentEditable) return false;
+    const selection = element.ownerDocument.getSelection();
+    if (!selection?.rangeCount) return false;
+    const range = selection.getRangeAt(0);
+    if (!element.contains(range.commonAncestorContainer)) return false;
+
+    selection.modify("move", forward ? "forward" : "backward", "character");
+    return true;
+  }
+
   execute_key(key: string): void {
     if (!this.#e) return this.close();
-    if (key.length === 0) this.close();
-    else if (key.length === 1) {
-      const canceled = !(
-        this.#dis_keydown({ key, code: "Key" + key.toUpperCase() }) &&
-        this.#dis_keypress({ key, code: "Key" + key.toUpperCase() }) &&
-        this.#dis_beforeinput({ data: key, inputType: "insertText" }) &&
-        this.#dis_input({ data: key, inputType: "insertText" }) &&
-        this.#dis_keyup({ key, code: "Key" + key.toUpperCase() })
-      );
-
-      if (canceled) return;
-    } else if (key.includes("layer")) {
+    if (key.length === 0) return this.close();
+    if (key.includes("layer")) {
       const layer_name = key.split(":")[1];
       if (layer_name === this.#layer.ok()) this.#layer.write("default");
       else this.#layer.write(layer_name);
-    } else if (key === KeyboardSpecialKeys.Close) this.close();
-    else if (key === KeyboardSpecialKeys.Enter) this.close();
-    else if (key === KeyboardSpecialKeys.Backspace) {
-      this.#dis_keydown({ key, code: "Backspace" });
-      this.#dis_beforeinput({ data: key, inputType: "deleteContentBackward" });
-      this.#dis_keypress({ key, code: "Backspace" });
-    } else if (key === KeyboardSpecialKeys.Escape) {
-      this.#dis_keydown({ key: "Escape", code: "Escape" });
-      this.#dis_keyup({ key: "Escape", code: "Escape" });
-    } else if (key === KeyboardSpecialKeys.Left) {
-      this.#dis_keydown({ key: "ArrowLeft", code: "ArrowLeft" });
-      this.#dis_keyup({ key: "ArrowLeft", code: "ArrowLeft" });
-    } else if (key === KeyboardSpecialKeys.Right) {
-      this.#dis_keydown({ key: "ArrowRight", code: "ArrowRight" });
-      this.#dis_keyup({ key: "ArrowRight", code: "ArrowRight" });
+      return;
     }
+    if (key === KeyboardSpecialKeys.Close) return this.close();
+
+    const special_keys: Partial<
+      Record<KeyboardSpecialKeys, KeyboardEventInit>
+    > = {
+      [KeyboardSpecialKeys.Backspace]: { key: "Backspace", code: "Backspace" },
+      [KeyboardSpecialKeys.Enter]: { key: "Enter", code: "Enter" },
+      [KeyboardSpecialKeys.Escape]: { key: "Escape", code: "Escape" },
+      [KeyboardSpecialKeys.Left]: { key: "ArrowLeft", code: "ArrowLeft" },
+      [KeyboardSpecialKeys.Right]: { key: "ArrowRight", code: "ArrowRight" },
+    };
+    const opts = special_keys[key as KeyboardSpecialKeys] ?? {
+      key,
+      code: key === " " ? "Space" : "Key" + key.toUpperCase(),
+    };
+
+    const keydown = this.#dis_keydown(opts);
+    if (keydown && key.length === 1) {
+      this.#dis_keypress(opts);
+      if (
+        this.#dis_beforeinput({ data: key, inputType: "insertText" }) &&
+        this.#edit_value(key)
+      )
+        this.#dis_input({ data: key, inputType: "insertText" });
+    } else if (
+      keydown &&
+      key === KeyboardSpecialKeys.Backspace &&
+      this.#dis_beforeinput({
+        data: null,
+        inputType: "deleteContentBackward",
+      }) &&
+      this.#edit_value("", true)
+    ) {
+      this.#dis_input({ data: null, inputType: "deleteContentBackward" });
+    } else if (
+      keydown &&
+      key === KeyboardSpecialKeys.Enter &&
+      this.#dis_beforeinput({ data: "\n", inputType: "insertLineBreak" })
+    ) {
+      this.#dis_input({ data: "\n", inputType: "insertLineBreak" });
+    } else if (keydown && key === KeyboardSpecialKeys.Left) {
+      this.#move_cursor(false);
+    } else if (keydown && key === KeyboardSpecialKeys.Right) {
+      this.#move_cursor(true);
+    }
+    this.#dis_keyup(opts);
   }
 }
 define_element(Keyboard);

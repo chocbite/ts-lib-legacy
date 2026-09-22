@@ -46,6 +46,18 @@ input.addEventListener("beforeinput", (e) => console.warn("beforeinput", e));
 input.addEventListener("input", (e) => console.warn("input", e));
 input.onfocus = () => keyboard_open(input, KeyboardType.Text);
 
+const contentedit = document.createElement("div");
+contentedit.contentEditable = "true";
+form_cont.appendChild(contentedit);
+contentedit.addEventListener("keydown", (e) => console.warn("keydown", e));
+contentedit.addEventListener("keyup", (e) => console.warn("keyup", e));
+contentedit.addEventListener("keypress", (e) => console.warn("keypress", e));
+contentedit.addEventListener("beforeinput", (e) =>
+  console.warn("beforeinput", e),
+);
+contentedit.addEventListener("input", (e) => console.warn("input", e));
+contentedit.onfocus = () => keyboard_open(contentedit, KeyboardType.Text);
+
 form_cont.appendChild(
   form.group_collapser(
     form.group({
