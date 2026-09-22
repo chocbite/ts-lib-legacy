@@ -32,6 +32,8 @@ export class Keyboard_DateTime extends KeyboardBase {
   #input?: HTMLInputElement;
   #view = new Date();
   #changed = false;
+  #hour_group = 0;
+  #minute_group = 0;
 
   static element_name(): string { return "keyboard-datetime"; }
   static element_name_space(): string { return "onscreen-keyboard"; }
@@ -47,6 +49,9 @@ export class Keyboard_DateTime extends KeyboardBase {
     this.#input = element;
     this.#view = date_from_value(element.value) ?? new Date();
     this.#view.setDate(1);
+    const time = element.value.match(/T?(\d{2}):(\d{2})/) ?? [];
+    this.#hour_group = Math.floor(Number(time[1] ?? 0) / 4);
+    this.#minute_group = Math.floor(Number(time[2] ?? 0) / 10);
     this.#changed = false;
     this.#render();
     super.open(element);
@@ -62,10 +67,12 @@ export class Keyboard_DateTime extends KeyboardBase {
   #render(): void {
     const container = document.createElement("div");
     const type = this.#input?.type;
+    if (type === "datetime-local")
+      container.className = "keyboard-datetime-local";
     if (type === "month") container.appendChild(this.#month_picker());
     else if (type === "time") container.appendChild(this.#time_picker());
     else {
-      container.appendChild(this.#calendar());
+      container.appendChild(type === "week" ? this.#week_picker() : this.#calendar());
       if (type === "datetime-local") container.appendChild(this.#time_picker());
     }
     this.replaceChildren(container);
@@ -124,32 +131,102 @@ export class Keyboard_DateTime extends KeyboardBase {
     return picker;
   }
 
+  #week_picker(): HTMLElement {
+    const picker = document.createElement("div");
+    const header = document.createElement("div");
+    header.className = "keyboard-datetime-header";
+    header.append(
+      this.#button("‹", () => this.#move_month(-1)),
+      Object.assign(document.createElement("strong"), { textContent: `${MONTHS[this.#view.getMonth()]} ${this.#view.getFullYear()}` }),
+      this.#button("›", () => this.#move_month(1)),
+    );
+    const weeks = document.createElement("div");
+    weeks.className = "keyboard-datetime-weeks";
+    const first = new Date(this.#view.getFullYear(), this.#view.getMonth(), 1);
+    const start = new Date(first);
+    start.setDate(first.getDate() - ((first.getDay() + 6) % 7));
+    for (let index = 0; index < 6; index += 1) {
+      const monday = new Date(start);
+      monday.setDate(start.getDate() + index * 7);
+      const value = week_value(monday);
+      const row = document.createElement("div");
+      row.className = "keyboard-datetime-week";
+      const button = this.#button(`W${value.slice(-2)}`, () => {
+        this.#set_value(value);
+        this.close();
+      });
+      button.disabled = !this.#value_allowed(value);
+      if (value === this.#input?.value) button.classList.add("selected");
+      const dates = document.createElement("div");
+      dates.className = "keyboard-datetime-week-dates";
+      for (let day = 0; day < 7; day += 1) {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + day);
+        const label = document.createElement("span");
+        label.textContent = date.getDate().toString();
+        if (date.getMonth() !== this.#view.getMonth()) label.classList.add("outside");
+        dates.append(label);
+      }
+      row.append(button, dates);
+      weeks.append(row);
+    }
+    picker.append(header, weeks);
+    return picker;
+  }
+
   #time_picker(): HTMLElement {
     const controls = document.createElement("div");
     controls.className = "keyboard-datetime-time";
-    const time = this.#input?.value.match(/T?(\d{2}):(\d{2})/) ?? [];
-    controls.append(this.#select("hour", 24, time[1] ?? "00"), document.createTextNode(":"), this.#select("minute", 60, time[2] ?? "00"));
+    const hours = document.createElement("div");
+    hours.className = "keyboard-datetime-time-column";
+    for (let group = 0; group < 6; group += 1) {
+      const start = group * 4;
+      const button = this.#button(`${start}-${start + 3}`, () => {
+        this.#hour_group = group;
+        this.#render();
+      });
+      if (group === this.#hour_group) button.classList.add("selected");
+      hours.append(button);
+    }
+
+    const hour_values = document.createElement("div");
+    hour_values.className = "keyboard-datetime-time-column";
+    for (let hour = this.#hour_group * 4; hour < this.#hour_group * 4 + 4; hour += 1) {
+      hour_values.append(this.#button(hour.toString().padStart(2, "0"), () => this.#set_time(hour, this.#time_parts()[1])));
+    }
+
+    const minute_groups = document.createElement("div");
+    minute_groups.className = "keyboard-datetime-time-column";
+    for (let group = 0; group < 6; group += 1) {
+      const start = group * 10;
+      const button = this.#button(`${start.toString().padStart(2, "0")}-${(start + 9).toString().padStart(2, "0")}`, () => {
+        this.#minute_group = group;
+        this.#render();
+      });
+      if (group === this.#minute_group) button.classList.add("selected");
+      minute_groups.append(button);
+    }
+
+    const minute_values_left = document.createElement("div");
+    minute_values_left.className = "keyboard-datetime-time-column";
+    const minute_values_right = document.createElement("div");
+    minute_values_right.className = "keyboard-datetime-time-column";
+    for (let offset = 0; offset < 10; offset += 1) {
+      const minute = this.#minute_group * 10 + offset;
+      const button = this.#button(minute.toString().padStart(2, "0"), () => this.#set_time(this.#time_parts()[0], minute));
+      (offset < 5 ? minute_values_left : minute_values_right).append(button);
+    }
+    controls.append(hours, hour_values, minute_groups, minute_values_left, minute_values_right);
     return controls;
   }
 
-  #select(name: string, count: number, value: string): HTMLSelectElement {
-    const select = document.createElement("select");
-    select.name = name;
-    for (let index = 0; index < count; index += 1) {
-      const option = document.createElement("option");
-      option.value = index.toString().padStart(2, "0");
-      option.textContent = option.value;
-      option.selected = option.value === value;
-      select.append(option);
-    }
-    select.addEventListener("change", () => this.#select_time());
-    return select;
+  #time_parts(): [number, number] {
+    const time = this.#input?.value.match(/T?(\d{2}):(\d{2})/) ?? [];
+    return [Number(time[1] ?? 0), Number(time[2] ?? 0)];
   }
 
-  #select_time(): void {
-    const hour = this.querySelector<HTMLSelectElement>('select[name="hour"]')?.value ?? "00";
-    const minute = this.querySelector<HTMLSelectElement>('select[name="minute"]')?.value ?? "00";
-    const time = `${hour}:${minute}`;
+  #set_time(hour: number, minute: number): void {
+    const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
     if (this.#input?.type === "time") this.#set_value(time);
     else this.#set_value(`${date_value(this.#selected_date())}T${time}`);
   }
