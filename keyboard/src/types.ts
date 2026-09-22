@@ -21,6 +21,16 @@ export const KeyboardType = {
   Text: "text",
   /**Email input type */
   Email: "email",
+  /**Date input type, eg. 2026-09-22 */
+  Date: "date",
+  /**Local date and time input type, eg. 2026-09-22T14:30 */
+  DateTimeLocal: "datetime_local",
+  /**Month input type, eg. 2026-09 */
+  Month: "month",
+  /**Time input type, eg. 14:30 */
+  Time: "time",
+  /**Week input type, eg. 2026-W39 */
+  Week: "week",
   /**Whole number input type, eg. 0, 1, 2 ...*/
   NumberWhole: "number_whole",
   /**Integer number input type, eg. -2, -1, 0, 1, 2 ... */

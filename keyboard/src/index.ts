@@ -1,6 +1,7 @@
+import { KeyboardBase } from "./base";
 import { keyboard_type } from "./helpers";
 import "./index.scss";
-import { Keyboard } from "./keyboard";
+import { Keyboard_Keys } from "./keyboard_keys";
 import {
   NUMBER_INTEGER_KEYBOARD,
   NUMBER_RATIONAL_KEYBOARD,
@@ -9,15 +10,27 @@ import {
   PHONE_KEYBOARD,
 } from "./number";
 import { VIRTUAL_KEYBOARD } from "./settings";
+import {
+  DATE_KEYBOARD,
+  DATETIME_LOCAL_KEYBOARD,
+  MONTH_KEYBOARD,
+  TIME_KEYBOARD,
+  WEEK_KEYBOARD,
+} from "./temporal";
 import { EMAIL_KEYBOARD, TEXT_KEYBOARD } from "./text";
 import { KeyboardConfig, KeyboardType } from "./types";
 
 export { VIRTUAL_KEYBOARD } from "./settings";
 export { KeyboardType } from "./types";
 
-const KEYBOARDS: Record<KeyboardType, Keyboard> = {
+const KEYBOARDS: Record<KeyboardType, Keyboard_Keys> = {
   [KeyboardType.Text]: TEXT_KEYBOARD,
   [KeyboardType.Email]: EMAIL_KEYBOARD,
+  [KeyboardType.Date]: DATE_KEYBOARD,
+  [KeyboardType.DateTimeLocal]: DATETIME_LOCAL_KEYBOARD,
+  [KeyboardType.Month]: MONTH_KEYBOARD,
+  [KeyboardType.Time]: TIME_KEYBOARD,
+  [KeyboardType.Week]: WEEK_KEYBOARD,
   [KeyboardType.NumberWhole]: NUMBER_WHOLE_KEYBOARD,
   [KeyboardType.NumberInteger]: NUMBER_INTEGER_KEYBOARD,
   [KeyboardType.NumberRationalPositive]: NUMBER_RATIONAL_POSITIVE_KEYBOARD,
@@ -31,13 +44,13 @@ const KEYBOARDS: Record<KeyboardType, Keyboard> = {
  * @returns A function that closes the keyboard when called. */
 export function keyboard_open(
   element: HTMLElement,
-  mode: KeyboardType | Keyboard | KeyboardConfig,
+  mode: KeyboardType | KeyboardBase | KeyboardConfig,
 ): () => void {
   const keyboard =
-    mode instanceof Keyboard
+    mode instanceof KeyboardBase
       ? mode
       : typeof mode === "object"
-        ? new Keyboard(mode)
+        ? new Keyboard_Keys(mode)
         : KEYBOARDS[mode];
 
   keyboard.open(element);
@@ -86,6 +99,6 @@ export function keyboard_attach(
 }
 
 /** Creates a new on-screen keyboard instance with the specified configuration */
-export function keyboard_create(config: KeyboardConfig): Keyboard {
-  return new Keyboard(config);
+export function keyboard_create(config: KeyboardConfig): Keyboard_Keys {
+  return new Keyboard_Keys(config);
 }

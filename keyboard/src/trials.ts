@@ -44,11 +44,16 @@ app.innerHTML = `
   <div class="field"><label for="integer">Integer <code>NumberInteger</code></label><input id="integer" type="number" placeholder="-42"></div>
   <div class="field"><label for="whole">Whole number <code>NumberWhole</code></label><input id="whole" type="number" min="0" step="1" placeholder="42"></div>
   <div class="field"><label for="rational">Rational <code>NumberRational</code></label><input id="rational" type="number" step="0.1" placeholder="-3.14"></div>
-  <div class="field"><label for="positive-rational">Positive rational <code>NumberRationalPositive</code></label><input id="positive-rational" type="number" min="0" step="0.1" placeholder="3.14"></div>
+        <div class="field"><label for="positive-rational">Positive rational <code>NumberRationalPositive</code></label><input id="positive-rational" type="number" min="0" step="0.1" placeholder="3.14"></div>
+        <div class="field"><label for="date">Date <code>Date</code></label><input id="date" type="date"></div>
+        <div class="field"><label for="datetime">Date and time <code>DateTimeLocal</code></label><input id="datetime" type="datetime-local"></div>
+        <div class="field"><label for="month">Month <code>Month</code></label><input id="month" type="month"></div>
+        <div class="field"><label for="time">Time <code>Time</code></label><input id="time" type="time"></div>
+        <div class="field"><label for="week">Week <code>Week</code></label><input id="week" type="week"></div>
   <div class="field span-two"><label for="textarea">Textarea <code>Text</code></label><textarea id="textarea" placeholder="Multi-line text input"></textarea></div>
   <div class="field span-two"><label for="editable">Contenteditable <code>Text</code></label><div id="editable" class="editable" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Editable rich text">Editable content</div></div>
   </div>
-  <p class="hint">Native controls such as date, range, checkbox, and file inputs deliberately do not open the virtual keyboard.</p>
+      <p class="hint">Date and time fields use compact numeric layouts with their required separators. Controls such as range, checkbox, and file inputs deliberately do not open the virtual keyboard.</p>
   </section>
   <aside class="panel">
       <label class="switch"><input type="checkbox" checked> Virtual keyboard enabled</label>

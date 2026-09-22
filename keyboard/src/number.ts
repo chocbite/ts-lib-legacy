@@ -1,7 +1,7 @@
-import { Keyboard } from "./keyboard";
+import { Keyboard_Keys } from "./keyboard_keys";
 import { KeyboardSpecialKeys } from "./types";
 
-export const NUMBER_RATIONAL_KEYBOARD = new Keyboard({
+export const NUMBER_RATIONAL_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 24,
     keys: [
@@ -15,7 +15,7 @@ export const NUMBER_RATIONAL_KEYBOARD = new Keyboard({
       ],
       [
         ..."123".split("").map((n) => ({ text: n })),
-        { text: "⏎", key: KeyboardSpecialKeys.Enter },
+        { text: "⏎", key: KeyboardSpecialKeys.Enter, cols: 2 },
       ],
       [
         { text: "0", cols: 2 },
@@ -28,19 +28,17 @@ export const NUMBER_RATIONAL_KEYBOARD = new Keyboard({
   },
 });
 
-export const NUMBER_WHOLE_KEYBOARD = new Keyboard({
+export const NUMBER_WHOLE_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 24,
     keys: [
       [
         ..."789".split("").map((n) => ({ text: n })),
-        1,
-        { text: "⌫", key: KeyboardSpecialKeys.Backspace },
+        { text: "⌫", key: KeyboardSpecialKeys.Backspace, cols: 2 },
       ],
       [
         ..."456".split("").map((n) => ({ text: n })),
-        1,
-        { text: "Esc", key: KeyboardSpecialKeys.Escape },
+        { text: "Esc", key: KeyboardSpecialKeys.Escape, cols: 2 },
       ],
       [
         ..."123".split("").map((n) => ({ text: n })),
@@ -56,7 +54,7 @@ export const NUMBER_WHOLE_KEYBOARD = new Keyboard({
   },
 });
 
-export const NUMBER_INTEGER_KEYBOARD = new Keyboard({
+export const NUMBER_INTEGER_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 24,
     keys: [
@@ -66,8 +64,7 @@ export const NUMBER_INTEGER_KEYBOARD = new Keyboard({
       ],
       [
         ..."456".split("").map((n) => ({ text: n })),
-        1,
-        { text: "Esc", key: KeyboardSpecialKeys.Escape },
+        { text: "Esc", key: KeyboardSpecialKeys.Escape, cols: 2 },
       ],
       [
         ..."123".split("").map((n) => ({ text: n })),
@@ -83,14 +80,13 @@ export const NUMBER_INTEGER_KEYBOARD = new Keyboard({
   },
 });
 
-export const NUMBER_RATIONAL_POSITIVE_KEYBOARD = new Keyboard({
+export const NUMBER_RATIONAL_POSITIVE_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 24,
     keys: [
       [
         ..."789".split("").map((n) => ({ text: n })),
-        1,
-        { text: "⌫", key: KeyboardSpecialKeys.Backspace },
+        { text: "⌫", key: KeyboardSpecialKeys.Backspace, cols: 2 },
       ],
       [
         ..."456.".split("").map((n) => ({ text: n })),
@@ -110,7 +106,7 @@ export const NUMBER_RATIONAL_POSITIVE_KEYBOARD = new Keyboard({
   },
 });
 
-export const PHONE_KEYBOARD = new Keyboard({
+export const PHONE_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 24,
     keys: [

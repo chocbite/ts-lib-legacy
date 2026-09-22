@@ -1,7 +1,7 @@
-import { Keyboard } from "./keyboard";
+import { Keyboard_Keys } from "./keyboard_keys";
 import { KeyboardSpecialKeys } from "./types";
 
-export const TEXT_KEYBOARD = new Keyboard({
+export const TEXT_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 60,
     key_cols: 4,
@@ -90,7 +90,7 @@ export const TEXT_KEYBOARD = new Keyboard({
   },
 });
 
-export const EMAIL_KEYBOARD = new Keyboard({
+export const EMAIL_KEYBOARD = new Keyboard_Keys({
   default: {
     max_width: 60,
     key_cols: 4,

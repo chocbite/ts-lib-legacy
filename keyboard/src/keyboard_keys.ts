@@ -5,6 +5,7 @@ import {
 } from "@chocbite/ts-lib-common";
 import { some } from "@chocbite/ts-lib-result";
 import state from "@chocbite/ts-lib-state";
+import { KeyboardBase } from "./base";
 import {
   KeyboardConfig,
   KeyboardLayerConfig,
@@ -21,7 +22,7 @@ class KeyboardKey extends Base {
   }
 
   constructor(
-    keyboard: Keyboard,
+    keyboard: Keyboard_Keys,
     text: string,
     key: string,
     ri: number,
@@ -56,7 +57,7 @@ class KeyboardLayer extends Base {
     return "onscreen-keyboard";
   }
 
-  constructor(keyboard: Keyboard, config: KeyboardLayerConfig) {
+  constructor(keyboard: Keyboard_Keys, config: KeyboardLayerConfig) {
     super();
     if (config.max_width) this.style.maxWidth = config.max_width + "rem";
     this.addEventListener("mousedown", (e) => e.preventDefault());
@@ -122,18 +123,13 @@ const IEO = {
   bubbles: true,
 };
 
-export class Keyboard extends Base {
+export class Keyboard_Keys extends KeyboardBase {
   static element_name(): string {
-    return "keyboard";
-  }
-
-  static element_name_space(): string {
-    return "onscreen-keyboard";
+    return "keyboard-keys";
   }
 
   #layer = state.ok_w("default");
   readonly layer = this.#layer.read_only;
-  #e?: HTMLElement;
   #changed = false;
 
   constructor(config: KeyboardConfig) {
@@ -157,82 +153,61 @@ export class Keyboard extends Base {
     });
   }
 
-  #listener = (e: PointerEvent) => {
-    if (e.target === this || this.contains(e.target as Node)) return;
-    if (this.#e && (e.target === this.#e || this.#e.contains(e.target as Node)))
-      return;
-    this.close();
-  };
-
-  protected connectedCallback(): void {
-    super.connectedCallback();
-    this.#e?.ownerDocument.addEventListener("pointerdown", this.#listener, {
-      capture: true,
-    });
-  }
-
-  protected disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.#e?.ownerDocument.removeEventListener("pointerdown", this.#listener, {
-      capture: true,
-    });
-  }
-
   open(element: HTMLElement): void {
-    this.#e = element;
+    super.open(element);
     this.#changed = false;
-    this.#e.ownerDocument.documentElement.appendChild(this);
     this.#layer.write("default");
   }
 
   close(): void {
     this.#dispatch_change();
-    this.remove();
+    super.close();
   }
 
   #dispatch_change(): void {
-    if (this.#e && this.#changed)
-      this.#e.dispatchEvent(new Event("change", { bubbles: true }));
+    if (this.elem && this.#changed)
+      this.elem.dispatchEvent(new Event("change", { bubbles: true }));
     this.#changed = false;
   }
 
   #dis_keydown(opts?: KeyboardEventInit): boolean {
     return (
-      this.#e?.dispatchEvent(
+      this.elem?.dispatchEvent(
         new KeyboardEvent("keydown", { ...KEO, ...opts }),
       ) ?? false
     );
   }
   #dis_keypress(opts?: KeyboardEventInit): boolean {
     return (
-      this.#e?.dispatchEvent(
+      this.elem?.dispatchEvent(
         new KeyboardEvent("keypress", { ...KEO, ...opts }),
       ) ?? false
     );
   }
   #dis_keyup(opts?: KeyboardEventInit): boolean {
     return (
-      this.#e?.dispatchEvent(new KeyboardEvent("keyup", { ...KEO, ...opts })) ??
-      false
+      this.elem?.dispatchEvent(
+        new KeyboardEvent("keyup", { ...KEO, ...opts }),
+      ) ?? false
     );
   }
   #dis_input(opts?: InputEventInit): boolean {
     return (
-      this.#e?.dispatchEvent(
+      this.elem?.dispatchEvent(
         new InputEvent("input", { ...IEO, cancelable: false, ...opts }),
       ) ?? false
     );
   }
   #dis_beforeinput(opts?: InputEventInit): boolean {
     return (
-      this.#e?.dispatchEvent(
+      this.elem?.dispatchEvent(
         new InputEvent("beforeinput", { ...IEO, cancelable: true, ...opts }),
       ) ?? false
     );
   }
 
   #edit_value(data: string, delete_backward = false): boolean {
-    const element = this.#e;
+    const element = this.elem;
     if (!element) return false;
 
     if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
@@ -273,7 +248,7 @@ export class Keyboard extends Base {
   }
 
   execute_key(key: string): void {
-    if (!this.#e) return this.close();
+    if (!this.elem) return this.close();
     if (key.length === 0) return this.close();
     if (key.includes("layer")) {
       const layer_name = key.split(":")[1];
@@ -321,7 +296,7 @@ export class Keyboard extends Base {
     } else if (
       keydown &&
       key === KeyboardSpecialKeys.Enter &&
-      this.#e.tagName !== "INPUT" &&
+      this.elem.tagName !== "INPUT" &&
       this.#dis_beforeinput({ data: "\n", inputType: "insertLineBreak" })
     ) {
       if (this.#edit_value("\n")) {
@@ -329,12 +304,12 @@ export class Keyboard extends Base {
         this.#dis_input({ data: "\n", inputType: "insertLineBreak" });
       }
     } else if (keydown && key === KeyboardSpecialKeys.Left) {
-      set_cursor_position(this.#e, get_cursor_position(this.#e) - 1);
+      set_cursor_position(this.elem, get_cursor_position(this.elem) - 1);
     } else if (keydown && key === KeyboardSpecialKeys.Right) {
-      set_cursor_position(this.#e, get_cursor_position(this.#e) + 1);
+      set_cursor_position(this.elem, get_cursor_position(this.elem) + 1);
     }
     this.#dis_keyup(opts);
     if (key === KeyboardSpecialKeys.Enter) this.#dispatch_change();
   }
 }
-define_element(Keyboard);
+define_element(Keyboard_Keys);
