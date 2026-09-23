@@ -35,11 +35,11 @@ form-switch {
     position: relative;
     outline: none;
     cursor: grab;
-    background-color: base.$color_background;
+    background-color: base.$color_basic_white;
     @include base.form-colors(off-color, background-color);
 
     &.on {
-      background-color: base.$color_background;
+      background-color: base.$color_basic_black;
       @include base.form-colors(on-color, background-color);
 
       &::after {

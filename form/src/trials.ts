@@ -7,6 +7,7 @@ import {
   material_add_to_queue_rounded,
   material_remove_from_queue_rounded,
 } from "@chocbite/ts-lib-icons";
+import { VIRTUAL_KEYBOARD } from "@chocbite/ts-lib-keyboard";
 import state from "@chocbite/ts-lib-state";
 import {
   ANIMATION_LEVEL,
@@ -23,6 +24,7 @@ form_cont.style.display = "flex";
 form_cont.style.flexDirection = "column";
 form_cont.style.flexGrow = "1";
 form_cont.style.overflow = "auto";
+form_cont.style.backgroundColor = "var(--form-colors-background-normal)";
 
 form_cont.appendChild(
   form.group_collapser(
@@ -41,6 +43,8 @@ form_cont.appendChild(
         form.stepper().bind({ value: SCALE }),
         form.text({ text: "Animation Speed" }),
         form.stepper().bind({ value: ANIMATION_SPEED }),
+        form.text({ text: "Virtual Keyboard" }),
+        form.switch().bind({ value: VIRTUAL_KEYBOARD }),
       ],
     }),
     { collapsed: true, closed_text: "Theme Options" },
@@ -153,6 +157,7 @@ setInterval(() => {
 //        | |  |  __|   > <    | |      | | | . ` |  ___/| |  | |  | |
 //        | |  | |____ / . \   | |     _| |_| |\  | |    | |__| |  | |
 //        |_|  |______/_/ \_\  |_|    |_____|_| \_|_|     \____/   |_|
+
 const text_state = state.ok_w("");
 form_cont.appendChild(form.text({ text: "Text Input" }));
 form_cont.appendChild(
