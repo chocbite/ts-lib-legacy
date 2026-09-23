@@ -45,11 +45,11 @@
     "vitest": "^5.0.1"
   },
   "dependencies": {
+    "@chocbite/ts-lib-result": "^1.4.1",
     "@chocbite/ts-lib-colors": "^1.1.0",
     "@chocbite/ts-lib-document": "^1.1.0",
     "@chocbite/ts-lib-common": "^1.7.2",
     "@chocbite/ts-lib-theme": "^1.4.1",
-    "@chocbite/ts-lib-icons": "^1.3.3",
     "@chocbite/ts-lib-settings": "^1.5.0",
     "@chocbite/ts-lib-state": "^2.4.4",
     "@chocbite/ts-lib-base": "^1.8.6"

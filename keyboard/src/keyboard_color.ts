@@ -181,13 +181,6 @@ export class Keyboard_Color extends KeyboardBase {
     this.#write_color();
   }
 
-  #set_hex(): void {
-    if (!/^#[\da-f]{6}$/i.test(this.#hex.value)) return;
-    this.#rgb = hex_to_rgb(this.#hex.value);
-    this.#hsv = rgb_to_hsv(this.#rgb);
-    this.#write_color(true);
-  }
-
   #write_color(commit = false): void {
     const input = this.#input;
     if (!input) return;
