@@ -1,7 +1,7 @@
 {
-  "name": "@chocbite/ts-lib-base",
-  "version": "1.8.6",
-  "description": "Base ui library for TypeScript",
+  "name": "@chocbite/ts-lib-keyboard",
+  "version": "1.0.0",
+  "description": "Virtual keyboard library for TypeScript",
   "author": "chocolateandmilkwin",
   "license": "MIT",
   "type": "module",
@@ -26,7 +26,8 @@
     "dev": "vite --port 9952",
     "build": "tsdown src/index.ts",
     "lint": "eslint src/**/*.ts",
-    "test": "vitest run",
+    "test": "vitest run --browser.headless",
+    "test:debug": "vitest",
     "check-deps": "npx depcheck",
     "check-trials": "tsc --noEmit",
     "prepublishOnly": "npm run check-deps && npm run check-trials && npm run build",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@chocbite/ts-supplement-eslint": "^2.0.0",
+    "@playwright/test": "^1.63.0",
     "@tsdown/css": "^0.23.0",
     "@vitest/browser-playwright": "^5.0.1",
     "eslint": "^10.11.0",
@@ -42,5 +44,15 @@
     "tsdown": "^0.23.0",
     "vite": "^8.3.0",
     "vitest": "^5.0.1"
+  },
+  "dependencies": {
+    "@chocbite/ts-lib-base": "^1.8.6",
+    "@chocbite/ts-lib-colors": "^1.1.0",
+    "@chocbite/ts-lib-common": "^1.7.2",
+    "@chocbite/ts-lib-document": "^1.1.0",
+    "@chocbite/ts-lib-result": "^1.4.1",
+    "@chocbite/ts-lib-settings": "^1.5.0",
+    "@chocbite/ts-lib-state": "^2.4.4",
+    "@chocbite/ts-lib-theme": "^1.4.1"
   }
 }
