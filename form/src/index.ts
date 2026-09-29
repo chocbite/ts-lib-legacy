@@ -39,6 +39,7 @@ import {
   type FormDropDownOptions,
   type FormDropDownSelection,
 } from "./selectors/drop_down/drop_down";
+import { type FormSelections } from "./selectors/selector_base";
 import {
   form_toggle_button,
   FormToggleButton,
@@ -148,6 +149,7 @@ export type {
   FormPassword,
   FormPasswordOptions,
   FormProgress,
+  FormSelections,
   FormSlider,
   FormSpacer,
   FormSpacerOptions,
