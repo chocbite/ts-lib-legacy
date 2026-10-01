@@ -137,7 +137,7 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
     };
     this.#value_box.onkeydown = (e) => {
       if (e.key === "Enter") {
-        this.focus();
+        HTMLElement.prototype.focus.call(this);
       } else if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
@@ -159,6 +159,10 @@ export class FormStepper<ID extends string | undefined> extends FormNumberWrite<
           e.preventDefault();
       }
     };
+  }
+
+  focus(options?: FocusOptions): void {
+    this.#value_box.focus(options);
   }
 
   set unit(unit: string | undefined) {

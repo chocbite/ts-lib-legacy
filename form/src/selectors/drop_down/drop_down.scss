@@ -23,7 +23,7 @@ form-dropdown {
     min-height: base.$size_touchHeight;
   }
 
-  &:focus-visible {
+  &:focus-within {
     box-shadow: base.$shadow_out_focus_out;
   }
 

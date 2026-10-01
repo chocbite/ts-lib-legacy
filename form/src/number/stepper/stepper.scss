@@ -28,7 +28,7 @@ form-stepper {
     box-shadow: base.$shadow_in_focus_out;
   }
 
-  &:focus-visible {
+  &:focus-within {
     box-shadow: base.$shadow_in_focus_out;
   }
 

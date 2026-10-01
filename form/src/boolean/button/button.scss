@@ -25,7 +25,7 @@ form-button {
     box-shadow: base.$shadow_out_active;
   }
 
-  &:focus-visible {
+  &:focus-within {
     box-shadow: base.$shadow_out_focus_out;
 
     &.active {

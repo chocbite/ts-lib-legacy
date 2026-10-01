@@ -99,6 +99,10 @@ export class FormButton<ID extends string | undefined> extends FormValueWrite<
     };
   }
 
+  focus(options?: FocusOptions): void {
+    HTMLElement.prototype.focus.call(this, options);
+  }
+
   /**Sets the current text of the button*/
   set text(label: string) {
     this.#text.textContent = label;

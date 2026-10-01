@@ -71,7 +71,7 @@ form-slider {
         cursor: grabbing;
       }
 
-      &:focus-visible {
+      &:focus-within {
         box-shadow: base.$shadow_out_focus_out;
         z-index: 2;
       }

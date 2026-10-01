@@ -203,6 +203,10 @@ export abstract class FormValueWrite<
     this.warn_input.name = "val";
   }
 
+  focus(options?: FocusOptions): void {
+    this.warn_input.focus(options);
+  }
+
   set change(func: (val: RT) => void) {
     this.#change = func;
   }
@@ -269,7 +273,8 @@ export abstract class FormValueWrite<
   }
 
   #set_value(val: RT) {
-    if (this._buffer === val) this.new_value(val);
+    if (this._buffer === val) return;
+    this.new_value(val);
     if (this._state) {
       const buff = this._buffer;
       this._state.write!(val).then((err) => {
@@ -279,7 +284,6 @@ export abstract class FormValueWrite<
         }
       });
     } else {
-      this.new_value(val);
       this._buffer = val;
       this.#changed = true;
     }
