@@ -110,6 +110,10 @@ export class FormTextMultiline<
     };
   }
 
+  focus(options?: FocusOptions): void {
+    this.#value_box.focus(options);
+  }
+
   async #set() {
     const buff = this.buffer;
     (await this.set_value_check(this.#value_box.value || "")).map_err(() => {

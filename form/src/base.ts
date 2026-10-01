@@ -203,6 +203,10 @@ export abstract class FormValueWrite<
     this.warn_input.name = "val";
   }
 
+  focus(options?: FocusOptions): void {
+    this.warn_input.focus(options);
+  }
+
   set change(func: (val: RT) => void) {
     this.#change = func;
   }

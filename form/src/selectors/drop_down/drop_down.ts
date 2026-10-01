@@ -1,8 +1,8 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
 import {
   material_close_rounded,
+  material_keyboard_arrow_down_rounded,
   material_unfold_less_rounded,
-  material_unfold_more_rounded,
 } from "@chocbite/ts-lib-icons";
 import type { SVGFunc } from "@chocbite/ts-lib-svg";
 import {
@@ -45,7 +45,9 @@ export class FormDropdown<
 
   #icon?: SVGSVGElement;
   #text: HTMLDivElement = this.appendChild(document.createElement("div"));
-  #open: SVGSVGElement = this.appendChild(material_unfold_more_rounded());
+  #open: SVGSVGElement = this.appendChild(
+    material_keyboard_arrow_down_rounded(),
+  );
   #default: Text = document.createTextNode("Select something");
   #default_icon?: SVGFunc;
   private is_open: boolean = false;
@@ -118,7 +120,7 @@ export class FormDropdown<
       box.open_menu(this.#map, this, this.buffer);
     } else if (!open && this.is_open) {
       const old = this.#open;
-      this.#open = material_unfold_more_rounded();
+      this.#open = material_keyboard_arrow_down_rounded();
       old.replaceWith(this.#open);
       box.close_menu();
     }
