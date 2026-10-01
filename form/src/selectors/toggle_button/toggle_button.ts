@@ -28,6 +28,10 @@ export class FormToggleButton<
   #values: RT[] = [];
   #selected: number = -1;
 
+  focus(options?: FocusOptions): void {
+    (this.firstElementChild as HTMLElement | null)?.focus(options);
+  }
+
   set selections(selections: FormSelectorOption<RT>[] | undefined) {
     if (this.#map.size > 0) {
       this.#map.clear();

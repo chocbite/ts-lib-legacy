@@ -62,7 +62,7 @@ form-togglebutton {
         font-size: 1rem;
       }
 
-      &:focus-visible {
+      &:focus-within {
         z-index: 1;
 
         &::before {

@@ -8,6 +8,7 @@ import {
   material_remove_from_queue_rounded,
 } from "@chocbite/ts-lib-icons";
 import { VIRTUAL_KEYBOARD } from "@chocbite/ts-lib-keyboard";
+import { err, ok } from "@chocbite/ts-lib-result";
 import state from "@chocbite/ts-lib-state";
 import {
   ANIMATION_LEVEL,
@@ -453,7 +454,9 @@ console.warn(form.switch({}).opts({ value: true }));
 //     | |  | |  _  /| |  | |  ___/| |  | | |  | |\ \/  \/ / | . ` |
 //     | |__| | | \ \| |__| | |    | |__| | |__| | \  /\  /  | |\  |
 //     |_____/|_|  \_\\____/|_|    |_____/ \____/   \/  \/   |_| \_|
-const num = state.ok_w(0);
+const num = state.rosw(ok(0), async (v, s) =>
+  v === 3 ? err("Value cannot be 3") : (s.set_ok(v) ?? ok(undefined)),
+);
 form_cont.appendChild(form.text({ text: "Dropdown" }));
 form_cont.appendChild(
   form
@@ -581,7 +584,12 @@ form_cont.appendChild(
 //      \___ \| |      | | | |  | |  __| |  _  /
 //      ____) | |____ _| |_| |__| | |____| | \ \
 //     |_____/|______|_____|_____/|______|_|  \_\
-const slider_num = state.ok_w(0);
+const slider_num = state.rosw(ok(0), async (v, s) =>
+  v > 3 && v < 6
+    ? err("Value cannot be 3 - 6")
+    : (s.set_ok(v) ?? ok(undefined)),
+);
+slider_num.sub((value) => console.warn("2", value.value));
 form_cont.appendChild(form.text({ text: "Slider" }));
 form_cont.appendChild(
   form

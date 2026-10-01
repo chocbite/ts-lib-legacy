@@ -81,6 +81,10 @@ export class FormDropdown<
     };
   }
 
+  focus(options?: FocusOptions): void {
+    HTMLElement.prototype.focus.call(this, options);
+  }
+
   /**Gets the default text displayed when nothing has been selected yet */
   get default() {
     return this.#default.nodeValue || "";
