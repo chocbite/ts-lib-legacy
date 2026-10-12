@@ -1,4 +1,4 @@
-import state from "@chocbite/ts-lib-state";
+import state, { StateSub } from "@chocbite/ts-lib-state";
 import { array_from_length } from "./array";
 import { FETCH_PARSE, make_fetch_parser } from "./fetch_parse";
 
@@ -53,18 +53,35 @@ yo.arr_fixed[1][FETCH_PARSE].then((v) => {
   console.warn(v);
 });
 
-yo.arr_dyn.then((v) => {
+const subs: StateSub<any>[] = [];
+yo.arr_dyn.sub((v) => {
   console.warn(v);
-  state.a.read(v).forEach((arr) => {
+  if (v.err) return;
+  state.a.read(v.value).forEach((arr) => {
     console.warn(arr);
     switch (arr.type) {
-      case "added":
-        arr.items.forEach((item) => {
+      case "fresh":
+        arr.items.forEach((item, i) => {
           console.warn(item);
-          item[FETCH_PARSE].then((v) => {
+          subs[i] = item.sub((v) => {
             console.warn(v);
           });
         });
+        break;
+      case "added":
+        arr.items.forEach((item, i) => {
+          console.warn(item);
+          subs[i] = item.sub((v) => {
+            console.warn(v);
+          });
+        });
+        break;
+      case "removed":
+        arr.items.forEach((item, i) => {
+          console.warn(item);
+          item.unsub(subs[i]);
+        });
+        break;
     }
   });
 });

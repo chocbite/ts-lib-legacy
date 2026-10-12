@@ -83,9 +83,32 @@ describe("make_fetch_parser", () => {
       send,
     );
 
-    const result = await user.aliases[5].write("joe");
+    const result = await user.aliases[5][FETCH_PARSE].write("joe");
 
     expect(result.ok).toBe(true);
     expect(send).toHaveBeenCalledWith({ aliases: { num: 1, alias: "joe" } });
+  });
+
+  it("maps fixed and dynamic array items to hidden state containers", async () => {
+    const parsed = make_fetch_parser(() => "/user", 1_000, {
+      fixed: [2, "n"],
+      dynamic: [0, "n"],
+    });
+    const fixed_item: StateREA<number> = parsed.fixed[1][FETCH_PARSE];
+    const dynamic: StateREA<{ readonly [FETCH_PARSE]: StateREA<number> }[]> =
+      parsed.dynamic;
+    const fetch_mock = vi
+      .fn()
+      .mockResolvedValue(new Response('{"fixed":[1,2],"dynamic":[3]}'));
+    vi.stubGlobal("fetch", fetch_mock);
+    const dynamic_value = await parsed.dynamic;
+
+    expect(fixed_item).toBeDefined();
+    expect(dynamic).toBeDefined();
+    expect(dynamic_value.ok).toBe(true);
+    if (dynamic_value.ok) {
+      expect(dynamic_value.value[0]?.[FETCH_PARSE]).toBeDefined();
+    }
+    vi.unstubAllGlobals();
   });
 });

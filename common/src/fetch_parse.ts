@@ -96,25 +96,36 @@ type Writable<S> = S extends string
     : false
   : false;
 
-type FetchContainer<Value> = { readonly [FETCH_PARSE]: StateREA<Value> };
+type FetchContainer<
+  Value,
+  State extends StateREA<Value> = StateREA<Value>,
+> = { readonly [FETCH_PARSE]: State };
+type FetchArrayItem<S, Value> = S extends string
+  ? FetchContainer<Value, FetchNode<S, Value>>
+  : FetchNode<S, Value>;
+type FetchRepeat<
+  T,
+  N extends number,
+  Acc extends unknown[] = [],
+> = Acc["length"] extends N ? Acc : FetchRepeat<T, N, [...Acc, T]>;
 type FetchNode<S, Value> = S extends string
   ? Writable<S> extends true
     ? StateREAW<Value>
     : StateREA<Value>
   : S extends readonly [0, infer Item, ArrayWriteEncoder]
-    ? FetchContainer<Value> & {
-        readonly [index: number]: FetchNode<Item, ArrayItem<Value>>;
+    ? StateREA<FetchArrayItem<Item, ArrayItem<Value>>[]> & {
+        readonly [index: number]: FetchArrayItem<Item, ArrayItem<Value>>;
       }
     : S extends readonly [0, infer Item]
-      ? FetchContainer<Value> & {
-          readonly [index: number]: FetchNode<Item, ArrayItem<Value>>;
+      ? StateREA<FetchArrayItem<Item, ArrayItem<Value>>[]> & {
+          readonly [index: number]: FetchArrayItem<Item, ArrayItem<Value>>;
         }
       : S extends readonly ["?", infer Item, () => unknown]
         ? FetchNode<Item, Value>
         : S extends readonly ["?", infer Item]
           ? FetchNode<Item, Value>
-          : S extends readonly [number, unknown]
-            ? StateREA<Value>
+          : S extends readonly [infer Count extends number, infer Item]
+            ? FetchRepeat<FetchArrayItem<Item, ArrayItem<Value>>, Count>
             : S extends Parser
               ? StateREA<Value>
               : S extends object
@@ -317,31 +328,58 @@ export function make_fetch_parser<const S extends FetchSchema>(
       });
     }
 
+    const array_item = (
+      item_schema: unknown,
+      item_path: PathPart[],
+      array_encoder?: ArrayWriteEncoder<unknown>,
+    ): unknown => {
+      const item = node(item_schema, item_path, array_encoder);
+      if (typeof item_schema !== "string") return item;
+      const container = {};
+      set_fetch_state(container, item as StateREA<unknown>);
+      return container;
+    };
+
     if (Array.isArray(part_schema) && part_schema[0] === 0) {
       const item: unknown = part_schema[1];
       const array_encoder =
         typeof part_schema[2] === "function"
           ? (part_schema[2] as ArrayWriteEncoder<unknown>)
           : undefined;
-      const array_state = state.proxy.rea(root as any, (result) =>
-        result_at_path(result, path),
-      );
       const items = new Map<number, unknown>();
-      const array = {};
-      set_fetch_state(array, array_state);
-      return new Proxy(array, {
-        get(target, property, receiver) {
-          if (typeof property !== "string" || !/^\d+$/.test(property))
-            return Reflect.get(target, property, receiver) as unknown;
-          const index = Number(property);
-          let item_state = items.get(index);
-          if (!item_state) {
-            item_state = node(item, [...path, index], array_encoder);
-            items.set(index, item_state);
+      const get_item = (index: number): unknown => {
+        let item_state = items.get(index);
+        if (!item_state) {
+          item_state = array_item(item, [...path, index], array_encoder);
+          items.set(index, item_state);
+        }
+        return item_state;
+      };
+      const array_state = state.proxy.rea(root as any, (result) => {
+        const value = result_at_path(result, path);
+        if (value.err) return value;
+        if (!Array.isArray(value.value)) return err("Expected array");
+        return ok(value.value.map((_value, index) => get_item(index)));
+      });
+      return new Proxy(array_state as object, {
+        get(target, property) {
+          if (typeof property !== "string" || !/^\d+$/.test(property)) {
+            const member: unknown = Reflect.get(target, property, target);
+            return typeof member === "function"
+              ? (member.bind(target) as unknown)
+              : member;
           }
-          return item_state;
+          return get_item(Number(property));
         },
       });
+    }
+
+    if (Array.isArray(part_schema) && typeof part_schema[0] === "number") {
+      const count = part_schema[0];
+      const item: unknown = part_schema[1];
+      return Array.from({ length: count }, (_value, index) =>
+        array_item(item, [...path, index]),
+      );
     }
 
     if (
