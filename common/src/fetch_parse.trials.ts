@@ -64,7 +64,7 @@ yo.arr_fixed[1][FETCH_PARSE].then((v) => {
   console.warn(v);
 });
 
-yo.arr_fixed[1].test.then((v) => {
+yo.arr_fixed_obj[1].test.then((v) => {
   console.warn(v);
 });
 
