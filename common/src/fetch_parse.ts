@@ -27,6 +27,7 @@ type FetchPrimitiveSpec =
 type Parser = (input: unknown) => unknown;
 
 export type ArrayWriteEncoder<T = any> = (value: T, index: number) => unknown;
+export const FETCH_PARSE: unique symbol = Symbol("FETCH_PARSE");
 
 export type FetchSchema =
   | FetchPrimitiveSpec
@@ -42,7 +43,7 @@ type RemoveWritable<S> = S extends string
   ? S extends `${infer Value}w`
     ? Value
     : S
-  : S extends readonly [0, infer Item, ArrayWriteEncoder<unknown>]
+  : S extends readonly [0, infer Item, ArrayWriteEncoder]
     ? readonly [0, RemoveWritable<Item>]
     : S extends readonly [infer Count extends number, infer Item]
       ? readonly [Count, RemoveWritable<Item>]
@@ -77,7 +78,7 @@ type ResolveSchema<S> = S extends string
       ? ResolveSchema<Item>
       : S extends readonly ["?", infer Item]
         ? ResolveSchema<Item> | undefined
-        : S extends readonly [0, infer Item, ArrayWriteEncoder]
+  : S extends readonly [0, infer Item, ArrayWriteEncoder]
           ? ResolveSchema<Item>[]
           : S extends readonly [0, infer Item]
             ? ResolveSchema<Item>[]
@@ -95,16 +96,17 @@ type Writable<S> = S extends string
     : false
   : false;
 
+type FetchContainer<Value> = { readonly [FETCH_PARSE]: StateREA<Value> };
 type FetchNode<S, Value> = S extends string
   ? Writable<S> extends true
     ? StateREAW<Value>
     : StateREA<Value>
-  : S extends readonly [0, infer Item, ArrayWriteEncoder<unknown>]
-    ? StateREA<Value> & {
+  : S extends readonly [0, infer Item, ArrayWriteEncoder]
+    ? FetchContainer<Value> & {
         readonly [index: number]: FetchNode<Item, ArrayItem<Value>>;
       }
     : S extends readonly [0, infer Item]
-      ? StateREA<Value> & {
+      ? FetchContainer<Value> & {
           readonly [index: number]: FetchNode<Item, ArrayItem<Value>>;
         }
       : S extends readonly ["?", infer Item, () => unknown]
@@ -116,7 +118,7 @@ type FetchNode<S, Value> = S extends string
             : S extends Parser
               ? StateREA<Value>
               : S extends object
-                ? StateREA<Value> & {
+                ? FetchContainer<Value> & {
                     -readonly [K in keyof S]: FetchNode<
                       S[K],
                       ValueForKey<Value, K>
@@ -127,7 +129,7 @@ type FetchNode<S, Value> = S extends string
 type ArrayItem<T> = T extends readonly (infer Item)[] ? Item : never;
 type ValueForKey<T, K> = K extends keyof T ? T[K] : never;
 
-export type FetchParsed<S extends FetchSchema> = StateREA<ResolveSchema<S>> &
+export type FetchParsed<S extends FetchSchema> = FetchContainer<ResolveSchema<S>> &
   (S extends object
     ? {
         -readonly [K in keyof S]: FetchNode<
@@ -149,6 +151,14 @@ type RuntimeSchema =
 type RemoteOwner = {
   update_single(value: StateResult<unknown>, update?: boolean): void;
 };
+
+function set_fetch_state(target: object, fetch_state: StateREA<unknown>): void {
+  Object.defineProperty(target, FETCH_PARSE, {
+    value: fetch_state,
+    enumerable: false,
+    configurable: true,
+  });
+}
 
 function strip_writable(schema: unknown): unknown {
   if (typeof schema === "string")
@@ -317,7 +327,9 @@ export function make_fetch_parser<const S extends FetchSchema>(
         result_at_path(result, path),
       );
       const items = new Map<number, unknown>();
-      return new Proxy(array_state as object, {
+      const array = {};
+      set_fetch_state(array, array_state);
+      return new Proxy(array, {
         get(target, property, receiver) {
           if (typeof property !== "string" || !/^\d+$/.test(property))
             return Reflect.get(target, property, receiver) as unknown;
@@ -339,10 +351,12 @@ export function make_fetch_parser<const S extends FetchSchema>(
     ) {
       const object_state = state.proxy.rea(root as any, (result) =>
         result_at_path(result, path),
-      ) as unknown as Record<string, unknown>;
+      );
+      const object: Record<string, unknown> = {};
+      set_fetch_state(object, object_state);
       for (const [key, child] of Object.entries(part_schema))
-        object_state[key] = node(child, [...path, key]);
-      return object_state;
+        object[key] = node(child, [...path, key]);
+      return object;
     }
 
     return state.proxy.rea(root as any, (result) =>
@@ -351,5 +365,6 @@ export function make_fetch_parser<const S extends FetchSchema>(
   };
 
   const result = node(schema, []) as object;
-  return Object.assign(root as object, result) as unknown as FetchParsed<S>;
+  set_fetch_state(result, root);
+  return result as unknown as FetchParsed<S>;
 }

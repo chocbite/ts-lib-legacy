@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
 import type { StateREA, StateREAW, StateResult } from "@chocbite/ts-lib-state";
-import { make_fetch_parser } from "./fetch_parse";
+import { describe, expect, it, vi } from "vitest";
+import { FETCH_PARSE, make_fetch_parser } from "./fetch_parse";
 
 describe("make_fetch_parser", () => {
   it("maps read-only and writable leaves to their state types", () => {
@@ -15,10 +15,14 @@ describe("make_fetch_parser", () => {
     const writable: StateREAW<string> = parsed.name;
     expect(read_only).toBeDefined();
     expect(writable).toBeDefined();
+    const root: StateREA<{ id: number; name: string }> = parsed[FETCH_PARSE];
+    expect(root).toBeDefined();
   });
 
   it("fetches once for a leaf subscription and projects its value", async () => {
-    const fetch_mock = vi.fn().mockResolvedValue(new Response('{"name":"Ada"}'));
+    const fetch_mock = vi
+      .fn()
+      .mockResolvedValue(new Response('{"name":"Ada"}'));
     vi.stubGlobal("fetch", fetch_mock);
     const user = make_fetch_parser(() => "/user", 60_000, { name: "s" });
     const update = vi.fn<(result: StateResult<string>) => void>();
@@ -31,6 +35,26 @@ describe("make_fetch_parser", () => {
     expect(first_result?.ok && first_result.value).toBe("Ada");
     user.name.unsub(update);
     vi.unstubAllGlobals();
+  });
+
+  it("keeps schema keys separate from the root state API", () => {
+    const parsed = make_fetch_parser(() => "/user", 1_000, { then: "n" });
+
+    const value: StateREA<number> = parsed.then;
+    const root: StateREA<{ then: number }> = parsed[FETCH_PARSE];
+
+    expect(value).toBeDefined();
+    expect(root).toBeDefined();
+  });
+
+  it("exposes primitive member states directly", () => {
+    const parsed = make_fetch_parser(() => "/user", 1_000, {
+      test: "?b",
+      obj: { test: "?b" },
+    });
+
+    expect(parsed.test.then.bind(parsed.test)).toBeTypeOf("function");
+    expect(parsed.obj.test.then.bind(parsed.obj.test)).toBeTypeOf("function");
   });
 
   it("sends nested writable values as a partial object", async () => {
@@ -59,7 +83,7 @@ describe("make_fetch_parser", () => {
       send,
     );
 
-    const result = await user.aliases[5].write!("joe");
+    const result = await user.aliases[5].write("joe");
 
     expect(result.ok).toBe(true);
     expect(send).toHaveBeenCalledWith({ aliases: { num: 1, alias: "joe" } });
