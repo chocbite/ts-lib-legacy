@@ -1,4 +1,3 @@
-import state, { StateSub } from "@chocbite/ts-lib-state";
 import { array_from_length } from "./array";
 import { FETCH_PARSE, make_fetch_parser } from "./fetch_parse";
 
@@ -44,7 +43,7 @@ yo[FETCH_PARSE].then((v) => {
   console.warn(v);
 });
 
-yo.test.then((v) => {
+yo.test.sub((v) => {
   console.warn(v);
 });
 
@@ -52,71 +51,71 @@ yo.then.sub((v) => {
   console.warn(v);
 });
 
-yo.obj[FETCH_PARSE].then((v) => {
-  console.warn(v);
-});
+// yo.obj[FETCH_PARSE].then((v) => {
+//   console.warn(v);
+// });
 
-yo.obj.test.then((v) => {
-  console.warn(v);
-});
+// yo.obj.test.then((v) => {
+//   console.warn(v);
+// });
 
-yo.arr_fixed[1][FETCH_PARSE].then((v) => {
-  console.warn(v);
-});
+// yo.arr_fixed[1][FETCH_PARSE].then((v) => {
+//   console.warn(v);
+// });
 
-yo.arr_fixed_obj[1].test.then((v) => {
-  console.warn(v);
-});
+// yo.arr_fixed_obj[1].test.then((v) => {
+//   console.warn(v);
+// });
 
-const subs: StateSub<any>[] = [];
-yo.arr_dyn.sub((v) => {
-  console.warn(v);
-  if (v.err) return;
-  state.a.read(v.value).forEach((arr) => {
-    console.warn(arr);
-    switch (arr.type) {
-      case "added":
-        arr.items.forEach((item, i) => {
-          console.warn(item);
-          subs[i] = item.sub((v) => {
-            console.warn(v);
-          });
-        });
-        break;
-      case "removed":
-        arr.items.forEach((item, i) => {
-          console.warn(item);
-          item.unsub(subs[i]);
-        });
-        break;
-    }
-  });
-});
+// const subs: StateSub<any>[] = [];
+// yo.arr_dyn.sub((v) => {
+//   console.warn(v);
+//   if (v.err) return;
+//   state.a.read(v.value).forEach((arr) => {
+//     console.warn(arr);
+//     switch (arr.type) {
+//       case "added":
+//         arr.items.forEach((item, i) => {
+//           console.warn(item);
+//           subs[i] = item.sub((v) => {
+//             console.warn(v);
+//           });
+//         });
+//         break;
+//       case "removed":
+//         arr.items.forEach((item, i) => {
+//           console.warn(item);
+//           item.unsub(subs[i]);
+//         });
+//         break;
+//     }
+//   });
+// });
 
-const subs2: StateSub<any>[] = [];
-yo.arr_dyn_obj.sub((v) => {
-  console.warn(v);
-  if (v.err) return;
-  state.a.read(v.value).forEach((arr) => {
-    console.warn(arr);
-    switch (arr.type) {
-      case "added":
-        arr.items.forEach((item, i) => {
-          console.warn(item);
-          item.test.then((v) => {
-            console.warn(v);
-          });
-          item[FETCH_PARSE].then((v) => {
-            console.warn(v);
-          });
-        });
-        break;
-      case "removed":
-        arr.items.forEach((item, i) => {
-          console.warn(item);
-          item.test.unsub(subs2[i]);
-        });
-        break;
-    }
-  });
-});
+// const subs2: StateSub<any>[] = [];
+// yo.arr_dyn_obj.sub((v) => {
+//   console.warn(v);
+//   if (v.err) return;
+//   state.a.read(v.value).forEach((arr) => {
+//     console.warn(arr);
+//     switch (arr.type) {
+//       case "added":
+//         arr.items.forEach((item, i) => {
+//           console.warn(item);
+//           item.test.then((v) => {
+//             console.warn(v);
+//           });
+//           item[FETCH_PARSE].then((v) => {
+//             console.warn(v);
+//           });
+//         });
+//         break;
+//       case "removed":
+//         arr.items.forEach((item, i) => {
+//           console.warn(item);
+//           item.test.unsub(subs2[i]);
+//         });
+//         break;
+//     }
+//   });
+// });
