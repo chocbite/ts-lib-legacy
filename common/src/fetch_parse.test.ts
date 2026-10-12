@@ -1,4 +1,8 @@
-import type { StateREA, StateREAW, StateResult } from "@chocbite/ts-lib-state";
+import state, {
+  type StateREA,
+  type StateREAW,
+  type StateResult,
+} from "@chocbite/ts-lib-state";
 import { describe, expect, it, vi } from "vitest";
 import { FETCH_PARSE, make_fetch_parser } from "./fetch_parse";
 
@@ -83,7 +87,7 @@ describe("make_fetch_parser", () => {
       send,
     );
 
-    const result = await user.aliases[5][FETCH_PARSE].write("joe");
+    const result = await user.aliases[5].write("joe");
 
     expect(result.ok).toBe(true);
     expect(send).toHaveBeenCalledWith({ aliases: { num: 1, alias: "joe" } });
@@ -95,8 +99,7 @@ describe("make_fetch_parser", () => {
       dynamic: [0, "n"],
     });
     const fixed_item: StateREA<number> = parsed.fixed[1][FETCH_PARSE];
-    const dynamic: StateREA<{ readonly [FETCH_PARSE]: StateREA<number> }[]> =
-      parsed.dynamic;
+    const dynamic: StateREA<StateREA<number>[]> = parsed.dynamic;
     const fetch_mock = vi
       .fn()
       .mockResolvedValue(new Response('{"fixed":[1,2],"dynamic":[3]}'));
@@ -107,8 +110,27 @@ describe("make_fetch_parser", () => {
     expect(dynamic).toBeDefined();
     expect(dynamic_value.ok).toBe(true);
     if (dynamic_value.ok) {
-      expect(dynamic_value.value[0]?.[FETCH_PARSE]).toBeDefined();
+      expect(dynamic_value.value[0]).toBeDefined();
     }
+    vi.unstubAllGlobals();
+  });
+
+  it("emits added and removed events for dynamic array length changes", async () => {
+    const fetch_mock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response('{"items":[1,2]}'))
+      .mockResolvedValue(new Response('{"items":[1]}'));
+    vi.stubGlobal("fetch", fetch_mock);
+    const parsed = make_fetch_parser(() => "/items", 10, { items: [0, "n"] });
+    const events: string[] = [];
+    const subscriber = parsed.items.sub((result) => {
+      if (result.ok) events.push(...state.a.read(result.value).map((event) => event.type));
+    });
+
+    await vi.waitFor(() => expect(events).toEqual(["added", "removed"]));
+
+    expect(events).not.toContain("fresh");
+    parsed.items.unsub(subscriber);
     vi.unstubAllGlobals();
   });
 });

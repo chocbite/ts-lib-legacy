@@ -12,7 +12,11 @@ window.fetch = async (e, i) => {
         test: true,
         then: zxcv++,
         arr_fixed: [1, 2, 3],
-        arr_dyn: array_from_length(abc++, (i) => i),
+        arr_fixed_obj: array_from_length(3, (i) => ({ test: false })),
+        arr_dyn: array_from_length(Math.min(3, abc++), (i) => i),
+        arr_dyn_obj: array_from_length(Math.min(3, abc++), (i) => ({
+          test: false,
+        })),
         obj: { test: false },
       }),
     ),
@@ -23,7 +27,14 @@ const yo = make_fetch_parser(() => "/test", 2000, {
   test: "?b",
   then: "n",
   arr_fixed: [3, "n"],
+  arr_fixed_obj: [
+    3,
+    {
+      test: "?b",
+    },
+  ],
   arr_dyn: [0, "n"],
+  arr_dyn_obj: [0, { test: "?b" }],
   obj: {
     test: "?b",
   },
@@ -53,6 +64,10 @@ yo.arr_fixed[1][FETCH_PARSE].then((v) => {
   console.warn(v);
 });
 
+yo.arr_fixed[1].test.then((v) => {
+  console.warn(v);
+});
+
 const subs: StateSub<any>[] = [];
 yo.arr_dyn.sub((v) => {
   console.warn(v);
@@ -60,14 +75,6 @@ yo.arr_dyn.sub((v) => {
   state.a.read(v.value).forEach((arr) => {
     console.warn(arr);
     switch (arr.type) {
-      case "fresh":
-        arr.items.forEach((item, i) => {
-          console.warn(item);
-          subs[i] = item.sub((v) => {
-            console.warn(v);
-          });
-        });
-        break;
       case "added":
         arr.items.forEach((item, i) => {
           console.warn(item);
@@ -80,6 +87,34 @@ yo.arr_dyn.sub((v) => {
         arr.items.forEach((item, i) => {
           console.warn(item);
           item.unsub(subs[i]);
+        });
+        break;
+    }
+  });
+});
+
+const subs2: StateSub<any>[] = [];
+yo.arr_dyn_obj.sub((v) => {
+  console.warn(v);
+  if (v.err) return;
+  state.a.read(v.value).forEach((arr) => {
+    console.warn(arr);
+    switch (arr.type) {
+      case "added":
+        arr.items.forEach((item, i) => {
+          console.warn(item);
+          item.test.then((v) => {
+            console.warn(v);
+          });
+          item[FETCH_PARSE].then((v) => {
+            console.warn(v);
+          });
+        });
+        break;
+      case "removed":
+        arr.items.forEach((item, i) => {
+          console.warn(item);
+          item.test.unsub(subs2[i]);
         });
         break;
     }

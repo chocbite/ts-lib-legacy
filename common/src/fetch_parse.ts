@@ -1,6 +1,9 @@
 import { err, ok } from "@chocbite/ts-lib-result";
 import {
   state,
+  STATE_ARRAY_READ_KEY,
+  type StateArrayRead,
+  type StateArrayReadTypes,
   type StateREA,
   type StateREAW,
   type StateResult,
@@ -103,6 +106,9 @@ type FetchContainer<
 type FetchArrayItem<S, Value> = S extends string
   ? FetchContainer<Value, FetchNode<S, Value>>
   : FetchNode<S, Value>;
+type FetchDynamicArrayItem<S, Value> = S extends string
+  ? FetchNode<S, Value>
+  : FetchNode<S, Value>;
 type FetchRepeat<
   T,
   N extends number,
@@ -113,12 +119,12 @@ type FetchNode<S, Value> = S extends string
     ? StateREAW<Value>
     : StateREA<Value>
   : S extends readonly [0, infer Item, ArrayWriteEncoder]
-    ? StateREA<FetchArrayItem<Item, ArrayItem<Value>>[]> & {
-        readonly [index: number]: FetchArrayItem<Item, ArrayItem<Value>>;
+    ? StateREA<FetchDynamicArrayItem<Item, ArrayItem<Value>>[]> & {
+        readonly [index: number]: FetchDynamicArrayItem<Item, ArrayItem<Value>>;
       }
     : S extends readonly [0, infer Item]
-      ? StateREA<FetchArrayItem<Item, ArrayItem<Value>>[]> & {
-          readonly [index: number]: FetchArrayItem<Item, ArrayItem<Value>>;
+      ? StateREA<FetchDynamicArrayItem<Item, ArrayItem<Value>>[]> & {
+          readonly [index: number]: FetchDynamicArrayItem<Item, ArrayItem<Value>>;
         }
       : S extends readonly ["?", infer Item, () => unknown]
         ? FetchNode<Item, Value>
@@ -350,16 +356,34 @@ export function make_fetch_parser<const S extends FetchSchema>(
       const get_item = (index: number): unknown => {
         let item_state = items.get(index);
         if (!item_state) {
-          item_state = array_item(item, [...path, index], array_encoder);
+          item_state = node(item, [...path, index], array_encoder);
           items.set(index, item_state);
         }
         return item_state;
       };
+      let previous_items: unknown[] = [];
       const array_state = state.proxy.rea(root as any, (result) => {
         const value = result_at_path(result, path);
         if (value.err) return value;
         if (!Array.isArray(value.value)) return err("Expected array");
-        return ok(value.value.map((_value, index) => get_item(index)));
+        const current_items = value.value.map((_value, index) => get_item(index));
+        const changes: StateArrayReadTypes<unknown>[] = [];
+        if (current_items.length > previous_items.length) {
+          changes.push({
+            type: "added",
+            index: previous_items.length,
+            items: current_items.slice(previous_items.length),
+          });
+        } else if (current_items.length < previous_items.length) {
+          changes.push({
+            type: "removed",
+            index: current_items.length,
+            items: previous_items.slice(current_items.length),
+          });
+        }
+        previous_items = current_items;
+        (current_items as StateArrayRead<unknown>)[STATE_ARRAY_READ_KEY] = changes;
+        return ok(current_items);
       });
       return new Proxy(array_state as object, {
         get(target, property) {
