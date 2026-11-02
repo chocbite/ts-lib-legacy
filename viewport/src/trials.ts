@@ -1,4 +1,5 @@
 import { define_element } from "@chocbite/ts-lib-base";
+import { Page } from "./page";
 import { Viewport } from "./viewport";
 import { WidgetBase } from "./widget";
 
@@ -64,10 +65,21 @@ define_element(TrialGraphic);
 document.body.style.margin = "0";
 document.body.style.background = "#222";
 
-const viewport = new Viewport().opts({ canvas_width: 800, canvas_height: 600 });
+const page = new Page().opts({ width: 800, height: 600 });
+const viewport = new Viewport().opts({ page });
 viewport.style.width = "100vw";
 viewport.style.height = "100vh";
 document.body.appendChild(viewport);
+
+const edit_button = document.body.appendChild(document.createElement("button"));
+edit_button.style.position = "fixed";
+edit_button.style.left = "10px";
+edit_button.style.top = "10px";
+edit_button.textContent = "Edit: off";
+edit_button.onclick = () => {
+  viewport.edit = !viewport.edit;
+  edit_button.textContent = viewport.edit ? "Edit: on" : "Edit: off";
+};
 
 const rotating = new TrialGraphic("#c0392b").opts({
   x: 600,
@@ -76,7 +88,7 @@ const rotating = new TrialGraphic("#c0392b").opts({
   height: 64,
 });
 
-viewport.widgets = [
+page.widgets = [
   new TrialBox("#ecf0f1", "").opts({ x: 0, y: 0, width: 800, height: 600 }),
   new TrialBox("#2980b9", "Small box").opts({
     x: 20,
