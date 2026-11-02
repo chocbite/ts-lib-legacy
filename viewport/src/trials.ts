@@ -21,13 +21,10 @@ class TrialBox extends WidgetBase {
   }
 
   get original_width(): number {
-    return 160;
+    return this.width;
   }
   get original_height(): number {
-    return 80;
-  }
-  get stretch(): boolean {
-    return false;
+    return this.height;
   }
 }
 define_element(TrialBox);
@@ -81,7 +78,12 @@ const rotating = new TrialGraphic("#c0392b").opts({
 
 viewport.widgets = [
   new TrialBox("#ecf0f1", "").opts({ x: 0, y: 0, width: 800, height: 600 }),
-  new TrialBox("#2980b9", "Original size").opts({ x: 20, y: 20 }),
+  new TrialBox("#2980b9", "Small box").opts({
+    x: 20,
+    y: 20,
+    width: 160,
+    height: 80,
+  }),
   new TrialBox("#27ae60", "Wide box, text not stretched").opts({
     x: 20,
     y: 120,
@@ -91,11 +93,13 @@ viewport.widgets = [
   new TrialBox("#8e44ad", "Rotated 45").opts({
     x: 20,
     y: 220,
+    width: 160,
+    height: 80,
     rotation: 45,
   }),
-  new TrialGraphic("#f1c40f").opts({ x: 300, y: 300 }),
-  new TrialGraphic("#f1c40f").opts({ x: 400, y: 300, width: 128 }),
-  new TrialGraphic("#f1c40f").opts({ x: 560, y: 300, height: 128 }),
+  new TrialGraphic("#f1c40f").opts({ x: 300, y: 300, width: 64, height: 64 }),
+  new TrialGraphic("#f1c40f").opts({ x: 400, y: 300, width: 128, height: 64 }),
+  new TrialGraphic("#f1c40f").opts({ x: 560, y: 300, width: 64, height: 128 }),
   new TrialGraphic("#f1c40f").opts({
     x: 300,
     y: 450,

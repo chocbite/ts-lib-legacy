@@ -4,9 +4,11 @@ import { Base } from "@chocbite/ts-lib-base";
  * Position and size are in viewport units (px before any viewport scaling)
  * Rotation is in degrees clockwise around the center of the widget
  *
- * Widgets declare their original size, which is the size their content is designed for
- * When stretch is true, the content is laid out at the original size and scaled to the width and height of the widget
- * When stretch is false, the content is laid out at the width and height of the widget*/
+ * Width and height must always be set, they default to 0
+ *
+ * Widgets declare their original size, which is the size their content is laid out at
+ * The content is then scaled from the original size to the width and height of the widget
+ * Widgets that should not stretch, like text, return width and height as their original size*/
 export abstract class WidgetBase extends Base {
   /**Returns the name used to define the element, Abstract classes should return @abstract@ */
   static element_name() {
@@ -19,8 +21,8 @@ export abstract class WidgetBase extends Base {
 
   #x: number = 0;
   #y: number = 0;
-  #width: number | undefined;
-  #height: number | undefined;
+  #width: number = 0;
+  #height: number = 0;
   #rotation: number = 0;
 
   constructor() {
@@ -35,16 +37,10 @@ export abstract class WidgetBase extends Base {
     this.#update();
   }
 
-  /**Returns the width the content of the widget is designed for */
+  /**Returns the width the content of the widget is laid out at, return this.width to not stretch */
   abstract get original_width(): number;
-  /**Returns the height the content of the widget is designed for */
+  /**Returns the height the content of the widget is laid out at, return this.height to not stretch */
   abstract get original_height(): number;
-
-  /**Returns whether the content of the widget is stretched from the original size to the width and height
-   * Override to return false for widgets that should lay out their content at the actual size, like text */
-  get stretch(): boolean {
-    return true;
-  }
 
   /**Sets the x position of the left edge of the widget */
   set x(x: number) {
@@ -66,24 +62,24 @@ export abstract class WidgetBase extends Base {
     return this.#y;
   }
 
-  /**Sets the width of the widget, defaults to the original width */
+  /**Sets the width of the widget */
   set width(width: number) {
     this.#width = width;
     this.#update();
   }
   /**Returns the width of the widget */
   get width(): number {
-    return this.#width ?? this.original_width;
+    return this.#width;
   }
 
-  /**Sets the height of the widget, defaults to the original height */
+  /**Sets the height of the widget */
   set height(height: number) {
     this.#height = height;
     this.#update();
   }
   /**Returns the height of the widget */
   get height(): number {
-    return this.#height ?? this.original_height;
+    return this.#height;
   }
 
   /**Sets the rotation of the widget in degrees, rotating clockwise around the center of the widget */
@@ -97,10 +93,10 @@ export abstract class WidgetBase extends Base {
   }
 
   #update() {
-    const width = this.width;
-    const height = this.height;
-    const layout_width = this.stretch ? this.original_width : width;
-    const layout_height = this.stretch ? this.original_height : height;
+    const width = this.#width;
+    const height = this.#height;
+    const layout_width = this.original_width;
+    const layout_height = this.original_height;
     const scale_x = layout_width > 0 ? width / layout_width : 1;
     const scale_y = layout_height > 0 ? height / layout_height : 1;
     this.style.left = this.#x + "px";
