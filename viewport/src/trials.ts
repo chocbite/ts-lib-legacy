@@ -66,7 +66,7 @@ document.body.style.margin = "0";
 document.body.style.background = "#222";
 
 const page = new Page().opts({ width: 800, height: 600 });
-const viewport = new Viewport().opts({ page });
+const viewport = new Viewport().opts({ page, edit: true });
 viewport.style.width = "100vw";
 viewport.style.height = "100vh";
 document.body.appendChild(viewport);
