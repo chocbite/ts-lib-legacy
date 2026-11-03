@@ -5,6 +5,8 @@ const ZOOM_MIN = 0.1;
 const ZOOM_MAX = 20;
 /**Zoom factor per wheel pixel */
 const WHEEL_ZOOM_SPEED = 0.002;
+/**Zoom factor per wheel pixel for touchpad pinch, which reports much smaller deltas than a mouse wheel */
+const PINCH_ZOOM_SPEED = 0.01;
 /**Screen pixels panned per wheel pixel */
 const WHEEL_PAN_SPEED = 0.5;
 /**Pixels per line, for wheel events reported in lines */
@@ -18,8 +20,9 @@ const CHECKERBOARD =
  * The page is scaled to fit inside the viewport element while keeping its aspect ratio, and centered
  *
  * When edit is true the page can be zoomed and panned, and a checkerboard is shown behind it
- * Vertical wheel zooms toward the cursor, horizontal wheel pans horizontally
- * Ctrl + vertical wheel pans vertically
+ * Wheel and touchpad two finger swipe pans, ctrl + wheel or swipe zooms toward the cursor
+ * Shift + vertical wheel pans horizontally
+ * Touchpad pinch zooms toward the cursor
  * Holding alt makes wheel zoom and pan 10 times slower
  * Two finger touch pinch zooms and pans, middle mouse drag pans*/
 export class Viewport extends Base {
@@ -50,6 +53,8 @@ export class Viewport extends Base {
   #touches = new Map<number, { x: number; y: number }>();
   #middle_id: number | undefined;
   #middle_last = { x: 0, y: 0 };
+  /**Whether the ctrl key is physically held, to tell touchpad pinch from ctrl + wheel */
+  #ctrl_held: boolean = false;
 
   constructor() {
     super();
@@ -93,6 +98,7 @@ export class Viewport extends Base {
     this.#edit = edit;
     this.#background.style.display = edit ? "" : "none";
     this.style.touchAction = edit ? "none" : "";
+    this.#listen_keys(edit && this.isConnected);
     if (edit) {
       this.addEventListener("wheel", this.#on_wheel, { passive: false });
       this.addEventListener("pointerdown", this.#on_pointer_down);
@@ -127,6 +133,30 @@ export class Viewport extends Base {
 
   protected on_resize(): void {
     this.#update_view();
+  }
+
+  protected connectedCallback(): void {
+    super.connectedCallback();
+    if (this.#edit) this.#listen_keys(true);
+  }
+
+  protected disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.#listen_keys(false);
+  }
+
+  /**Adds or removes the window listeners tracking the ctrl key */
+  #listen_keys(listen: boolean) {
+    if (listen) {
+      window.addEventListener("keydown", this.#on_key);
+      window.addEventListener("keyup", this.#on_key);
+      window.addEventListener("blur", this.#on_blur);
+    } else {
+      window.removeEventListener("keydown", this.#on_key);
+      window.removeEventListener("keyup", this.#on_key);
+      window.removeEventListener("blur", this.#on_blur);
+      this.#ctrl_held = false;
+    }
   }
 
   #update_view() {
@@ -179,15 +209,16 @@ export class Viewport extends Base {
     const delta_x = e.deltaX * unit;
     const delta_y = e.deltaY * unit;
     const speed = e.altKey ? WHEEL_SLOW : 1;
-    this.#pan_x -= delta_x * speed * WHEEL_PAN_SPEED;
-    if (e.ctrlKey) this.#pan_y -= delta_y * speed * WHEEL_PAN_SPEED;
-    else if (delta_y !== 0) {
+    if (e.ctrlKey) {
+      //Browsers report touchpad pinch as ctrl + wheel, without the ctrl key being held
+      const zoom_speed = this.#ctrl_held ? WHEEL_ZOOM_SPEED : PINCH_ZOOM_SPEED;
       const point = this.#local(e);
-      this.#zoom_at(
-        point.x,
-        point.y,
-        Math.exp(-delta_y * WHEEL_ZOOM_SPEED * speed),
-      );
+      this.#zoom_at(point.x, point.y, Math.exp(-delta_y * zoom_speed * speed));
+    } else {
+      //Shift makes the vertical wheel pan horizontally, some browsers already swap the deltas themselves
+      const swap = e.shiftKey && delta_x === 0;
+      this.#pan_x -= (swap ? delta_y : delta_x) * speed * WHEEL_PAN_SPEED;
+      this.#pan_y -= (swap ? 0 : delta_y) * speed * WHEEL_PAN_SPEED;
     }
     this.#update_view();
   };
@@ -205,6 +236,7 @@ export class Viewport extends Base {
   };
 
   #on_pointer_move = (e: PointerEvent) => {
+    this.#ctrl_held = e.ctrlKey;
     if (this.#touches.has(e.pointerId)) {
       const before = this.#pinch();
       this.#touches.set(e.pointerId, this.#local(e));
@@ -231,6 +263,14 @@ export class Viewport extends Base {
   /**Prevents the browser autoscroll on middle mouse button */
   #on_mouse_down = (e: MouseEvent) => {
     if (e.button === 1) e.preventDefault();
+  };
+
+  #on_key = (e: KeyboardEvent) => {
+    this.#ctrl_held = e.ctrlKey;
+  };
+
+  #on_blur = () => {
+    this.#ctrl_held = false;
   };
 }
 define_element(Viewport);
