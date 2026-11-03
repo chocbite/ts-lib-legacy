@@ -108,9 +108,9 @@ transformer.make_variable(
 transformer.make_variable(
   "handleSize",
   "Handle Size",
-  "Diameter of the transformer handles",
-  "0.75rem",
-  "0.75rem",
+  "Diameter of the transformer handles, also the width of the outline area that moves the widget",
+  "1.25rem",
+  "1.25rem",
   "Length",
   { min: 0.1, max: 10 },
 );

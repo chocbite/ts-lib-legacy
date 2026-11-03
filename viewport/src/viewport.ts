@@ -199,18 +199,13 @@ export class Viewport extends Base {
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
-  /**Selects the widget under the pointer and starts moving it, or clears the selection if there is none
-   * Returns whether a widget was selected */
-  #select_at(e: PointerEvent): boolean {
+  /**Selects the widget under the pointer, or clears the selection if there is none */
+  #select_at(e: PointerEvent) {
     const page = this.#page;
     let element = e.target instanceof Element ? e.target : null;
     while (element && element.parentElement !== page)
       element = element.parentElement;
-    const widget = page?.widgets.find((widget) => widget === element);
-    this.selected = widget;
-    if (!widget) return false;
-    this.#transformer.start_move(e);
-    return true;
+    this.selected = page?.widgets.find((widget) => widget === element);
   }
 
   /**Returns center and distance of the first two touches */
@@ -253,7 +248,7 @@ export class Viewport extends Base {
     if (e.pointerType === "touch") {
       //Only the first touch selects, so a second finger can pinch without changing the selection
       if (this.#touches.size === 0 && !this.#transformer.dragging)
-        if (this.#select_at(e)) return;
+        this.#select_at(e);
       this.#touches.set(e.pointerId, this.#local(e));
       this.setPointerCapture(e.pointerId);
     } else if (e.button === 0) {

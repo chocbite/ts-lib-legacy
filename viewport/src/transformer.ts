@@ -1,4 +1,10 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
+import {
+  material_arrow_range_rounded,
+  material_open_with_rounded,
+  material_rotate_right_rounded,
+} from "@chocbite/ts-lib-icons";
+import type { SVGFunc } from "@chocbite/ts-lib-svg";
 import "./shared";
 import "./transformer.scss";
 import { WIDGET_TRANSFORM_EVENT, type WidgetBase } from "./widget";
@@ -57,10 +63,12 @@ interface Drag {
 /**Dashed outline with handles, attached to a widget to move, resize and rotate it
  * Corner handles resize both axes and side handles one axis, keeping the opposite corner or side in place
  * The handle above the outline rotates the widget around its center
- * The center handle and the outline itself move the widget
+ * The center handle and the outline itself move the widget, the inside of the outline is left to the widgets below
  *
  * Position and size snap to a 5px grid and rotation to 15 degrees
  * Holding alt snaps to a 1px grid and 5 degrees instead, holding shift disables snapping
+ *
+ * Resize and rotate cursors follow the rotation of the widget in 45 degree steps
  *
  * The transformer is drawn in viewport pixels, so it keeps its size when the page is zoomed*/
 export class Transformer extends Base {
@@ -86,14 +94,14 @@ export class Transformer extends Base {
     for (const side of ["top", "right", "bottom", "left"])
       this.#add("side " + side, { type: "move" });
     this.#add("line", undefined);
-    this.#add("handle move", { type: "move" });
+    this.#add("handle move", { type: "move" }, material_open_with_rounded);
     for (const handle of RESIZE_HANDLES)
-      this.#add("handle " + handle.name, {
-        type: "resize",
-        x: handle.x,
-        y: handle.y,
-      });
-    this.#add("handle rotate", { type: "rotate" });
+      this.#add(
+        "handle " + handle.name,
+        { type: "resize", x: handle.x, y: handle.y },
+        material_arrow_range_rounded,
+      );
+    this.#add("handle rotate", { type: "rotate" }, material_rotate_right_rounded);
     this.addEventListener("pointerdown", this.#on_pointer_down);
   }
 
@@ -132,14 +140,10 @@ export class Transformer extends Base {
     this.#update();
   }
 
-  /**Starts moving the widget with the given pointer, used when the widget itself is pressed */
-  start_move(e: PointerEvent) {
-    this.#start({ type: "move" }, e);
-  }
-
-  #add(class_name: string, action: Action | undefined) {
+  #add(class_name: string, action: Action | undefined, icon?: SVGFunc) {
     const element = this.appendChild(document.createElement("div"));
     element.className = class_name;
+    if (icon) element.appendChild(icon());
     if (action) this.#actions.set(element, action);
   }
 
@@ -153,6 +157,9 @@ export class Transformer extends Base {
     this.style.width = widget.width * scale + "px";
     this.style.height = widget.height * scale + "px";
     this.style.transform = `rotate(${widget.rotation}deg)`;
+    //Cursors only exist in 45 degree steps repeating every 180 degrees, the stylesheet picks the cursors from the closest step
+    const half_turn = ((widget.rotation % 180) + 180) % 180;
+    this.setAttribute("cursor-step", String(Math.round(half_turn / 45) % 4));
   }
 
   #start(action: Action, e: PointerEvent) {
