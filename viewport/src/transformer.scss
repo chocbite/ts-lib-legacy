@@ -1,8 +1,10 @@
 @use "sass:list";
 @use "./base";
 
-/**Distance from the top of the outline to the rotate handle */
-$rotate_distance: 2rem;
+/**Size of the handles and width of the outline area that moves the widget, set per input mode below */
+$handle_size: var(--handle-size);
+/**Distance from the top of the outline to the rotate handle, kept far enough from the top side handle */
+$rotate_distance: calc(#{$handle_size} * 1.6);
 
 /**Resize cursors in 45 degree steps, starting from horizontal and turning clockwise */
 $cursors: ew-resize, nwse-resize, ns-resize, nesw-resize;
@@ -29,12 +31,18 @@ $handle_icon_rotations: (
 );
 
 viewport-transformer {
+  --handle-size: 1.25rem;
   display: block;
   position: absolute;
   box-sizing: border-box;
   outline: 1px dashed base.$transformer_color;
   //Only the handles and sides take pointer events, so widgets under the outline can still be pressed
   pointer-events: none;
+
+  //The theme sets the touch class on the document in touch input mode
+  .touch & {
+    --handle-size: 3.75rem;
+  }
 
   &[hidden] {
     display: none;
@@ -53,30 +61,30 @@ viewport-transformer {
   > .bottom {
     left: 0;
     right: 0;
-    height: base.$transformer_handle_size;
+    height: $handle_size;
   }
   > .left,
   > .right {
     top: 0;
     bottom: 0;
-    width: base.$transformer_handle_size;
+    width: $handle_size;
   }
   > .top {
-    top: calc(#{base.$transformer_handle_size} / -2);
+    top: calc(#{$handle_size} / -2);
   }
   > .bottom {
-    bottom: calc(#{base.$transformer_handle_size} / -2);
+    bottom: calc(#{$handle_size} / -2);
   }
   > .left {
-    left: calc(#{base.$transformer_handle_size} / -2);
+    left: calc(#{$handle_size} / -2);
   }
   > .right {
-    right: calc(#{base.$transformer_handle_size} / -2);
+    right: calc(#{$handle_size} / -2);
   }
 
   > .line {
     left: 50%;
-    top: -$rotate_distance;
+    top: calc(#{$rotate_distance} * -1);
     height: $rotate_distance;
     border-left: 1px solid base.$transformer_color;
     pointer-events: none;
@@ -87,8 +95,8 @@ viewport-transformer {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    width: base.$transformer_handle_size;
-    height: base.$transformer_handle_size;
+    width: $handle_size;
+    height: $handle_size;
     border: 1px solid base.$transformer_color;
     border-radius: 50%;
     background: base.$transformer_handle_background;
@@ -135,7 +143,7 @@ viewport-transformer {
     top: 100%;
   }
   > .rotate {
-    top: -$rotate_distance;
+    top: calc(#{$rotate_distance} * -1);
   }
   > .move {
     cursor: move;

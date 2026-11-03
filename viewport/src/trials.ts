@@ -1,5 +1,5 @@
 import { define_element } from "@chocbite/ts-lib-base";
-import { THEME, Themes } from "@chocbite/ts-lib-theme";
+import { INPUT_MODE, InputModes, THEME, Themes } from "@chocbite/ts-lib-theme";
 import { Page } from "./page";
 import { Viewport } from "./viewport";
 import { WidgetBase } from "./widget";
@@ -90,6 +90,24 @@ theme_button.style.top = "10px";
 theme_button.textContent = "Toggle theme";
 theme_button.onclick = () => {
   THEME.write(THEME.ok() === Themes.Dark ? Themes.Light : Themes.Dark);
+};
+
+const input_mode_select = document.body.appendChild(
+  document.createElement("select"),
+);
+input_mode_select.style.position = "fixed";
+input_mode_select.style.left = "200px";
+input_mode_select.style.top = "10px";
+for (const mode of Object.values(InputModes)) {
+  const option = input_mode_select.appendChild(
+    document.createElement("option"),
+  );
+  option.value = mode;
+  option.textContent = "Input: " + mode;
+}
+input_mode_select.value = INPUT_MODE.ok();
+input_mode_select.onchange = () => {
+  INPUT_MODE.write(input_mode_select.value as InputModes);
 };
 
 const rotating = new TrialGraphic("#c0392b").opts({
