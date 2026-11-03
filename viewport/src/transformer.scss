@@ -1,8 +1,13 @@
 @use "sass:list";
 @use "./base";
 
-/**Size of the handles and width of the outline area that moves the widget, set per input mode below */
+/**Size of the handles and width of the outline area that moves the widget, in mouse and touch input mode */
+$handle_size_mouse: 1.25rem;
+$handle_size_touch: $handle_size_mouse * 2.6;
+/**Current handle size, switched between the sizes above by input mode */
 $handle_size: var(--handle-size);
+/**Side handles are hidden when the outline is shorter than this many handles along their side, so they do not overlap the corner handles */
+$side_handle_min_handles: 3;
 /**Distance from the top of the outline to the rotate handle, kept far enough from the top side handle */
 $rotate_distance: calc(#{$handle_size} * 1.6);
 
@@ -30,18 +35,36 @@ $handle_icon_rotations: (
   ne: -45deg,
 );
 
+/**Hides the side handles when the outline is too small for them, for the given handle size */
+@mixin hide_side_handles($size) {
+  @container (max-width: #{$size * $side_handle_min_handles}) {
+    > .n,
+    > .s {
+      display: none;
+    }
+  }
+  @container (max-height: #{$size * $side_handle_min_handles}) {
+    > .e,
+    > .w {
+      display: none;
+    }
+  }
+}
+
 viewport-transformer {
-  --handle-size: 1.25rem;
+  --handle-size: #{$handle_size_mouse};
   display: block;
   position: absolute;
   box-sizing: border-box;
+  //The handles query the size of the outline, to hide side handles on small widgets
+  container-type: size;
   outline: 1px dashed base.$transformer_color;
   //Only the handles and sides take pointer events, so widgets under the outline can still be pressed
   pointer-events: none;
 
   //The theme sets the touch class on the document in touch input mode
   .touch & {
-    --handle-size: 3.75rem;
+    --handle-size: #{$handle_size_touch};
   }
 
   &[hidden] {
@@ -164,5 +187,10 @@ viewport-transformer {
         }
       }
     }
+  }
+
+  @include hide_side_handles($handle_size_mouse);
+  .touch & {
+    @include hide_side_handles($handle_size_touch);
   }
 }
