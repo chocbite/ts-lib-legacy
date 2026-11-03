@@ -1,4 +1,6 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
+import "./page.scss";
+import "./shared";
 import type { WidgetBase } from "./widget";
 
 /**Page of widgets with a fixed size
@@ -19,9 +21,6 @@ export class Page extends Base {
 
   constructor() {
     super();
-    this.style.display = "block";
-    this.style.position = "relative";
-    this.style.overflow = "hidden";
     this.style.width = this.#width + "px";
     this.style.height = this.#height + "px";
   }

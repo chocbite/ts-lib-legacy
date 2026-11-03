@@ -1,5 +1,7 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
 import type { Page } from "./page";
+import "./shared";
+import "./viewport.scss";
 
 const ZOOM_MIN = 0.1;
 const ZOOM_MAX = 20;
@@ -13,8 +15,6 @@ const WHEEL_PAN_SPEED = 0.5;
 const WHEEL_LINE_HEIGHT = 16;
 /**Speed multiplier for wheel zoom and pan while alt is held */
 const WHEEL_SLOW = 0.1;
-const CHECKERBOARD =
-  "repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 0 0 / 20px 20px";
 
 /**Viewport showing a page of widgets
  * The page is scaled to fit inside the viewport element while keeping its aspect ratio, and centered
@@ -58,17 +58,8 @@ export class Viewport extends Base {
 
   constructor() {
     super();
-    this.style.display = "block";
-    this.style.position = "relative";
-    this.style.overflow = "hidden";
-    this.#background.style.position = "absolute";
-    this.#background.style.inset = "0";
-    this.#background.style.background = CHECKERBOARD;
-    this.#background.style.display = "none";
-    this.#container.style.position = "absolute";
-    this.#container.style.left = "0px";
-    this.#container.style.top = "0px";
-    this.#container.style.transformOrigin = "0 0";
+    this.#background.className = "checkerboard";
+    this.#container.className = "container";
     this.attach_to_resize_observer();
   }
 
@@ -96,8 +87,7 @@ export class Viewport extends Base {
   set edit(edit: boolean) {
     if (this.#edit === edit) return;
     this.#edit = edit;
-    this.#background.style.display = edit ? "" : "none";
-    this.style.touchAction = edit ? "none" : "";
+    this.toggleAttribute("edit", edit);
     this.#listen_keys(edit && this.isConnected);
     if (edit) {
       this.addEventListener("wheel", this.#on_wheel, { passive: false });
