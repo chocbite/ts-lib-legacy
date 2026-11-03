@@ -1,5 +1,8 @@
 import { Base } from "@chocbite/ts-lib-base";
 
+/**Event dispatched on a widget when its position, size or rotation changes */
+export const WIDGET_TRANSFORM_EVENT = "widget_transform";
+
 /**Shared class for widgets placed at a fixed position in a viewport
  * Position and size are in viewport units (px before any viewport scaling)
  * Rotation is in degrees clockwise around the center of the widget
@@ -8,7 +11,9 @@ import { Base } from "@chocbite/ts-lib-base";
  *
  * Widgets declare their original size, which is the size their content is laid out at
  * The content is then scaled from the original size to the width and height of the widget
- * Widgets that should not stretch, like text, return width and height as their original size*/
+ * Widgets that should not stretch, like text, return width and height as their original size
+ *
+ * WIDGET_TRANSFORM_EVENT is dispatched whenever position, size or rotation changes*/
 export abstract class WidgetBase extends Base {
   /**Returns the name used to define the element, Abstract classes should return @abstract@ */
   static element_name() {
@@ -105,5 +110,6 @@ export abstract class WidgetBase extends Base {
     this.style.height = layout_height + "px";
     //Scale the layout box to the widget size, then rotate around the center of the widget size
     this.style.transform = `translate(${width / 2}px, ${height / 2}px) rotate(${this.#rotation}deg) translate(${-width / 2}px, ${-height / 2}px) scale(${scale_x}, ${scale_y})`;
+    this.dispatchEvent(new Event(WIDGET_TRANSFORM_EVENT));
   }
 }

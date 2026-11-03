@@ -1,4 +1,4 @@
-import { GREY } from "@chocbite/ts-lib-colors";
+import { BLUE, GREY } from "@chocbite/ts-lib-colors";
 import { theme_init_variable_root } from "@chocbite/ts-lib-theme";
 
 const theme_root = theme_init_variable_root(
@@ -72,6 +72,45 @@ edit.make_variable(
   "Size of one square of the checkerboard shown behind the page in edit mode",
   "0.625rem",
   "0.625rem",
+  "Length",
+  { min: 0.1, max: 10 },
+);
+
+//      _______ _____            _   _  _____ ______ ____  _____  __  __ ______ _____
+//     |__   __|  __ \     /\   | \ | |/ ____|  ____/ __ \|  __ \|  \/  |  ____|  __ \
+//        | |  | |__) |   /  \  |  \| | (___ | |__ | |  | | |__) | \  / | |__  | |__) |
+//        | |  |  _  /   / /\ \ | . ` |\___ \|  __|| |  | |  _  /| |\/| |  __| |  _  /
+//        | |  | | \ \  / ____ \| |\  |____) | |   | |__| | | \ \| |  | | |____| | \ \
+//        |_|  |_|  \_\/_/    \_\_| \_|_____/|_|    \____/|_|  \_\_|  |_|______|_|  \_\
+const transformer = theme_root.make_sub_group(
+  "transformer",
+  "Transformer",
+  "Settings for the transformer used to move, resize and rotate widgets in edit mode",
+);
+transformer.make_variable(
+  "color",
+  "Transformer Color",
+  "Color of the transformer outline and handle borders",
+  BLUE["600"],
+  BLUE["300"],
+  "Color",
+  undefined,
+);
+transformer.make_variable(
+  "handleBackground",
+  "Handle Background Color",
+  "Background color of the transformer handles",
+  GREY["50"],
+  GREY["900"],
+  "Color",
+  undefined,
+);
+transformer.make_variable(
+  "handleSize",
+  "Handle Size",
+  "Diameter of the transformer handles",
+  "0.75rem",
+  "0.75rem",
   "Length",
   { min: 0.1, max: 10 },
 );

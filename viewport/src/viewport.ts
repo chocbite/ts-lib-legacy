@@ -1,7 +1,9 @@
 import { Base, define_element } from "@chocbite/ts-lib-base";
 import type { Page } from "./page";
 import "./shared";
+import { Transformer } from "./transformer";
 import "./viewport.scss";
+import type { WidgetBase } from "./widget";
 
 const ZOOM_MIN = 0.1;
 const ZOOM_MAX = 20;
@@ -24,7 +26,10 @@ const WHEEL_SLOW = 0.1;
  * Shift + vertical wheel pans horizontally
  * Touchpad pinch zooms toward the cursor
  * Holding alt makes wheel zoom and pan 10 times slower
- * Two finger touch pinch zooms and pans, middle mouse drag pans*/
+ * Two finger touch pinch zooms and pans, middle mouse drag pans
+ *
+ * Pressing a widget in edit mode selects it and attaches a transformer to move, resize and rotate it
+ * Pressing outside any widget clears the selection*/
 export class Viewport extends Base {
   /**Returns the name used to define the element */
   static element_name() {
@@ -39,6 +44,7 @@ export class Viewport extends Base {
     document.createElement("div"),
   );
   #container: HTMLDivElement = this.appendChild(document.createElement("div"));
+  #transformer: Transformer = this.appendChild(new Transformer());
   #page: Page | undefined;
   #page_observer = new ResizeObserver(() => {
     this.#update_view();
@@ -66,6 +72,7 @@ export class Viewport extends Base {
   /**Sets the page shown in the viewport */
   set page(page: Page | undefined) {
     if (this.#page === page) return;
+    this.selected = undefined;
     if (this.#page) {
       this.#page_observer.unobserve(this.#page);
       if (this.#page.parentElement === this.#container) this.#page.remove();
@@ -105,6 +112,7 @@ export class Viewport extends Base {
       this.removeEventListener("mousedown", this.#on_mouse_down);
       this.#touches.clear();
       this.#middle_id = undefined;
+      this.selected = undefined;
       this.#zoom = 1;
       this.#pan_x = 0;
       this.#pan_y = 0;
@@ -114,6 +122,15 @@ export class Viewport extends Base {
   /**Returns whether edit mode is enabled */
   get edit(): boolean {
     return this.#edit;
+  }
+
+  /**Sets the selected widget, which the transformer is attached to, selection is cleared when leaving edit mode */
+  set selected(widget: WidgetBase | undefined) {
+    this.#transformer.widget = widget;
+  }
+  /**Returns the selected widget */
+  get selected(): WidgetBase | undefined {
+    return this.#transformer.widget;
   }
 
   /**Returns the current scale from page units to screen pixels */
@@ -160,6 +177,11 @@ export class Viewport extends Base {
     this.#fit_y = (rect.height - height * fit) / 2;
     this.#scale = fit * this.#zoom;
     this.#container.style.transform = `translate(${this.#fit_x + this.#pan_x}px, ${this.#fit_y + this.#pan_y}px) scale(${this.#scale})`;
+    this.#transformer.view(
+      this.#fit_x + this.#pan_x,
+      this.#fit_y + this.#pan_y,
+      this.#scale,
+    );
   }
 
   /**Zooms by the factor, keeping the given point in viewport coordinates in place */
@@ -175,6 +197,20 @@ export class Viewport extends Base {
   #local(e: MouseEvent): { x: number; y: number } {
     const rect = this.getBoundingClientRect();
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  /**Selects the widget under the pointer and starts moving it, or clears the selection if there is none
+   * Returns whether a widget was selected */
+  #select_at(e: PointerEvent): boolean {
+    const page = this.#page;
+    let element = e.target instanceof Element ? e.target : null;
+    while (element && element.parentElement !== page)
+      element = element.parentElement;
+    const widget = page?.widgets.find((widget) => widget === element);
+    this.selected = widget;
+    if (!widget) return false;
+    this.#transformer.start_move(e);
+    return true;
   }
 
   /**Returns center and distance of the first two touches */
@@ -215,8 +251,13 @@ export class Viewport extends Base {
 
   #on_pointer_down = (e: PointerEvent) => {
     if (e.pointerType === "touch") {
+      //Only the first touch selects, so a second finger can pinch without changing the selection
+      if (this.#touches.size === 0 && !this.#transformer.dragging)
+        if (this.#select_at(e)) return;
       this.#touches.set(e.pointerId, this.#local(e));
       this.setPointerCapture(e.pointerId);
+    } else if (e.button === 0) {
+      this.#select_at(e);
     } else if (e.button === 1) {
       e.preventDefault();
       this.#middle_id = e.pointerId;

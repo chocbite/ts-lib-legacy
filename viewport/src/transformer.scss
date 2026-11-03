@@ -1,0 +1,124 @@
+@use "./base";
+
+/**Distance from the top of the outline to the rotate handle */
+$rotate_distance: 1.5rem;
+
+viewport-transformer {
+  display: block;
+  position: absolute;
+  box-sizing: border-box;
+  outline: 1px dashed base.$transformer_color;
+  //Only the handles and sides take pointer events, so widgets under the outline can still be pressed
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  > * {
+    position: absolute;
+    pointer-events: auto;
+  }
+
+  //Invisible strips along the outline, used to move the widget
+  > .side {
+    cursor: move;
+  }
+  > .top,
+  > .bottom {
+    left: 0;
+    right: 0;
+    height: base.$transformer_handle_size;
+  }
+  > .left,
+  > .right {
+    top: 0;
+    bottom: 0;
+    width: base.$transformer_handle_size;
+  }
+  > .top {
+    top: calc(#{base.$transformer_handle_size} / -2);
+  }
+  > .bottom {
+    bottom: calc(#{base.$transformer_handle_size} / -2);
+  }
+  > .left {
+    left: calc(#{base.$transformer_handle_size} / -2);
+  }
+  > .right {
+    right: calc(#{base.$transformer_handle_size} / -2);
+  }
+
+  > .line {
+    left: 50%;
+    top: -$rotate_distance;
+    height: $rotate_distance;
+    border-left: 1px solid base.$transformer_color;
+    pointer-events: none;
+  }
+
+  > .handle {
+    box-sizing: border-box;
+    width: base.$transformer_handle_size;
+    height: base.$transformer_handle_size;
+    border: 1px solid base.$transformer_color;
+    border-radius: 50%;
+    background: base.$transformer_handle_background;
+    translate: -50% -50%;
+  }
+
+  > .nw,
+  > .w,
+  > .sw {
+    left: 0;
+  }
+  > .n,
+  > .move,
+  > .s,
+  > .rotate {
+    left: 50%;
+  }
+  > .ne,
+  > .e,
+  > .se {
+    left: 100%;
+  }
+  > .nw,
+  > .n,
+  > .ne {
+    top: 0;
+  }
+  > .w,
+  > .move,
+  > .e {
+    top: 50%;
+  }
+  > .sw,
+  > .s,
+  > .se {
+    top: 100%;
+  }
+  > .rotate {
+    top: -$rotate_distance;
+    cursor: grab;
+  }
+  > .move {
+    cursor: move;
+  }
+  > .nw,
+  > .se {
+    cursor: nwse-resize;
+  }
+  > .ne,
+  > .sw {
+    cursor: nesw-resize;
+  }
+  > .n,
+  > .s {
+    cursor: ns-resize;
+  }
+  > .e,
+  > .w {
+    cursor: ew-resize;
+  }
+}
