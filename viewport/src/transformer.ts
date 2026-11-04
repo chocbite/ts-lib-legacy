@@ -94,7 +94,6 @@ export class Transformer extends Base {
     for (const side of ["top", "right", "bottom", "left"])
       this.#add("side " + side, { type: "move" });
     this.#add("line", undefined);
-    this.#add("handle move", { type: "move" }, material_open_with_rounded);
     for (const handle of RESIZE_HANDLES)
       this.#add(
         "handle " + handle.name,
@@ -102,6 +101,8 @@ export class Transformer extends Base {
         material_arrow_range_rounded,
       );
     this.#add("handle rotate", { type: "rotate" }, material_rotate_right_rounded);
+    //Added last so it is drawn on top of the other handles on small widgets
+    this.#add("handle move", { type: "move" }, material_open_with_rounded);
     this.addEventListener("pointerdown", this.#on_pointer_down);
   }
 

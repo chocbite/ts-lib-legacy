@@ -26,7 +26,7 @@ const WHEEL_SLOW = 0.1;
  * Shift + vertical wheel pans horizontally
  * Touchpad pinch zooms toward the cursor
  * Holding alt makes wheel zoom and pan 10 times slower
- * Two finger touch pinch zooms and pans, middle mouse drag pans
+ * Two finger touch pinch zooms and pans, middle or right mouse drag pans
  *
  * Pressing a widget in edit mode selects it and attaches a transformer to move, resize and rotate it
  * Pressing outside any widget clears the selection*/
@@ -57,8 +57,8 @@ export class Viewport extends Base {
   #pan_x: number = 0;
   #pan_y: number = 0;
   #touches = new Map<number, { x: number; y: number }>();
-  #middle_id: number | undefined;
-  #middle_last = { x: 0, y: 0 };
+  #pan_pointer_id: number | undefined;
+  #pan_pointer_last = { x: 0, y: 0 };
   /**Whether the ctrl key is physically held, to tell touchpad pinch from ctrl + wheel */
   #ctrl_held: boolean = false;
 
@@ -103,6 +103,7 @@ export class Viewport extends Base {
       this.addEventListener("pointerup", this.#on_pointer_up);
       this.addEventListener("pointercancel", this.#on_pointer_up);
       this.addEventListener("mousedown", this.#on_mouse_down);
+      this.addEventListener("contextmenu", this.#on_context_menu);
     } else {
       this.removeEventListener("wheel", this.#on_wheel);
       this.removeEventListener("pointerdown", this.#on_pointer_down);
@@ -110,8 +111,9 @@ export class Viewport extends Base {
       this.removeEventListener("pointerup", this.#on_pointer_up);
       this.removeEventListener("pointercancel", this.#on_pointer_up);
       this.removeEventListener("mousedown", this.#on_mouse_down);
+      this.removeEventListener("contextmenu", this.#on_context_menu);
       this.#touches.clear();
-      this.#middle_id = undefined;
+      this.#pan_pointer_id = undefined;
       this.selected = undefined;
       this.#zoom = 1;
       this.#pan_x = 0;
@@ -253,10 +255,10 @@ export class Viewport extends Base {
       this.setPointerCapture(e.pointerId);
     } else if (e.button === 0) {
       this.#select_at(e);
-    } else if (e.button === 1) {
+    } else if (e.button === 1 || e.button === 2) {
       e.preventDefault();
-      this.#middle_id = e.pointerId;
-      this.#middle_last = this.#local(e);
+      this.#pan_pointer_id = e.pointerId;
+      this.#pan_pointer_last = this.#local(e);
       this.setPointerCapture(e.pointerId);
     }
   };
@@ -272,23 +274,28 @@ export class Viewport extends Base {
       this.#pan_y += after.y - before.y;
       this.#zoom_at(after.x, after.y, after.distance / before.distance);
       this.#update_view();
-    } else if (e.pointerId === this.#middle_id) {
+    } else if (e.pointerId === this.#pan_pointer_id) {
       const point = this.#local(e);
-      this.#pan_x += point.x - this.#middle_last.x;
-      this.#pan_y += point.y - this.#middle_last.y;
-      this.#middle_last = point;
+      this.#pan_x += point.x - this.#pan_pointer_last.x;
+      this.#pan_y += point.y - this.#pan_pointer_last.y;
+      this.#pan_pointer_last = point;
       this.#update_view();
     }
   };
 
   #on_pointer_up = (e: PointerEvent) => {
     this.#touches.delete(e.pointerId);
-    if (e.pointerId === this.#middle_id) this.#middle_id = undefined;
+    if (e.pointerId === this.#pan_pointer_id) this.#pan_pointer_id = undefined;
   };
 
   /**Prevents the browser autoscroll on middle mouse button */
   #on_mouse_down = (e: MouseEvent) => {
     if (e.button === 1) e.preventDefault();
+  };
+
+  /**Prevents the context menu, as the right mouse button pans in edit mode */
+  #on_context_menu = (e: MouseEvent) => {
+    e.preventDefault();
   };
 
   #on_key = (e: KeyboardEvent) => {
