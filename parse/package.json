@@ -1,6 +1,6 @@
 {
   "name": "@chocbite/ts-lib-parse",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parsing utilities for TypeScript",
   "author": "chocolateandmilkwin",
   "license": "MIT",

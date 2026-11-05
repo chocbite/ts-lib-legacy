@@ -37,6 +37,7 @@ export type FetchSchema =
   | Parser
   | readonly ["?", FetchSchema]
   | readonly ["?", FetchSchema, () => unknown]
+  | readonly ["{}", FetchSchema]
   | readonly [number, FetchSchema]
   | readonly [0, FetchSchema, ArrayWriteEncoder]
   | readonly FetchSchema[]
@@ -81,6 +82,8 @@ type ResolveSchema<S> = S extends string
       ? ResolveSchema<Item>
       : S extends readonly ["?", infer Item]
         ? ResolveSchema<Item> | undefined
+  : S extends readonly ["{}", infer Item]
+          ? Record<string, ResolveSchema<Item>>
   : S extends readonly [0, infer Item, ArrayWriteEncoder]
           ? ResolveSchema<Item>[]
           : S extends readonly [0, infer Item]
@@ -130,7 +133,11 @@ type FetchNode<S, Value> = S extends string
         ? FetchNode<Item, Value>
         : S extends readonly ["?", infer Item]
           ? FetchNode<Item, Value>
-          : S extends readonly [infer Count extends number, infer Item]
+          : S extends readonly ["{}", infer Item]
+            ? FetchContainer<Value> & {
+                readonly [key: string]: FetchNode<Item, RecordItem<Value>>;
+              }
+            : S extends readonly [infer Count extends number, infer Item]
             ? FetchRepeat<FetchArrayItem<Item, ArrayItem<Value>>, Count>
             : S extends Parser
               ? StateREA<Value>
@@ -144,17 +151,22 @@ type FetchNode<S, Value> = S extends string
                 : StateREA<Value>;
 
 type ArrayItem<T> = T extends readonly (infer Item)[] ? Item : never;
+type RecordItem<T> = T extends Record<string, infer Item> ? Item : never;
 type ValueForKey<T, K> = K extends keyof T ? T[K] : never;
 
 export type FetchParsed<S extends FetchSchema> = FetchContainer<ResolveSchema<S>> &
-  (S extends object
+  (S extends readonly ["{}", infer Item]
     ? {
-        -readonly [K in keyof S]: FetchNode<
-          S[K],
-          ValueForKey<ResolveSchema<S>, K>
-        >;
+        readonly [key: string]: FetchNode<Item, RecordItem<ResolveSchema<S>>>;
       }
-    : {});
+    : S extends object
+      ? {
+          -readonly [K in keyof S]: FetchNode<
+            S[K],
+            ValueForKey<ResolveSchema<S>, K>
+          >;
+        }
+      : {});
 
 export type FetchRequest = string | readonly [string, RequestInit];
 export type FetchWrite = (payload: unknown) => PromiseLike<void>;
@@ -218,7 +230,11 @@ function result_at_path(
   if (value.err) return err(value.error);
   let current: unknown = value.value;
   for (const part of path) {
-    if (current === null || typeof current !== "object" || !(part in current)) {
+    if (
+      current === null ||
+      typeof current !== "object" ||
+      !Object.hasOwn(current, part)
+    ) {
       return err(`Failed to read missing member ${String(part)}`);
     }
     current = (current as Record<PathPart, unknown>)[part];
@@ -261,23 +277,24 @@ export function make_fetch_parser<const S extends FetchSchema>(
   let timer: ReturnType<typeof setTimeout> | undefined;
   let controller: AbortController | undefined;
   let active = false;
-  const load = async (owner: RemoteOwner, update: boolean) => {
+  const fetch_result = async (): Promise<StateResult<unknown>> => {
     try {
       controller = new AbortController();
       const [url, init] = request_parts(request());
       const response = await fetch(url, { ...init, signal: controller.signal });
-      if (!response.ok)
-        throw new Error(`Fetch failed: HTTP ${response.status}`);
-      const parsed = parse(await response.text());
-      owner.update_single(parsed, update);
+      if (!response.ok) return err(`Fetch failed: HTTP ${response.status}`);
+      return parse(await response.text());
     } catch (cause) {
-      if (active || update) {
-        const message = cause instanceof Error ? cause.message : String(cause);
-        owner.update_single(err(message), update);
-      }
+      // fetch, response.text and request can reject, convert to a result here
+      return err(cause instanceof Error ? cause.message : String(cause));
     } finally {
       controller = undefined;
     }
+  };
+
+  // Always answer so pending reads resolve, only notify subscribers while subscribed
+  const load = async (owner: RemoteOwner, update: boolean) => {
+    owner.update_single(await fetch_result(), update && active);
   };
 
   const schedule = (owner: RemoteOwner) => {
@@ -394,6 +411,28 @@ export function make_fetch_parser<const S extends FetchSchema>(
               : member;
           }
           return get_item(Number(property));
+        },
+      });
+    }
+
+    if (Array.isArray(part_schema) && part_schema[0] === "{}") {
+      const item: unknown = part_schema[1];
+      const items = new Map<string, unknown>();
+      const record = {};
+      set_fetch_state(
+        record,
+        state.proxy.rea(root as any, (result) => result_at_path(result, path)),
+      );
+      return new Proxy(record, {
+        get(target, property) {
+          if (typeof property !== "string")
+            return Reflect.get(target, property, target) as unknown;
+          let item_state = items.get(property);
+          if (!item_state) {
+            item_state = node(item, [...path, property]);
+            items.set(property, item_state);
+          }
+          return item_state;
         },
       });
     }

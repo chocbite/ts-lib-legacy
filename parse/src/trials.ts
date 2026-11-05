@@ -1,1 +1,1 @@
-import "./fetch_parse.trials";
+import "./parse.trials";

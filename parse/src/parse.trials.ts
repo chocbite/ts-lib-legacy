@@ -1,6 +1,10 @@
 import type { Parsed } from "./parse";
 import { make_parser } from "./parse";
 
+const yo = make_parser(["{}", "b"]);
+
+console.warn(yo({ test: 42 }));
+
 const internal_parser = make_parser(
   {
     bln: "b",

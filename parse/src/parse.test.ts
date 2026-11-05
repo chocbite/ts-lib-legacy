@@ -283,7 +283,83 @@ describe("make_parser", () => {
     it("should reject invalid root array elements", () => {
       const result = parse([{ bln: "wrong", num: 1 }]);
       expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.error).toContain("input[0].bln");
+      if (!result.ok) expect(result.error).toContain("root[0].bln");
+    });
+  });
+
+  describe("records", () => {
+    const parse = make_parser({ scores: ["{}", "n"] });
+
+    it("should accept objects with unknown keys and infer a record", () => {
+      const result = parse({ scores: { alice: 1, bob: 2 } });
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.scores).toEqual({ alice: 1, bob: 2 });
+        expectTypeOf(result.value.scores).toEqualTypeOf<Record<string, number>>();
+      }
+    });
+
+    it("should accept empty objects", () => {
+      expect(parse({ scores: {} }).ok).toBe(true);
+    });
+
+    it("should reject values with wrong type", () => {
+      const result = parse({ scores: { alice: 1, bob: "two" } });
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe(
+          "Failed to parse due to member scores.bob being wrong type (expected number)",
+        );
+      }
+    });
+
+    it("should reject non-objects", () => {
+      expect(parse({ scores: null }).ok).toBe(false);
+      expect(parse({ scores: [1, 2] }).ok).toBe(false);
+      expect(parse({ scores: 42 }).ok).toBe(false);
+    });
+
+    it("should support nested object values", () => {
+      const parse_users = make_parser({ users: ["{}", { name: "s", age: "n" }] });
+      const result = parse_users({ users: { a: { name: "A", age: 1 } } });
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expectTypeOf(result.value.users).toEqualTypeOf<
+          Record<string, { name: string; age: number }>
+        >();
+      }
+      expect(parse_users({ users: { a: { name: "A", age: "1" } } }).ok).toBe(false);
+    });
+
+    it("should support records at the root", () => {
+      const parse_root = make_parser(["{}", "s"]);
+      const result = parse_root({ a: "x", b: "y" });
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expectTypeOf(result.value).toEqualTypeOf<Record<string, string>>();
+      }
+      const failed = parse_root({ a: 1 });
+      expect(failed.ok).toBe(false);
+      if (!failed.ok) expect(failed.error).toContain("root.a");
+    });
+
+    it("should apply subparser transforms to values", () => {
+      const parse_dates = make_parser({ dates: ["{}", (input: unknown) => new Date(input as string)] });
+      const result = parse_dates({ dates: { start: "2026-01-01" } });
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.value.dates.start).toBeInstanceOf(Date);
+    });
+
+    it("should not replace the prototype when transforming a __proto__ key", () => {
+      const parse_transform = make_parser(["{}", (input: unknown) => ({ wrapped: input })]);
+      const result = parse_transform('{"__proto__": {"polluted": true}}');
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(Object.getPrototypeOf(result.value)).toBe(Object.prototype);
+        expect(Object.getOwnPropertyDescriptor(result.value, "__proto__")?.value).toEqual({
+          wrapped: { polluted: true },
+        });
+      }
     });
   });
 

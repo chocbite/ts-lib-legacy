@@ -23,6 +23,46 @@ describe("make_fetch_parser", () => {
     expect(root).toBeDefined();
   });
 
+  it("resolves a one-shot read with an error when fetch rejects", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    const parsed = make_fetch_parser(() => "/user", 1_000, { name: "s" });
+
+    const result = await parsed.name;
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBe("offline");
+    vi.unstubAllGlobals();
+  });
+
+  it("resolves a one-shot read with an error on a failed http status", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response("", { status: 500 })),
+    );
+    const parsed = make_fetch_parser(() => "/user", 1_000, { name: "s" });
+
+    const result = await parsed.name;
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBe("Fetch failed: HTTP 500");
+    vi.unstubAllGlobals();
+  });
+
+  it("resolves a one-shot read with an error when the request factory fails", async () => {
+    const parsed = make_fetch_parser(
+      () => {
+        throw new Error("no url");
+      },
+      1_000,
+      { name: "s" },
+    );
+
+    const result = await parsed.name;
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBe("no url");
+  });
+
   it("fetches once for a leaf subscription and projects its value", async () => {
     const fetch_mock = vi
       .fn()
@@ -132,5 +172,66 @@ describe("make_fetch_parser", () => {
     expect(events).not.toContain("fresh");
     parsed.items.unsub(subscriber);
     vi.unstubAllGlobals();
+  });
+
+  it("projects record members by key", async () => {
+    const fetch_mock = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            '{"scores":{"alice":1,"bob":2},"users":{"a":{"name":"A"}}}',
+          ),
+        ),
+      );
+    vi.stubGlobal("fetch", fetch_mock);
+    const parsed = make_fetch_parser(() => "/scores", 1_000, {
+      scores: ["{}", "n"],
+      users: ["{}", { name: "s" }],
+    });
+
+    const record: StateREA<Record<string, number>> = parsed.scores[FETCH_PARSE];
+    const alice: StateREA<number> = parsed.scores.alice;
+    const name: StateREA<string> = parsed.users.a.name;
+
+    expect(parsed.scores.alice).toBe(alice);
+    const record_value = await record;
+    expect(record_value.ok && record_value.value).toEqual({ alice: 1, bob: 2 });
+    const alice_value = await alice;
+    expect(alice_value.ok && alice_value.value).toBe(1);
+    const name_value = await name;
+    expect(name_value.ok && name_value.value).toBe("A");
+    const missing = await parsed.scores.carol;
+    expect(missing.ok).toBe(false);
+    vi.unstubAllGlobals();
+  });
+
+  it("supports records at the root", async () => {
+    const fetch_mock = vi.fn().mockResolvedValue(new Response('{"a":true}'));
+    vi.stubGlobal("fetch", fetch_mock);
+    const parsed = make_fetch_parser(() => "/flags", 1_000, ["{}", "b"]);
+
+    const root: StateREA<Record<string, boolean>> = parsed[FETCH_PARSE];
+    const flag: StateREA<boolean> = parsed.a;
+
+    expect(root).toBeDefined();
+    const flag_value = await flag;
+    expect(flag_value.ok && flag_value.value).toBe(true);
+    vi.unstubAllGlobals();
+  });
+
+  it("sends writable record values as a partial object", async () => {
+    const send = vi.fn().mockResolvedValue(undefined);
+    const parsed = make_fetch_parser(
+      () => "/scores",
+      1_000,
+      { scores: ["{}", "nw"] },
+      send,
+    );
+
+    const result = await parsed.scores.alice.write(5);
+
+    expect(result.ok).toBe(true);
+    expect(send).toHaveBeenCalledWith({ scores: { alice: 5 } });
   });
 });

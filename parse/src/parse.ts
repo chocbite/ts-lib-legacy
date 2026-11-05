@@ -53,27 +53,36 @@ type ResolveSpec<T> = T extends string
     ? Parsed<T>
     : T extends readonly ["?", infer Sub, () => unknown]
       ? ResolveSpec<Sub>
-  : T extends readonly ["?", infer Sub]
-    ? ResolveSpec<Sub> | undefined
-    : T extends readonly [0, infer Sub]
-      ? ResolveSpec<Sub>[]
-      : T extends readonly [infer N extends number, infer Sub]
-        ? Repeat<ResolveSpec<Sub>, N>
-        : T extends readonly PrimitiveSpec[]
-          ? ResolveStringTuple<T>
-          : T extends readonly SchemaQNSBL[]
-            ? ResolveSpec<T[number]>
-            : T extends object
-              ? { -readonly [K in keyof T]: ResolveSpec<T[K]> }
-              : never;
+      : T extends readonly ["?", infer Sub]
+        ? ResolveSpec<Sub> | undefined
+        : T extends readonly ["{}", infer Sub]
+          ? Record<string, ResolveSpec<Sub>>
+          : T extends readonly [0, infer Sub]
+            ? ResolveSpec<Sub>[]
+            : T extends readonly [infer N extends number, infer Sub]
+              ? Repeat<ResolveSpec<Sub>, N>
+              : T extends readonly PrimitiveSpec[]
+                ? ResolveStringTuple<T>
+                : T extends readonly SchemaQNSBL[]
+                  ? ResolveSpec<T[number]>
+                  : T extends object
+                    ? { -readonly [K in keyof T]: ResolveSpec<T[K]> }
+                    : never;
 
 type InferSchema<S> = {
   -readonly [K in keyof S]: ResolveSpec<S[K]>;
 };
 
-type InferArraySchema<S extends readonly [0, unknown]> =
-  S extends readonly [0, infer Item]
-    ? ResolveSpec<Item>[]
+type InferArraySchema<S extends readonly [0, unknown]> = S extends readonly [
+  0,
+  infer Item,
+]
+  ? ResolveSpec<Item>[]
+  : never;
+
+type InferRecordSchema<S extends readonly ["{}", unknown]> =
+  S extends readonly ["{}", infer Item]
+    ? Record<string, ResolveSpec<Item>>
     : never;
 
 type SchemaQNSBL =
@@ -81,15 +90,17 @@ type SchemaQNSBL =
   | Parser
   | readonly ["?", SchemaQNSBL]
   | readonly ["?", SchemaQNSBL, () => unknown]
+  | readonly ["{}", SchemaQNSBL]
   | readonly [number, SchemaQNSBL]
   | readonly SchemaQNSBL[]
   | { readonly [key: string]: SchemaQNSBL };
 
-type ParsedReturn<T> = T extends ResultOk<infer Value>
-  ? Value
-  : T extends { ok: boolean }
-    ? never
-    : T;
+type ParsedReturn<T> =
+  T extends ResultOk<infer Value>
+    ? Value
+    : T extends { ok: boolean }
+      ? never
+      : T;
 
 export type Parsed<F extends (...args: any[]) => unknown> = ParsedReturn<
   ReturnType<F>
@@ -152,6 +163,25 @@ function validate(
       return validate(value, spec[1] as SchemaQNSBL, path);
     }
 
+    if (spec[0] === "{}") {
+      if (typeof value !== "object" || value === null || Array.isArray(value)) {
+        return `Failed to parse due to member ${path} being wrong type (expected object)`;
+      }
+      const record = value as Record<string, unknown>;
+      for (const key of Object.keys(record)) {
+        const result = validate(
+          record[key],
+          spec[1] as SchemaQNSBL,
+          `${path}.${key}`,
+        );
+        if (typeof result === "string") return result;
+        // defineProperty avoids triggering the __proto__ setter for an own "__proto__" key
+        if (result)
+          Object.defineProperty(record, key, { value: result.transformed });
+      }
+      return null;
+    }
+
     if (typeof spec[0] === "number") {
       const count = spec[0];
       const sub_spec = spec[1] as SchemaQNSBL;
@@ -195,7 +225,11 @@ function validate(
       return `Failed to parse due to member ${path} having wrong length (expected ${spec.length}, got ${value.length})`;
     }
     for (let i = 0; i < spec.length; i++) {
-      const result = validate(value[i], spec[i] as SchemaQNSBL, `${path}[${i}]`);
+      const result = validate(
+        value[i],
+        spec[i] as SchemaQNSBL,
+        `${path}[${i}]`,
+      );
       if (typeof result === "string") return result;
       if (result) value[i] = result.transformed;
     }
@@ -225,6 +259,7 @@ function validate(
  * - Optional spec: prefix a type string with "?", or use ["?", spec] — permits a missing or undefined value
  * - Optional default: ["?", spec, () => defaultValue] — supplies a value when the input is missing or undefined
  * - Nested object: { key: spec } — recursively validated object
+ * - Record: ["{}", spec] — object with unknown keys, every value validated against spec
  * - Nested parser: another parser created by `make_parser`
  * - String tuple: ["ns", "b"] — tuple with per-position types
  * - Repeated tuple: [3, "s"] — fixed-length tuple of N elements of the same type
@@ -258,6 +293,9 @@ export function make_parser<const S extends Record<string, SchemaQNSBL>>(
 export function make_parser<const S extends readonly [0, unknown]>(
   schema: S & readonly [0, SchemaQNSBL],
 ): (input: unknown) => Result<InferArraySchema<S>, string>;
+export function make_parser<const S extends readonly ["{}", unknown]>(
+  schema: S & readonly ["{}", SchemaQNSBL],
+): (input: unknown) => Result<InferRecordSchema<S>, string>;
 export function make_parser(
   schema: unknown,
   default_value?: () => unknown,
@@ -275,9 +313,14 @@ export function make_parser(
       obj = input;
     }
 
-    if (!Array.isArray(schema) && typeof schema === "object" && schema !== null) {
+    if (
+      !Array.isArray(schema) &&
+      typeof schema === "object" &&
+      schema !== null
+    ) {
       if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
-        if (!default_value) return err("Failed to parse: input is not an object");
+        if (!default_value)
+          return err("Failed to parse: input is not an object");
         obj = default_value();
       }
 
@@ -290,7 +333,7 @@ export function make_parser(
         if (result) record[key] = result.transformed;
       }
     } else {
-      const result = validate(obj, schema as SchemaQNSBL, "input");
+      const result = validate(obj, schema as SchemaQNSBL, "root");
       if (typeof result === "string") return err(result);
       if (result) obj = result.transformed;
     }
