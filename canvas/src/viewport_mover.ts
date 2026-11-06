@@ -1,5 +1,6 @@
 import { node_clone } from "@chocbite/ts-lib-common";
 import { material_action_autorenew_rounded } from "@chocbite/ts-lib-icons";
+import { degrees_to_radians, radians_to_degrees } from "@chocbite/ts-lib-math";
 import type { StateROS } from "@chocbite/ts-lib-state";
 import { svg } from "@chocbite/ts-lib-svg";
 import { ViewportElement } from "./viewport_element";
@@ -46,7 +47,7 @@ rotation_center_indicator.appendChild(svg.create("circle").elem);
 rotation_center_indicator.appendChild(svg.line(-6, 0, 6, 0).elem);
 rotation_center_indicator.appendChild(svg.line(0, -6, 0, 6).elem);
 
-const DEG_TO_RAD = Math.PI / 180;
+const ICON_SCALE = 1.4;
 
 export class ViewportMover {
   #canvas: SVGSVGElement = svg.create("svg").cl("viewport-mover").elem;
@@ -75,7 +76,7 @@ export class ViewportMover {
   ) {
     scale.sub((val) => {
       this.#scale_buffer = val.value;
-      const s = `scale(${1 / val.value})`;
+      const s = `scale(${(1 / val.value) * ICON_SCALE})`;
       this.#nw_corner.setAttribute("transform", s);
       this.#ne_corner.setAttribute("transform", s);
       this.#sw_corner.setAttribute("transform", s);
@@ -93,6 +94,7 @@ export class ViewportMover {
     grid_rotate.sub((val) => {
       this.#grid_rotate_buffer = val.value;
     }, true);
+    this.#canvas.tabIndex = -1;
     this.#setup_position();
     this.#setup_corner(this.#nw_corner, -1, -1);
     this.#setup_corner(this.#ne_corner, 1, -1);
@@ -158,11 +160,15 @@ export class ViewportMover {
           const pos_x = (ev.offsetX - offset_x) / this.#scale_buffer + x;
           this.position_x = ev.shiftKey
             ? pos_x
-            : Math.round(pos_x / this.#grid_x_buffer) * this.#grid_x_buffer;
+            : ev.altKey
+              ? Math.round(pos_x / 1) * 1
+              : Math.round(pos_x / this.#grid_x_buffer) * this.#grid_x_buffer;
           const pos_y = (ev.offsetY - offset_y) / this.#scale_buffer + y;
           this.position_y = ev.shiftKey
             ? pos_y
-            : Math.round(pos_y / this.#grid_y_buffer) * this.#grid_y_buffer;
+            : ev.altKey
+              ? Math.round(pos_y / 1) * 1
+              : Math.round(pos_y / this.#grid_y_buffer) * this.#grid_y_buffer;
         }
       };
       this.#move.onpointerup = (ev) => {
@@ -220,7 +226,7 @@ export class ViewportMover {
           ev.clientX - center.x,
         );
         const raw_rotation =
-          initial_rotation + (current_angle - initial_angle) / DEG_TO_RAD;
+          initial_rotation + radians_to_degrees(current_angle - initial_angle);
         this.rotation = ev.shiftKey
           ? raw_rotation
           : Math.round(raw_rotation / this.#grid_rotate_buffer) *
@@ -271,7 +277,7 @@ export class ViewportMover {
       const initial_py = this.#position_y;
       const initial_rcx = this.#rotation_center_x;
       const initial_rcy = this.#rotation_center_y;
-      const rad = this.#rotation * DEG_TO_RAD;
+      const rad = degrees_to_radians(this.#rotation);
       const cos_r = Math.cos(rad);
       const sin_r = Math.sin(rad);
       handle.onpointermove = (ev) => {

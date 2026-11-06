@@ -1,12 +1,14 @@
+import { define_element } from "@chocbite/ts-lib-base";
 import { none, Option } from "@chocbite/ts-lib-result";
+import state from "@chocbite/ts-lib-state";
 import { svg } from "@chocbite/ts-lib-svg";
 import { viewport, ViewportElement } from ".";
 
 export class ViewportElementTest extends ViewportElement {
-  protected element_name(): string {
-    return "viewport";
+  static element_name(): string {
+    return "viewportelementtest";
   }
-  protected element_name_space(): string {
+  static element_name_space(): string {
     return "editor";
   }
 
@@ -20,16 +22,21 @@ export class ViewportElementTest extends ViewportElement {
   constructor() {
     super();
     this.canvas.appendChild(
-      svg.rectangle_from_corner(0, 0, 64, 64, 0).s("red").f("none").elem,
+      svg.rectangle_from_corner(0, 0, 64, 64, 0).s("red").f("green").elem,
     );
   }
+
+  set fill(color: string) {
+    (this.canvas.children[1] as SVGRectElement).setAttribute("fill", color);
+  }
 }
+define_element(ViewportElementTest);
 
 export class ViewportElementDynamicTest extends ViewportElement {
-  protected element_name(): string {
-    return "viewport-dynamic";
+  static element_name(): string {
+    return "viewportelementdynamictest";
   }
-  protected element_name_space(): string {
+  static element_name_space(): string {
     return "editor";
   }
 
@@ -60,8 +67,9 @@ export class ViewportElementDynamicTest extends ViewportElement {
     this.#rect.setAttribute("height", height.toString());
   }
 }
+define_element(ViewportElementDynamicTest);
 
-document.body.style.height = "100vh";
+document.body.style.height = "95vh";
 document.body.style.margin = "0";
 document.body.style.overflow = "hidden";
 
@@ -77,3 +85,9 @@ vp.elements = [elem, elem_dynamic];
 
 elem.rotation_center_x = 0;
 elem.rotation_center_y = 0;
+
+const yo = state.ok("green");
+elem.attach_state_ROA_to_prop("fill", yo);
+setTimeout(() => {
+  yo.set_ok("yellow");
+}, 2000);

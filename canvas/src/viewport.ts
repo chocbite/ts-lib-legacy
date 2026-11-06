@@ -20,20 +20,7 @@ export class Viewport extends Base {
   #viewport_width_half: number = 0;
   #viewport_height: number = 0;
   #viewport_height_half: number = 0;
-  #resize_observer = new ResizeObserver((a) => {
-    this.#viewport_width = a[0].contentRect.width;
-    this.#viewport_width_half = this.#viewport_width / 2;
-    this.#viewport_height = a[0].contentRect.height;
-    this.#viewport_height_half = this.#viewport_height / 2;
-    this.#pan_coordinates(
-      this.#pan_x.ok() + (a[0].contentRect.width - this.#viewport_width) / 2,
-      this.#pan_y.ok() + (a[0].contentRect.height - this.#viewport_height) / 2,
-    );
-    this.#root.setAttribute(
-      "viewBox",
-      `0 0 ${this.#viewport_width} ${this.#viewport_height}`,
-    );
-  });
+
   #root = this.appendChild(svg.create("svg").elem);
   #panner;
   #zoomer;
@@ -44,7 +31,7 @@ export class Viewport extends Base {
     infinite_canvas: boolean = false,
   ) {
     super();
-    this.#resize_observer.observe(this);
+    this.tabIndex = -1;
     this.#canvas_width = canvas_width;
     this.#canvas_height = canvas_height;
     //Panning
@@ -93,12 +80,25 @@ export class Viewport extends Base {
     let count = 0;
     let mover_x = 0;
     let mover_y = 0;
-    let initial_x = 0;
-    let initial_y = 0;
-    let initial_id = 0;
-    // let second_initial_x = 0;
-    // let second_initial_y = 0;
-    let second_initial_id = 0;
+
+    // Pointer tracking (clientX/clientY for reliable multitouch with SVG)
+    let pointer1_id = 0;
+    let pointer1_x = 0;
+    let pointer1_y = 0;
+    let pointer1_initial_x = 0;
+    let pointer1_initial_y = 0;
+
+    let pointer2_id = 0;
+    let pointer2_x = 0;
+    let pointer2_y = 0;
+
+    // Pinch-zoom state
+    let pinch_initial_distance = 0;
+    let pinch_initial_zoom = 1;
+    let pinch_initial_mid_x = 0;
+    let pinch_initial_mid_y = 0;
+    let pinch_initial_mid_vp_x = 0;
+    let pinch_initial_mid_vp_y = 0;
 
     //Middle Mouse
     let double_click = 0;
@@ -107,71 +107,149 @@ export class Viewport extends Base {
         e.preventDefault();
         e.stopPropagation();
 
-        // Element selection: detect clicks on the mover or viewport elements
-        const target = e.target as Element;
-        if (target.closest(".viewport-mover")) return;
-        const elementCanvas = target.closest(".viewport-element");
-        if (elementCanvas) {
-          const element = this.#elements.find(
-            (el) => el.canvas === elementCanvas,
-          );
-          if (element) {
-            this.attach_mover(element);
+        if (count >= 2) return;
+
+        // For touch, a second finger should only initiate pinch-zoom
+        // without affecting element selection or mover state.
+        // For mouse, always handle element selection and mover detach.
+        if (count === 0 || e.pointerType === "mouse") {
+          // Element selection: detect clicks on the mover or viewport elements
+          const target = e.target as Element;
+          if (target.closest(".viewport-mover")) return;
+          const elementCanvas = target.closest(".viewport-element");
+          if (elementCanvas) {
+            const element = this.#elements.find(
+              (el) => el.canvas === elementCanvas,
+            );
+            if (element) {
+              this.attach_mover(element);
+              return;
+            }
+          }
+          this.#detach_mover();
+
+          //Double Click Reset Position
+          const now = performance.now();
+          if (now - double_click < 300) {
+            this.#pan_coordinates(0, 0);
+            this.#zoom_coordinates(
+              Math.min(
+                this.#viewport_height / this.#canvas_height,
+                this.#viewport_width / this.#canvas_width,
+              ),
+              0,
+              0,
+            );
             return;
           }
+          double_click = now;
         }
-        this.#detach_mover();
 
-        //Double Click Reset Position
-        const now = performance.now();
-        if (now - double_click < 300) {
-          this.#pan_coordinates(0, 0);
-          this.#zoom_coordinates(
-            Math.min(
-              this.#viewport_height / this.#canvas_height,
-              this.#viewport_width / this.#canvas_width,
-            ),
-            0,
-            0,
-          );
-          return;
-        }
-        double_click = now;
         //Dragging
         this.setPointerCapture(e.pointerId);
         if (count === 0) {
           mover_x = this.#pan_x.ok();
           mover_y = this.#pan_y.ok();
-          initial_x = e.offsetX;
-          initial_y = e.offsetY;
-          initial_id = e.pointerId;
+          pointer1_id = e.pointerId;
+          pointer1_x = e.clientX;
+          pointer1_y = e.clientY;
+          pointer1_initial_x = e.clientX;
+          pointer1_initial_y = e.clientY;
         } else if (count === 1) {
-          // second_initial_x = e.offsetX;
-          // second_initial_y = e.offsetY;
-          second_initial_id = e.pointerId;
+          pointer2_id = e.pointerId;
+          pointer2_x = e.clientX;
+          pointer2_y = e.clientY;
+          // Initialize pinch-zoom state
+          const dx = pointer2_x - pointer1_x;
+          const dy = pointer2_y - pointer1_y;
+          pinch_initial_distance = Math.hypot(dx, dy);
+          pinch_initial_zoom = this.#zoom.ok();
+          mover_x = this.#pan_x.ok();
+          mover_y = this.#pan_y.ok();
+          pinch_initial_mid_x = (pointer1_x + pointer2_x) / 2;
+          pinch_initial_mid_y = (pointer1_y + pointer2_y) / 2;
+          const rect = this.getBoundingClientRect();
+          pinch_initial_mid_vp_x =
+            pinch_initial_mid_x - rect.left - this.#viewport_width_half;
+          pinch_initial_mid_vp_y =
+            pinch_initial_mid_y - rect.top - this.#viewport_height_half;
         }
         count++;
       }
     });
     this.onpointermove = (ev) => {
       if (count === 0) return;
-      if (ev.pointerId === initial_id) {
+
+      // Update tracked pointer position
+      if (ev.pointerId === pointer1_id) {
+        pointer1_x = ev.clientX;
+        pointer1_y = ev.clientY;
+      } else if (ev.pointerId === pointer2_id) {
+        pointer2_x = ev.clientX;
+        pointer2_y = ev.clientY;
+      } else return;
+
+      if (count === 1) {
+        // Single pointer: pan only
         this.#pan_coordinates(
-          mover_x + (ev.offsetX - initial_x) / count,
-          mover_y + (ev.offsetY - initial_y) / count,
+          mover_x + (pointer1_x - pointer1_initial_x),
+          mover_y + (pointer1_y - pointer1_initial_y),
         );
-      } else if (ev.pointerId === second_initial_id) {
-        if (count < 2) return;
-        this.#pan_coordinates(
-          mover_x + (ev.offsetX - initial_x) / count,
-          mover_y + (ev.offsetY - initial_y) / count,
+      } else if (count >= 2) {
+        // Two pointers: pinch-zoom + pan
+        const dx = pointer2_x - pointer1_x;
+        const dy = pointer2_y - pointer1_y;
+        const current_distance = Math.hypot(dx, dy);
+
+        // Calculate new zoom from distance ratio
+        const scale_ratio =
+          pinch_initial_distance > 0
+            ? current_distance / pinch_initial_distance
+            : 1;
+        const new_scale = Math.max(
+          0.001,
+          Math.min(10000, pinch_initial_zoom * scale_ratio),
         );
+        const zoom_factor = new_scale / pinch_initial_zoom;
+
+        // Calculate midpoint movement for pan
+        const current_mid_x = (pointer1_x + pointer2_x) / 2;
+        const current_mid_y = (pointer1_y + pointer2_y) / 2;
+        const mid_delta_x = current_mid_x - pinch_initial_mid_x;
+        const mid_delta_y = current_mid_y - pinch_initial_mid_y;
+
+        // Combined: zoom-adjusted pan + zoom center compensation + midpoint pan
+        const new_pan_x =
+          mover_x * zoom_factor +
+          pinch_initial_mid_vp_x * (1 - zoom_factor) +
+          mid_delta_x;
+        const new_pan_y =
+          mover_y * zoom_factor +
+          pinch_initial_mid_vp_y * (1 - zoom_factor) +
+          mid_delta_y;
+
+        // Apply zoom and pan directly
+        this.#zoomer.style.scale = new_scale.toString();
+        this.#zoom.set_ok(new_scale);
+        this.#pan_coordinates(new_pan_x, new_pan_y);
       }
     };
     this.onpointerup = (ev) => {
       if (this.hasPointerCapture(ev.pointerId)) {
         this.releasePointerCapture(ev.pointerId);
         count--;
+        if (count === 1) {
+          // Transition from pinch to single-finger pan
+          mover_x = this.#pan_x.ok();
+          mover_y = this.#pan_y.ok();
+          if (ev.pointerId === pointer1_id) {
+            pointer1_id = pointer2_id;
+            pointer1_x = pointer2_x;
+            pointer1_y = pointer2_y;
+          }
+          pointer1_initial_x = pointer1_x;
+          pointer1_initial_y = pointer1_y;
+        }
       }
     };
     //Wheel
@@ -214,16 +292,6 @@ export class Viewport extends Base {
       },
       { capture: true },
     );
-    // Detach mover when clicking outside the viewport
-    document.addEventListener("pointerdown", (e) => {
-      if (!this.contains(e.target as Node)) {
-        this.#detach_mover();
-      }
-    });
-    // Detach mover when the browser window loses focus
-    window.addEventListener("blur", () => {
-      this.#detach_mover();
-    });
   }
 
   #pan_coordinates(x?: number, y?: number) {
@@ -254,6 +322,31 @@ export class Viewport extends Base {
     );
     this.#zoomer.style.scale = scale.toString();
     this.#zoom.set_ok(scale);
+  }
+
+  #resize_observer = new ResizeObserver((a) => {
+    this.#viewport_width = a[0].contentRect.width;
+    this.#viewport_width_half = this.#viewport_width / 2;
+    this.#viewport_height = a[0].contentRect.height;
+    this.#viewport_height_half = this.#viewport_height / 2;
+    this.#pan_coordinates(
+      this.#pan_x.ok() + (a[0].contentRect.width - this.#viewport_width) / 2,
+      this.#pan_y.ok() + (a[0].contentRect.height - this.#viewport_height) / 2,
+    );
+    this.#root.setAttribute(
+      "viewBox",
+      `0 0 ${this.#viewport_width} ${this.#viewport_height}`,
+    );
+  });
+
+  protected connectedCallback(): void {
+    super.connectedCallback();
+    this.#resize_observer.observe(this);
+  }
+
+  protected disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.#resize_observer.disconnect();
   }
 
   //       _____          _   ___      __      _____
