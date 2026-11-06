@@ -1,6 +1,6 @@
 {
   "name": "@chocbite/ts-lib-localstorage",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Helpers for using localStorage and states in a Typescript",
   "author": "chocolateandmilkwin",
   "license": "MIT",
@@ -35,8 +35,8 @@
     "@chocbite/ts-supplement-eslint": "^1.0.4",
     "@vitest/browser-playwright": "^4.1.10",
     "eslint": "^10.7.0",
-    "tsdown": "^0.21.10",
-    "typescript": "^6.0.3",
+    "tsdown": "^0.22.5",
+    "typescript": "^7.0.2",
     "vite": "^8.1.4",
     "vitest": "^4.1.10"
   },
