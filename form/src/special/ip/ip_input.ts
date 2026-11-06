@@ -170,10 +170,6 @@ export class FormIp<ID extends string | undefined> extends FormValueWrite<
     };
   }
 
-  focus(options?: FocusOptions): void {
-    this.#parts[0].focus(options);
-  }
-
   get value_as_ip(): IPAddress {
     return new IPAddress(
       this.#parts

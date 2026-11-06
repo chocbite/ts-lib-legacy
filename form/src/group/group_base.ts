@@ -142,7 +142,9 @@ export abstract class FormGroupBase<
     switch (access) {
       case AccessTypes.Read: {
         this.tabIndex = 0;
-        this.onfocus = () => document.body.focus();
+        this.onfocus = () => {
+          document.body.focus();
+        };
         break;
       }
       case AccessTypes.Write: {

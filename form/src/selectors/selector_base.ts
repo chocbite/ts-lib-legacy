@@ -12,15 +12,12 @@ export interface FormSelectorOption<RT> {
   icon?: SVGFunc;
 }
 
-/**Selection options for a form selector */
-export type FormSelections<T> = FormSelectorOption<T>[];
-
 export interface FormSelectorBaseOptions<
   T,
   ID extends string | undefined,
 > extends FormValueWriteOptions<T, ID> {
   /**Options for selector*/
-  selections?: FormSelections<T>;
+  selections?: FormSelectorOption<T>[];
 }
 
 /**Base for number elements elements*/
@@ -29,7 +26,7 @@ export abstract class FormSelectorBase<
   ID extends string | undefined,
 > extends FormValueWrite<RT, ID> {
   /**Sets the selection options for the selector */
-  abstract set selections(selections: FormSelections<RT> | undefined);
+  abstract set selections(selections: FormSelectorOption<RT>[] | undefined);
 
   static apply_options<RT, ID extends string | undefined>(
     element: FormSelectorBase<RT, ID>,

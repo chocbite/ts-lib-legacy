@@ -151,10 +151,6 @@ export class FormSlider<ID extends string | undefined> extends FormNumberWrite<
     };
   }
 
-  focus(options?: FocusOptions): void {
-    this.#slider.focus(options);
-  }
-
   set unit(unit: string | undefined) {
     this.#unit = unit || "";
     this.#unit_box.textContent = this.#unit;
