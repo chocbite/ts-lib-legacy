@@ -1,0 +1,44 @@
+{
+  "name": "@chocbite/ts-lib-common",
+  "version": "2.0.0",
+  "description": "Common utilities for TypeScript",
+  "author": "chocolateandmilkwin",
+  "license": "MIT",
+  "repository": "https://github.com/chocbite/ts-lib-common.git",
+  "type": "module",
+  "private": false,
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --port 9959",
+    "build": "tsdown src/index.ts",
+    "lint": "eslint src/**/*.ts",
+    "test": "vitest run --browser.headless",
+    "test:debug": "vitest",
+    "check-deps": "npx depcheck",
+    "check-trials": "tsc --noEmit",
+    "prepublishOnly": "npm run check-deps && npm run check-trials && npm run test && npm run build",
+    "upgrades": "npx npm-check-updates --target semver",
+    "upgrade": "npx npm-check-updates --target semver -u && npm install"
+  },
+  "devDependencies": {
+    "@chocbite/ts-supplement-eslint": "^2.0.0",
+    "@vitest/browser-playwright": "^5.0.4",
+    "eslint": "^10.12.0",
+    "tsdown": "^0.23.1",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.4"
+  }
+}
